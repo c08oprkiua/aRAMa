@@ -1,7 +1,7 @@
 #include <string.h>
 #include "rpx_rpl_table.h"
-#include "kernel/kernel_functions.h"
-#include "common/common.h"
+#include "../kernel/kernel_functions.h"
+#include "../common/common.h"
 
 //! static container holding our retain data
 static unsigned char ucRpxData[0xffff];

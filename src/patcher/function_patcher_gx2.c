@@ -20,7 +20,6 @@
 #include "../utils/function_patcher.h"
 #include "../utils/logger.h"
 #include "function_patcher_gx2.h"
-#include <gd.h>
 #include <string.h> // memcpy()
 
 static volatile int executionCounter = 0;

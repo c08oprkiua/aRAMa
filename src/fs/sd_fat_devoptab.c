@@ -29,10 +29,10 @@
 #include <malloc.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include "dynamic_libs/fs_functions.h"
-#include "dynamic_libs/os_functions.h"
+#include "../dynamic_libs/fs_functions.h"
+#include "../dynamic_libs/os_functions.h"
 #include "fs_utils.h"
-#include "utils/logger.h"
+#include "../utils/logger.h"
 #include "../dynamic_libs/fs_functions.h"
 #include "../dynamic_libs/os_functions.h"
 

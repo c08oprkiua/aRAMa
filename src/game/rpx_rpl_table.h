@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <gctypes.h>
-#include "common/common.h"
+#include "../common/common.h"
 #include "memory_area_table.h"
 
 /* Struct used to organize rpx/rpl data in memory */

@@ -33,7 +33,7 @@
 #include <sys/dirent.h>
 
 #include "DirList.h"
-#include "utils/StringTools.h"
+#include "../utils/StringTools.h"
 
 DirList::DirList()
 {

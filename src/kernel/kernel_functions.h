@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "common/kernel_defs.h"
+#include "../common/kernel_defs.h"
 #include "syscalls.h"
 
 extern ReducedCosAppXmlInfo cosAppXmlInfoStruct;

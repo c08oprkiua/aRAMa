@@ -21,7 +21,7 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
  ***************************************************************************/
-#include "common/common.h"
+#include "../common/common.h"
 #include "os_functions.h"
 
 u32 coreinit_handle = 0;

@@ -23,7 +23,7 @@
  ***************************************************************************/
 #include "fs_functions.h"
 #include "os_functions.h"
-#include "utils/utils.h"
+#include "../utils/utils.h"
 
 EXPORT_DECL(int, FSInit, void);
 
