@@ -226,10 +226,10 @@ int Menu_Main(void) {
 
 #include <wups.h>
 
-WUPS_PLUGIN_NAME("TCPGecko")
-WUPS_PLUGIN_DESCRIPTION("RAM Debugger and cheat engine for Aroma")
+WUPS_PLUGIN_NAME("aRAMa")
+WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma")
 WUPS_PLUGIN_AUTHOR("port: c08o.prkiua, original: BullyWiiPlaza + contributors")
 
 ON_APPLICATION_START(){
-	
+	//Todo: Figure out what all TCPGecko does on an application launch
 }
