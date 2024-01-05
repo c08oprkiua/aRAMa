@@ -1,7 +1,8 @@
-#include "../dynamic_libs/os_functions.h"
+#include <coreinit/memorymap.h>
 
 int validateAddressRange(int starting_address, int ending_address) {
-	return __OSValidateAddressSpaceRange(1, (void *) starting_address, ending_address - starting_address + 1);
+	//Port change: (void*) typecasted to uint32_t
+	return __OSValidateAddressSpaceRange(1, (uint32_t)(void *) starting_address, ending_address - starting_address + 1);
 }
 
 /*bool isValidDataAddress(int address) {

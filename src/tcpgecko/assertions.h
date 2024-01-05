@@ -1,3 +1,6 @@
+#include <coreinit/debug.h>
+#include <wut.h>
+
 #ifndef TCPGECKO_ASSERTIONS_H
 #define TCPGECKO_ASSERTIONS_H
 

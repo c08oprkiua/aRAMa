@@ -6,11 +6,9 @@
 // #include <inttypes.h>
 #include "../common/common.h"
 #include <zlib.h> // Actually must be included before os_functions
-#include "../dynamic_libs/os_functions.h"
 #include <string.h>
 #include <malloc.h>
 #include "main.h"
-#include "../dynamic_libs/socket_functions.h"
 #include "../dynamic_libs/gx2_functions.h"
 #include "../dynamic_libs/fs_functions.h"
 #include "../utils/logger.h"
@@ -25,6 +23,10 @@
 #include "sd_cheats.h"
 #include "threads.h"
 #include "software_breakpoints.h"
+
+//WUT includes
+#include <coreinit/thread.h> //replaces os_functions.h
+#include <nsysnet/socket.h> //replaces socket_functions.h
 
 void *client;
 void *commandBlock;

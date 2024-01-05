@@ -1,5 +1,5 @@
 #include <stdbool.h>
-#include "../dynamic_libs/os_functions.h"
+//#include "../dynamic_libs/os_functions.h"
 #include "../system/exception_handler.h"
 #include "../kernel/syscalls.h"
 #include "../common/common.h"

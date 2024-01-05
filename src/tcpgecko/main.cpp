@@ -5,11 +5,21 @@
 #include <malloc.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "../dynamic_libs/os_functions.h"
-#include "../dynamic_libs/fs_functions.h"
-#include "../dynamic_libs/sys_functions.h"
-#include "../dynamic_libs/vpad_functions.h"
-#include "../dynamic_libs/socket_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/screen.h>
+
+//#include "../dynamic_libs/fs_functions.h"
+
+
+//#include "../dynamic_libs/sys_functions.h"
+
+
+//#include "../dynamic_libs/vpad_functions.h"
+#include <vpad/input.h>
+
+//#include "../dynamic_libs/socket_functions.h"
+
+
 #include "../kernel/kernel_functions.h"
 #include "../system/memory.h"
 #include "../common/common.h"
@@ -51,8 +61,8 @@ unsigned char *screenBuffer;
 void initializeScreen() {
 	// Init screen and screen buffers
 	OSScreenInit();
-	unsigned int screenBuffer0Size = OSScreenGetBufferSizeEx(0);
-	unsigned int screenBuffer1Size = OSScreenGetBufferSizeEx(1);
+	unsigned int screenBuffer0Size = OSScreenGetBufferSizeEx(SCREEN_TV);
+	unsigned int screenBuffer1Size = OSScreenGetBufferSizeEx(SCREEN_DRC);
 
 	screenBuffer = (unsigned char *) MEM1_alloc(screenBuffer0Size + screenBuffer1Size, 0x40);
 
@@ -127,11 +137,11 @@ int Menu_Main(void) {
 	char messageBuffer[80];
 	int launchMethod;
 	int shouldUpdateScreen = 1;
-	s32 vpadError = -1;
-	VPADData vpad_data;
+	VPADReadError vpadError = -1;
+	VPADStatus vpad_data;
 
 	while (true) {
-		VPADRead(0, &vpad_data, 1, &vpadError);
+		VPADRead(VPAD_CHAN_0, &vpad_data, 1, &vpadError);
 
 		if (shouldUpdateScreen) {
 			OSScreenClearBufferEx(0, 0);
@@ -167,7 +177,7 @@ int Menu_Main(void) {
 			OSScreenFlipBuffersEx(1);
 		}
 
-		u32 pressedButtons = vpad_data.btns_d | vpad_data.btns_h;
+		u32 pressedButtons = vpad_data.trigger | vpad_data.hold;
 
 		// Home Button
 		if (pressedButtons & VPAD_BUTTON_HOME) {
@@ -210,4 +220,16 @@ int Menu_Main(void) {
 
 	// For each title load, relaunch the TCP Gecko
 	return EXIT_RELAUNCH_ON_LOAD;
+}
+
+//Aroma WUPS code
+
+#include <wups.h>
+
+WUPS_PLUGIN_NAME("TCPGecko")
+WUPS_PLUGIN_DESCRIPTION("RAM Debugger and cheat engine for Aroma")
+WUPS_PLUGIN_AUTHOR("port: c08o.prkiua, original: BullyWiiPlaza + contributors")
+
+ON_APPLICATION_START(){
+	
 }

@@ -2,7 +2,6 @@
 
 #include "../kernel/syscalls.h"
 #include "assertions.h"
-#include "../dynamic_libs/os_functions.h"
 #include "tcp_gecko.h"
 #include "../utils/logger.h"
 

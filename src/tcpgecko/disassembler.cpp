@@ -1,9 +1,10 @@
-#include "../dynamic_libs/os_functions.h"
 #include "assertions.h"
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include <wut.h>
 
 char *disassemblerBuffer;
 void *disassemblerBufferPointer;

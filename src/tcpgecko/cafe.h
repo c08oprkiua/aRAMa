@@ -83,13 +83,13 @@ typedef int (*ThreadFunc)(int argc, void *argv);
 typedef struct OSThread {
 	OSContext context;
 
-	u32 txtTag;
-	u8 state;
-	u8 attr;
+	u32 txtTag; //uint32_t tag
+	u8 state; //OSThreadState state
+	u8 attr; //OSThreadAttributes attr
 
-	short threadId;
-	int suspend;
-	int priority;
+	short threadId; 
+	int suspend; //
+	int priority; //int32_t priority
 
 	char _[0x394 - 0x330];
 
