@@ -3,7 +3,11 @@
 #include "../utils/logger.h"
 #include "../fs/sd_fat_devoptab.h"
 #include "../fs/fs_utils.h"
-#include "../dynamic_libs/os_functions.h"
+
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/memorymap.h>
+#include <coreinit/title.h>
+
 #include "tcp_gecko.h"
 #include "../kernel/syscalls.h"
 #include <fat.h>

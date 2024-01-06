@@ -6,14 +6,9 @@
 #include "utilities.h"
 #include "../system/exception_handler.h"
 
-#define OS_EXCEPTION_DSI 		2
-#define OS_EXCEPTION_ISI 		3
-#define OS_EXCEPTION_PROGRAM 	6
-
-#define OS_EXCEPTION_MODE_THREAD               1
-#define OS_EXCEPTION_MODE_GLOBAL               2
-#define OS_EXCEPTION_MODE_THREAD_ALL_CORES     3
-#define OS_EXCEPTION_MODE_GLOBAL_ALL_CORES     4
+#include <coreinit/exception.h>
+#include <coreinit/debug.h>
+#include <coreinit/exception.h>
 
 struct Breakpoint {
 	u32 address;
@@ -35,8 +30,9 @@ unsigned char ProgramHandler_Debug(void *interruptedContext) {
 	return 0;
 }
 
+//I don't think ProgramHandler_Debug will work here with WUT
 void installBreakpointHandler() {
-	OSSetExceptionCallbackEx((u8) OS_EXCEPTION_MODE_GLOBAL_ALL_CORES, (u8) OS_EXCEPTION_PROGRAM, ProgramHandler_Debug);
+	OSSetExceptionCallbackEx(OS_EXCEPTION_MODE_GLOBAL_ALL_CORES, OS_EXCEPTION_TYPE_PROGRAM, ProgramHandler_Debug);
 }
 
 struct Breakpoint breakpoints[GENERAL_BREAKPOINTS_COUNT + STEP_BREAKPOINTS_COUNT];

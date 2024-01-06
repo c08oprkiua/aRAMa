@@ -1,7 +1,9 @@
 #ifndef TCPGECKO_UTILITIES_H
 #define TCPGECKO_UTILITIES_H
 
-#include "../dynamic_libs/os_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/cache.h>
+
 #include "../utils/logger.h"
 #include "kernel.h"
 #include <stddef.h> /* size_t */

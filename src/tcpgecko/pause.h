@@ -2,7 +2,9 @@
 
 #include "../utils/logger.h"
 #include "assertions.h"
-#include "../dynamic_libs/os_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/dynload.h>
+
 #include "../common/fs_defs.h"
 #include "kernel.h"
 

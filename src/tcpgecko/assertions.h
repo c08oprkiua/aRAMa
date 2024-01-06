@@ -1,8 +1,8 @@
-#include <coreinit/debug.h>
-#include <wut.h>
-
 #ifndef TCPGECKO_ASSERTIONS_H
 #define TCPGECKO_ASSERTIONS_H
+
+#include <coreinit/debug.h>
+#include <wut.h>
 
 #define ASSERT_MINIMUM_HOLDS(actual, minimum, variableName) \
 if(actual < minimum) { \

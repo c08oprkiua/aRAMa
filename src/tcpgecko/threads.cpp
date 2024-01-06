@@ -1,7 +1,9 @@
 #include "threads.h"
 #include "linked_list.h"
+
 //#include "../dynamic_libs/os_functions.h"
 #include <coreinit/thread.h>
+
 #include "../utils/logger.h"
 
 struct node *getAllThreads() {

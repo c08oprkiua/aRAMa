@@ -1,7 +1,9 @@
 #include "../common/os_defs.h"
 #include "../common/kernel_defs.h"
 #include "../common/common.h"
-#include "../dynamic_libs/os_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+
+
 #include "syscalls.h"
 
 extern void my_PrepareTitle_hook(void);

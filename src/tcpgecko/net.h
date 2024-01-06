@@ -36,7 +36,7 @@
 #define MASK_COMMON           0x0200
 #define MASK_COMMON_CLEAN     0x0400
 
-void cafiine_connect(int *psock,u32 ip);
+void cafiine_connect(int *psock, uint32_t ip);
 void cafiine_disconnect(int sock);
 int cafiine_handshake(int sock);
 int getMode(int sock,int * result);

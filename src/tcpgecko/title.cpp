@@ -1,8 +1,9 @@
-#include "../dynamic_libs/os_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/title.h>
 #include "title.h"
 
 bool isRunningTitleID(unsigned long long int japaneseTitleID) {
-	u64 currentTitleID = OSGetTitleID();
+	uint64_t currentTitleID = OSGetTitleID();
 	return currentTitleID == japaneseTitleID // JAP
 		   || currentTitleID == japaneseTitleID + 0x100 // USA
 		   || currentTitleID == japaneseTitleID + 0x200; // EUR

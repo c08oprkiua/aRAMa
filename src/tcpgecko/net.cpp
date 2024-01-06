@@ -1,18 +1,22 @@
 #include <string.h>
 #include <malloc.h>
-#include "../dynamic_libs/os_functions.h"
-#include "../dynamic_libs/socket_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/title.h>
+
+//#include "../dynamic_libs/socket_functions.h"
+#include <nsysnet/socket.h>
+
 #include "net.h"
 
 static volatile int iLock = 0;
 
 #define CHECK_ERROR(cond) if (cond) { goto error; }
 
-void cafiine_connect(int *psock, u32 server_ip) {
+void cafiine_connect(int *psock, uint32_t server_ip) {
 	struct sockaddr_in addr;
 	int sock, ret;
 
-	socket_lib_init();
+	socket_lib_init(); //wdym
 
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	CHECK_ERROR(sock == -1);
@@ -48,7 +52,7 @@ int cafiine_handshake(int sock) {
 
 	unsigned char buffer[16];
 
-	u64 title_id = OSGetTitleID();
+	uint64_t title_id = OSGetTitleID();
 	memcpy(buffer, &title_id, 16);
 
 	ret = sendwait(sock, buffer, sizeof(buffer));

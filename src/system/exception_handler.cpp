@@ -1,10 +1,12 @@
 #include <stdio.h>
 //#include "../dynamic_libs/os_functions.h"
+#include <coreinit/exception.h>
+#include <coreinit/debug.h>
+
 #include "../utils/logger.h"
 #include "exception_handler.h"
 
-#include <coreinit/exception.h>
-#include <coreinit/debug.h>
+
 
 static const char *exception_names[] = {
 		"DSI",

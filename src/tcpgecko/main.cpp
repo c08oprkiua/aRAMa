@@ -33,6 +33,7 @@
 #include "title.h"
 #include "tcp_gecko.h"
 
+
 bool isCodeHandlerInstalled = false;
 bool areSDCheatsEnabled = false;
 
@@ -222,14 +223,44 @@ int Menu_Main(void) {
 	return EXIT_RELAUNCH_ON_LOAD;
 }
 
-//Aroma WUPS code
+//aRAMa code
 
 #include <wups.h>
+#include <wups/storage.h>
 
-WUPS_PLUGIN_NAME("aRAMa")
-WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma")
-WUPS_PLUGIN_AUTHOR("port: c08o.prkiua, original: BullyWiiPlaza + contributors")
+//Metadata
+WUPS_PLUGIN_NAME("aRAMa");
+WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma");
+WUPS_PLUGIN_VERSION("v0");
+WUPS_PLUGIN_AUTHOR("Rewrite & Aroma port: c08o.prkiua \n Original HBL version: BullyWiiPlaza + contributors");
+WUPS_PLUGIN_LICENSE("GPLv3");
+
+WUPS_USE_STORAGE("aRAMa");
+
+INITIALIZE_PLUGIN(){
+	WUPSStorageError storag_err;
+	
+	//open WUPS storage
+	
+	//look for the "use SD codes" setting
+
+	//if that is true, check titleid
+
+	//if the titleID has codes stored for it (also in storage), load them
+}
+
+DEINITIALIZE_PLUGIN(){
+
+}
 
 ON_APPLICATION_START(){
-	//Todo: Figure out what all TCPGecko does on an application launch
+	//Todo: Figure out what all TCPGecko does on an application launch:
+
+	//TCPGecko apparently would relaunch itself every time you open a title (maybe change that)
+
+	//Apply game specific stored codes if that is enabled
+}
+
+ON_APPLICATION_REQUESTS_EXIT(){
+	//Prolly some code that unpatches the game specific function patches TCPGecko employs
 }
