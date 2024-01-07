@@ -1,13 +1,19 @@
 #pragma once
 
-#include "../kernel/syscalls.h"
+//#include "../kernel/syscalls.h"
+
 #include "assertions.h"
 #include "tcp_gecko.h"
 #include "../utils/logger.h"
 
+//WUT includes
+#include <coreinit/memorymap.h>
+#include <coreinit/cache.h>
+
 // TODO Variable size, not hard-coded
 unsigned char *kernelCopyBufferOld[DATA_BUFFER_SIZE];
 
+//replaced in libkernel?
 void kernelCopyData(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
 	if (length > DATA_BUFFER_SIZE) {
 		OSFatal("Kernel copy buffer size exceeded");
@@ -120,7 +126,8 @@ int kernelMemoryCompare(const char *sourceBuffer,
 void executeAssembly(unsigned char buffer[], unsigned int size) {
 	// Write the assembly to an executable code region
 	int destinationAddress = 0x10000000 - size;
-	kernelCopyData((unsigned char *) destinationAddress, buffer, size);
+	//kernelCopyData((unsigned char *) destinationAddress, buffer, size);
+	KernelCopyData(destinationAddress, buffer, size);
 
 	// Execute the assembly from there
 	void (*function)() = (void (*)()) destinationAddress;
@@ -128,5 +135,6 @@ void executeAssembly(unsigned char buffer[], unsigned int size) {
 
 	// Clear the memory contents again
 	memset((void *) buffer, 0, size);
-	kernelCopyData((unsigned char *) destinationAddress, buffer, size);
+	//kernelCopyData((unsigned char *) destinationAddress, buffer, size);
+	KernelCopyData(destinationAddress,buffer, size);
 }

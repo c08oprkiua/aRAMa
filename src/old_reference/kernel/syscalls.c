@@ -1,8 +1,12 @@
-#include "../common/os_defs.h"
+//#include "../common/os_defs.h"
 #include "../common/kernel_defs.h"
 #include "../common/common.h"
-//#include "../dynamic_libs/os_functions.h"
 
+//#include "../dynamic_libs/os_functions.h"
+#include <coreinit/memorymap.h>
+#include <coreinit/cache.h>
+//libkernel
+#include <kernel/kernel.h>
 
 #include "syscalls.h"
 
@@ -10,7 +14,8 @@ extern void my_PrepareTitle_hook(void);
 
 static unsigned int origPrepareTitleInstr = 0;
 
-static void KernelCopyData(unsigned int addr, unsigned int src, unsigned int len) {
+//static void KernelCopyData
+static void Debugged_Out_1(unsigned int addr, unsigned int src, unsigned int len) {
 	/*
 	 * Setup a DBAT access with cache inhibited to write through and read directly from memory
 	 */
@@ -82,7 +87,7 @@ static void KernelCopyData(unsigned int addr, unsigned int src, unsigned int len
 
 	/*
 	 * Restore original DBAT value
-*/
+	*/
 	asm volatile("eieio; isync");
 	asm volatile("mtdbatu 0, %0" : : "r" (dbatu0));
 	asm volatile("mtdbatl 0, %0" : : "r" (dbatl0));
@@ -90,6 +95,7 @@ static void KernelCopyData(unsigned int addr, unsigned int src, unsigned int len
 	asm volatile("mtdbatl 1, %0" : : "r" (dbatl1));
 	asm volatile("eieio; isync");
 }
+*/
 
 static void KernelReadDBATs(bat_table_t *table) {
 	u32 i = 0;
@@ -233,8 +239,10 @@ void KernelSetupSyscalls(void) {
 	u32 addr_my_PrepareTitle_hook = ((u32) my_PrepareTitle_hook) | 0x48000003;
 	DCFlushRange(&addr_my_PrepareTitle_hook, sizeof(addr_my_PrepareTitle_hook));
 
-	SC0x25_KernelCopyData((u32) &origPrepareTitleInstr, (u32) addr_PrepareTitle_hook, 4);
-	SC0x25_KernelCopyData((u32) addr_PrepareTitle_hook, (u32) OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
+	//SC0x25_KernelCopyData((u32) &origPrepareTitleInstr, (u32) addr_PrepareTitle_hook, 4);
+	KernelCopyData(&origPrepareTitleInstr, addr_my_PrepareTitle_hook,4);
+	//SC0x25_KernelCopyData((u32) addr_PrepareTitle_hook, (u32) OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
+	KernelCopyData(addr_PrepareTitle_hook, OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
 }
 
 

@@ -1,7 +1,8 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-#include "../common/types.h"
+//#include "../common/types.h"
+#include <gctypes.h>
 //#include "../dynamic_libs/os_functions.h"
 
 #ifdef __cplusplus

@@ -5,8 +5,11 @@
 //#include "../dynamic_libs/os_functions.h"
 #include <coreinit/dynload.h>
 
-#include "../common/fs_defs.h"
-#include "kernel.h"
+//#include "../common/fs_defs.h"
+#include <coreinit/filesystem.h>
+
+//#include "kernel.h"
+#include <kernel/kernel.h>
 
 int (*AVMGetDRCScanMode)(int);
 
@@ -40,7 +43,8 @@ void writeConsoleState(ConsoleState state) {
 	// Write the value
 	unsigned int patchAddress = getConsoleStatePatchAddress();
 	log_printf("Patch address: %x\n", patchAddress);
-	kernelCopyData((unsigned char *) patchAddress, (unsigned char *) &patchValue, 4);
+	//kernelCopyData((unsigned char *) patchAddress, (unsigned char *) &patchValue, 4);
+	KernelCopyData(patchAddress, &patchValue, 4);
 }
 
 bool isConsolePaused() {

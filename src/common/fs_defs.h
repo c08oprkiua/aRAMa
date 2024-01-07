@@ -37,8 +37,7 @@ extern "C" {
 #define FS_CLIENT_SIZE                  0x1700
 #define FS_CMD_BLOCK_SIZE               0xA80
 
-typedef struct
-{
+/* typedef struct {
     uint32_t flag;
     uint32_t permission;
     uint32_t owner_id;
@@ -49,14 +48,13 @@ typedef struct
     uint32_t ent_id;
     uint64_t ctime;
     uint64_t mtime;
-    uint8_t attributes[48];
-} __attribute__((packed)) FSStat;
+    uint8_t attributes[48]; //Unique part of this redefine
+} __attribute__((packed)) FSStat; */
 
-typedef struct
-{
+/* typedef struct{
     FSStat      stat;
     char        name[FS_MAX_ENTNAME_SIZE];
-} FSDirEntry;
+} FSDirEntry; */
 
 
 #ifdef __cplusplus

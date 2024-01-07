@@ -13,7 +13,7 @@
 
 
 //#include "../dynamic_libs/fs_functions.h"
-
+#include <coreinit/filesystem.h>
 
 #include "../utils/logger.h"
 #include "hardware_breakpoints.h"
@@ -30,18 +30,20 @@
 
 //WUT includes
 #include <coreinit/thread.h> //replaces os_functions.h
+
 #include <nsysnet/socket.h> //replaces socket_functions.h
 
 //Regorganization based includes
 #include "tcp_gecko_commands.h"
 
-void *client;
+FSClient *client;
 void *commandBlock;
 bool kernelCopyServiceStarted;
 
 struct pygecko_bss_t {
 	int error, line;
-	void *thread;
+	//void *thread;
+	OSThread *thread;
 	unsigned char stack[0x6F00];
 };
 
@@ -127,10 +129,7 @@ static int sendByte(struct pygecko_bss_t *bss, int sock, unsigned char byte) {
 	return sendwait(bss, sock, buffer, 1);
 }
 
-unsigned int receiveString(struct pygecko_bss_t *bss,
-						   int clientfd,
-						   unsigned char *stringBuffer,
-						   unsigned int bufferSize) {
+unsigned int receiveString(struct pygecko_bss_t *bss, int clientfd, unsigned char *stringBuffer, unsigned int bufferSize) {
 	// Receive the string length
 	unsigned char lengthBuffer[4] = {0};
 	int ret = recvwait(bss, clientfd, lengthBuffer, sizeof(int));
@@ -247,7 +246,8 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 				destinationAddress = ((int *) buffer)[0];
 				value = ((int *) buffer)[1];
 
-				kernelCopyData((unsigned char *) destinationAddress, (unsigned char *) &value, sizeof(int));
+				//kernelCopyData((unsigned char *) destinationAddress, (unsigned char *) &value, sizeof(int));
+				KernelCopyData(destinationAddress, &value, sizeof(int));
 				break;
 			}
 			case COMMAND_READ_MEMORY: {
@@ -693,7 +693,8 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 
 					ret = recvwait(bss, clientfd, buffer, length);
 					CHECK_ERROR(ret < 0)
-					kernelCopyData(currentAddress, buffer, (unsigned int) length);
+					//kernelCopyData(currentAddress, buffer, (unsigned int) length);
+					KernelCopyData(currentAddress, buffer, length);
 
 					currentAddress += length;
 				}
@@ -774,7 +775,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 				considerInitializingFileSystem();
 
 				s32 handle;
-				FSDirEntry entry;
+				FSDirectoryEntry entry;
 
 				ret = FSOpenDir(client, commandBlock, directory_path, &handle, FS_RET_ALL_ERROR);
 
@@ -784,7 +785,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 					ret = sendwait(bss, clientfd, buffer, 4);
 					ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (success status)")
 
-					int entrySize = sizeof(FSDirEntry);
+					int entrySize = sizeof(FSDirectoryEntry);
 
 					// Read every entry in the given directory
 					while (FSReadDir(client, commandBlock, handle, &entry, -1) == FS_STATUS_OK) {

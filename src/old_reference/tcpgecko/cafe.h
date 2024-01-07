@@ -1,28 +1,25 @@
 #ifndef TCPGECKO_STACK_H
 #define TCPGECKO_STACK_H
 
-typedef struct OSThread;
+//I think this file is entirely redundant, it's just defines for 
+//things in <coreinit/thread.h> and <coreinit/threadqueue.h>
 
-typedef struct OSThreadLink {
-	OSThread *next;
-	OSThread *prev;
-} OSThreadLink;
-
-typedef struct OSThreadQueue {
+/* typedef struct OSThreadQueue {
 	OSThread *head;
 	OSThread *tail;
 	void *parentStruct;
 	u32 reserved;
-} OSThreadQueue;
+} OSThreadQueue; */
 
+/* Notable difference: data0-3 instead of args[3]
 typedef struct OSMessage {
 	u32 message;
 	u32 data0;
 	u32 data1;
 	u32 data2;
-} OSMessage;
+} OSMessage; */
 
-typedef struct OSMessageQueue {
+/* typedef struct OSMessageQueue {
 	u32 tag;
 	char *name;
 	u32 reserved;
@@ -33,9 +30,9 @@ typedef struct OSMessageQueue {
 	int msgCount;
 	int firstIndex;
 	int usedCount;
-} OSMessageQueue;
+} OSMessageQueue; */
 
-typedef struct OSContext {
+/* typedef struct OSContext {
 	char tag[8];
 
 	u32 gpr[32];
@@ -99,6 +96,6 @@ typedef struct OSThread {
 	ThreadFunc entryPoint;
 
 	char _3A0[0x6A0 - 0x3A0];
-} OSThread;
+} OSThread; */
 
 #endif

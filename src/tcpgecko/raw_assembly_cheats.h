@@ -2,6 +2,9 @@
 
 #include "kernel.h"
 
+//libkernel
+#include <kernel/kernel.h>
+
 #define ENDING_ADDRESS 0x10000000
 unsigned int assemblySize = 0;
 
@@ -14,7 +17,8 @@ void persistAssembly(unsigned char buffer[], unsigned int size) {
 
 	// Write the assembly to an executable code region
 	unsigned int startAddress = getStartAddress();
-	kernelCopyData((unsigned char *) startAddress, buffer, assemblySize);
+	//kernelCopyData((unsigned char *) startAddress, buffer, assemblySize);
+	KernelCopyData(startAddress,buffer, assemblySize);
 }
 
 void executeAssembly() {

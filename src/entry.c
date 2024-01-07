@@ -1,14 +1,14 @@
 #include "tcpgecko/main.h"
 #include "tcpgecko/title.h"
-#include "dynamic_libs/socket_functions.h"
-#include "dynamic_libs/gx2_functions.h"
+//#include "dynamic_libs/socket_functions.h"
+//#include "dynamic_libs/gx2_functions.h"
 #include "utils/logger.h"
 #include "tcpgecko/tcp_gecko.h"
 #include "common/common.h"
 
 int entry() {
 	if (isRunningAllowedTitleID()) {
-		InitOSFunctionPointers();
+		//InitOSFunctionPointers();
 		InitSocketFunctionPointers();
 		InitGX2FunctionPointers();
 

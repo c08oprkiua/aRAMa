@@ -232,28 +232,38 @@ int Menu_Main(void) {
 WUPS_PLUGIN_NAME("aRAMa");
 WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma");
 WUPS_PLUGIN_VERSION("v0");
-WUPS_PLUGIN_AUTHOR("Rewrite & Aroma port: c08o.prkiua \n Original HBL version: BullyWiiPlaza + contributors");
+WUPS_PLUGIN_AUTHOR("Rewrite & Aroma port: c08o.prkiua \n Original legacy version: wj444 + contributors");
 WUPS_PLUGIN_LICENSE("GPLv3");
 
 WUPS_USE_STORAGE("aRAMa");
 
 INITIALIZE_PLUGIN(){
-	WUPSStorageError storag_err;
 	
-	//open WUPS storage
-	
+	/*WUPSStorageError storag_err = WUPS_OpenStorage();
+
+	if (storag_err == WUPS_STORAGE_ERROR_SUCCESS){
+		wups_storage_item_t sd_codes;
+		sd_codes.key = ""
+	}*/
+		
 	//look for the "use SD codes" setting
 
 	//if that is true, check titleid
 
 	//if the titleID has codes stored for it (also in storage), load them
+	startTCPGecko();
 }
 
 DEINITIALIZE_PLUGIN(){
 
 }
 
+//Based on entry.c
 ON_APPLICATION_START(){
+	if (isRunningAllowedTitleID()){
+		log_print("OSGetTitleID checks passed...\n");
+
+	}
 	//Todo: Figure out what all TCPGecko does on an application launch:
 
 	//TCPGecko apparently would relaunch itself every time you open a title (maybe change that)

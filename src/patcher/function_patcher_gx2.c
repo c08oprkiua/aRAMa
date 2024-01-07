@@ -17,7 +17,7 @@
 
 #include <stdlib.h> // malloc()/free()
 #include <gd.h> // image library
-#include "../utils/function_patcher.h"
+//#include "../utils/function_patcher.h"
 #include "../utils/logger.h"
 #include "function_patcher_gx2.h"
 #include <string.h> // memcpy()
@@ -30,8 +30,11 @@ unsigned int totalImageSize = 0;
 int bufferedImageSize = 0;
 void *bufferedImageData = NULL;
 
-declareFunctionHook(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorBuffer, s32
-		scan_target) {
+#include <wups.h>
+#include <gx2/swap.h>
+
+//declareFunctionHook
+DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorBuffer, s32 scan_target){
 	if (executionCounter > 120) {
 		GX2Surface surface = colorBuffer->surface;
 		log_printf("GX2CopyColorBufferToScanBuffer {surface width:%d, height:%d, image size:%d, image data:%x}\n",
@@ -90,10 +93,13 @@ declareFunctionHook(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *
 
 	executionCounter++;
 
-	real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
+	//real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
+	return real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 }
 
-FunctionHook method_hooks_gx2[] __attribute__((section(".data"))) = {
+WUPS_MUST_REPLACE(GX2CopyColorBufferToScanBuffer, WUPS_LOADER_LIBRARY_GX2, GX2CopyColorBufferToScanBuffer);
+
+/* FunctionHook method_hooks_gx2[] __attribute__((section(".data"))) = {
 		// makeFunctionHook(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION)
 };
 
@@ -101,3 +107,4 @@ u32 method_hooks_size_gx2 __attribute__((section(".data"))) = sizeof(method_hook
 
 volatile unsigned int method_calls_gx2[sizeof(method_hooks_gx2) / sizeof(FunctionHook) *
 									   FUNCTION_PATCHER_METHOD_STORE_SIZE] __attribute__((section(".data")));
+*/

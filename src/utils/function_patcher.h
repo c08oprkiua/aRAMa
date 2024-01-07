@@ -27,15 +27,15 @@ extern "C" {
 #include "../common/common.h" // OS_FIRMWARE
 
 // Library handles
-#include "../dynamic_libs/aoc_functions.h"
-#include "../dynamic_libs/ax_functions.h"
-#include "../dynamic_libs/fs_functions.h"
-#include "../dynamic_libs/gx2_functions.h"
-#include "../dynamic_libs/os_functions.h"
-#include "../dynamic_libs/padscore_functions.h"
-#include "../dynamic_libs/socket_functions.h"
-#include "../dynamic_libs/sys_functions.h"
-#include "../dynamic_libs/vpad_functions.h"
+//#include "../dynamic_libs/aoc_functions.h"
+//#include "../dynamic_libs/ax_functions.h"
+//#include "../dynamic_libs/fs_functions.h"
+//#include "../dynamic_libs/gx2_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+//#include "../dynamic_libs/padscore_functions.h"
+//#include "../dynamic_libs/socket_functions.h"
+//#include "../dynamic_libs/sys_functions.h"
+//#include "../dynamic_libs/vpad_functions.h"
 /*#include "../dynamic_libs/acp_functions.h"
 #include "../dynamic_libs/syshid_functions.h"*/
 

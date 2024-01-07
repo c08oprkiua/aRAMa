@@ -1,7 +1,8 @@
 #ifndef __KERNEL_DEFS_H_
 #define __KERNEL_DEFS_H_
 
-#include "types.h"
+//#include "types.h
+#include <gctypes.h>
 #include "fs_defs.h"
 
 #ifdef __cplusplus
