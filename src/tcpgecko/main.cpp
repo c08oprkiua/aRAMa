@@ -26,7 +26,7 @@
 #include "main.h"
 #include "code_handler.h"
 #include "../utils/logger.h"
-#include "../utils/function_patcher.h"
+//#include "../utils/function_patcher.h"
 #include "../patcher/function_patcher_gx2.h"
 #include "../patcher/function_patcher_coreinit.h"
 #include "sd_ip_reader.h"
@@ -42,10 +42,11 @@ typedef enum {
 	TCP_GECKO
 } LaunchMethod;
 
+/* This shouldn't be needed anymore because of WUPS
 void applyFunctionPatches() {
 	patchIndividualMethodHooks(method_hooks_gx2, method_hooks_size_gx2, method_calls_gx2);
 	patchIndividualMethodHooks(method_hooks_coreinit, method_hooks_size_coreinit, method_calls_coreinit);
-}
+}*/
 
 void installCodeHandler() {
 	unsigned int physicalCodeHandlerAddress = (unsigned int) OSEffectiveToPhysical(
@@ -77,8 +78,8 @@ void initializeScreen() {
 void install() {
 	installCodeHandler();
 	initializeUDPLog();
-	log_print("Patching functions\n");
-	applyFunctionPatches();
+	//log_print("Patching functions\n");
+	//applyFunctionPatches();
 }
 
 /* Entry point */
@@ -138,7 +139,7 @@ int Menu_Main(void) {
 	char messageBuffer[80];
 	int launchMethod;
 	int shouldUpdateScreen = 1;
-	VPADReadError vpadError = -1;
+	VPADReadError vpadError = VPAD_READ_NO_SAMPLES;
 	VPADStatus vpad_data;
 
 	while (true) {
@@ -227,6 +228,7 @@ int Menu_Main(void) {
 
 #include <wups.h>
 #include <wups/storage.h>
+#include <notifications/notifications.h>
 
 //Metadata
 WUPS_PLUGIN_NAME("aRAMa");

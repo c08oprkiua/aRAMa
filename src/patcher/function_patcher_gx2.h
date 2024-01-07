@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-#include "../utils/function_patcher.h"
+//#include "../utils/function_patcher.h"
 
 // The dynamically allocated buffer size for the image copy
 #define IMAGE_BUFFER_SIZE 100

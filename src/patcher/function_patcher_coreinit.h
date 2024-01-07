@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include "../utils/function_patcher.h"
+//#include "../utils/function_patcher.h"
 
 extern FunctionHook method_hooks_coreinit[];
 extern u32 method_hooks_size_coreinit;

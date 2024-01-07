@@ -2,7 +2,8 @@
 #define __UTILS_H_
 
 #include <malloc.h>
-#include "../common/types.h"
+//#include "../common/types.h"
+#include <gctypes.h>
 
 #ifdef __cplusplus
 extern "C" {
