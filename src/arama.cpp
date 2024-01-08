@@ -23,13 +23,37 @@
 //Metadata
 WUPS_PLUGIN_NAME("aRAMa");
 WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma");
-WUPS_PLUGIN_VERSION("v0");
+/*A memory editor that does magical things to your games. In order to develop and apply real-time cheats use JGecko U.
+
+        Special thanks to:
+        Chadderz, Marionumber1 - Original TCP Gecko Installer
+        dimok - Homebrew Launcher
+        kinnay - Diibugger
+        pwsincd - Icon and XML
+        CosmoCortney - Original Cheat code handler
+        Mewtality - New Cheat code handler
+- from meta.xml
+*/
+WUPS_PLUGIN_VERSION("v0.1");
 WUPS_PLUGIN_AUTHOR("Rewrite & Aroma port: c08o.prkiua \n Original legacy version: wj444 + contributors");
 WUPS_PLUGIN_LICENSE("GPLv3");
 
 WUPS_USE_WUT_DEVOPTAB();
 WUPS_USE_WUT_MALLOC(); //Idrk
 WUPS_USE_STORAGE("aRAMa");
+
+//General settings variables
+
+
+//Screenshot variables
+static volatile int executionCounter = 0;
+
+bool shouldTakeScreenShot = false;
+unsigned int remainingImageSize = 0;
+unsigned int totalImageSize = 0;
+int bufferedImageSize = 0;
+void *bufferedImageData = NULL;
+
 
 INITIALIZE_PLUGIN(){
 	
@@ -69,7 +93,9 @@ ON_APPLICATION_REQUESTS_EXIT(){
 	//Prolly some code that unpatches the game specific function patches TCPGecko employs
 }
 
-//Several hooks from the utils folder
+//Several hooks from the utils folder:
+
+//FS logging hooks
 
 //declareFunctionHook
 DECL_FUNCTION(int, FSOpenFile, void *pClient, void *pCmd, const char *path, const char *mode, int *fd, int errHandling){
@@ -119,13 +145,7 @@ DECL_FUNCTION(int, FSGetStatAsync, void *pClient, void *pCmd, const char *path, 
 
 WUPS_MUST_REPLACE(FSGetStatAsync,WUPS_LOADER_LIBRARY_COREINIT,FSGetStatAsync);
 
-static volatile int executionCounter = 0;
-
-bool shouldTakeScreenShot = false;
-unsigned int remainingImageSize = 0;
-unsigned int totalImageSize = 0;
-int bufferedImageSize = 0;
-void *bufferedImageData = NULL;
+//Screenshot capture hook(?)
 
 //declareFunctionHook
 DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorBuffer, s32 scan_target){
@@ -136,7 +156,7 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorB
 
 		if (shouldTakeScreenShot) {
 			void *imageData = surface.image;
-			totalImageSize = surface.image;
+			totalImageSize = surface.imageSize;
 			remainingImageSize = totalImageSize;
 			int bufferSize = IMAGE_BUFFER_SIZE;
 

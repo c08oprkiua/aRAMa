@@ -2,7 +2,7 @@
 #define TCPGECKO_ASSERTIONS_H
 
 #include <coreinit/debug.h>
-#include <wut.h>
+#include <coreinit/internal.h>
 
 #define ASSERT_MINIMUM_HOLDS(actual, minimum, variableName) \
 if(actual < minimum) { \

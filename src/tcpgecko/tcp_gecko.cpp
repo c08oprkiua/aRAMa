@@ -5,12 +5,12 @@
 #include <stdio.h>
 // #include <inttypes.h>
 #include "../common/common.h"
-#include <zlib.h> // Actually must be included before os_functions
+//#include <zlib.h> // Actually must be included before os_functions
 #include <string.h>
 #include <malloc.h>
 #include "main.h"
 //#include "../dynamic_libs/gx2_functions.h"
-
+#include <gx2/event.h>
 
 //#include "../dynamic_libs/fs_functions.h"
 #include <coreinit/filesystem.h>
@@ -30,14 +30,19 @@
 
 //WUT includes
 #include <coreinit/thread.h> //replaces os_functions.h
+#include <coreinit/filesystem.h>
+#include <coreinit/memory.h>
+#include <nn/act.h>
 
 #include <nsysnet/socket.h> //replaces socket_functions.h
 
 //Regorganization based includes
 #include "tcp_gecko_commands.h"
 
+//void *client;
 FSClient *client;
-void *commandBlock;
+//void *commandBlock;
+FSCmdBlock *commandBlock;
 bool kernelCopyServiceStarted;
 
 struct pygecko_bss_t {
@@ -172,8 +177,9 @@ unsigned int receiveString(struct pygecko_bss_t *bss, int clientfd, unsigned cha
 void considerInitializingFileSystem() {
 	if (!client) {
 		// Initialize the file system
-		int status = FSInit();
-		ASSERT_FUNCTION_SUCCEEDED(status, "FSInit")
+		//int status = FSInit();
+		FSInit();
+		//ASSERT_FUNCTION_SUCCEEDED(status, "FSInit")
 
 		// Allocate the client
 		client = malloc(FS_CLIENT_SIZE);
@@ -484,9 +490,9 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 						int value = *(int *) currentAddress;
 						((int *) buffer)[currentIntegerIndex++] = value;
 						char *opCodeBuffer = (char *) malloc(bufferSize);
-						bool status = DisassemblePPCOpcode((u32 *) currentAddress, opCodeBuffer, (u32) bufferSize,
+						bool status = (bool) DisassemblePPCOpcode((u32 *) currentAddress, opCodeBuffer, (u32) bufferSize,
 														   OSGetSymbolName,
-														   (u32) disassemblerOptions);
+														   (DisassemblePPCFlags) disassemblerOptions);
 
 						((int *) buffer)[currentIntegerIndex++] = status;
 
@@ -718,7 +724,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 				considerInitializingFileSystem();
 
 				int handle;
-				int status = FSOpenFile(client, commandBlock, file_path, "r", &handle, FS_RET_ALL_ERROR);
+				int status = FSOpenFile(client, commandBlock, file_path, "r", &handle, FS_ERROR_FLAG_ALL);
 
 				if (status == FS_STATUS_OK) {
 					// Send the OK status
@@ -728,7 +734,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 
 					// Retrieve the file statistics
 					FSStat stat;
-					ret = FSGetStatFile(client, commandBlock, handle, &stat, FS_RET_ALL_ERROR);
+					ret = FSGetStatFile(client, commandBlock, handle, &stat, FS_ERROR_FLAG_ALL);
 					ASSERT_FUNCTION_SUCCEEDED(ret, "FSGetStatFile")
 
 					// Send the total bytes count
@@ -745,7 +751,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 					int totalBytesRead = 0;
 					while (totalBytesRead < totalBytes) {
 						int bytesRead = FSReadFile(client, commandBlock, fileBuffer, 1, file_buffer_size,
-												   handle, 0, FS_RET_ALL_ERROR);
+												   handle, 0, FS_ERROR_FLAG_ALL);
 						ASSERT_FUNCTION_SUCCEEDED(bytesRead, "FSReadFile")
 
 						// Send file bytes
@@ -755,7 +761,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 						totalBytesRead += bytesRead;
 					}
 
-					ret = FSCloseFile(client, commandBlock, handle, FS_RET_ALL_ERROR);
+					ret = FSCloseFile(client, commandBlock, handle, FS_ERROR_FLAG_ALL);
 					ASSERT_FUNCTION_SUCCEEDED(ret, "FSCloseFile")
 
 					OSFreeToSystem(fileBuffer);
@@ -777,7 +783,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 				s32 handle;
 				FSDirectoryEntry entry;
 
-				ret = FSOpenDir(client, commandBlock, directory_path, &handle, FS_RET_ALL_ERROR);
+				ret = FSOpenDir(client, commandBlock, directory_path, &handle, FS_ERROR_FLAG_ALL);
 
 				if (ret == FS_STATUS_OK) {
 					// Send the success status
@@ -805,7 +811,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 					ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (no more data)")
 
 					// Done, close the directory also
-					ret = FSCloseDir(client, commandBlock, handle, FS_RET_ALL_ERROR);
+					ret = FSCloseDir(client, commandBlock, handle, FS_ERROR_FLAG_ALL);
 					ASSERT_FUNCTION_SUCCEEDED(ret, "FSCloseDir")
 				} else {
 					// Send the status
@@ -827,7 +833,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 
 				// Create an empty file for writing. Its contents will be erased
 				int handle;
-				int status = FSOpenFile(client, commandBlock, file_path, "w", &handle, FS_RET_ALL_ERROR);
+				int status = FSOpenFile(client, commandBlock, file_path, "w", &handle, FS_ERROR_FLAG_ALL);
 
 				if (status == FS_STATUS_OK) {
 					// Send the OK status
@@ -836,7 +842,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 					ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (OK status)")
 
 					// Set the file handle position to the beginning
-					ret = FSSetPosFile(client, commandBlock, handle, 0, FS_RET_ALL_ERROR);
+					ret = FSSetPosFile(client, commandBlock, handle, 0, FS_ERROR_FLAG_ALL);
 					ASSERT_FUNCTION_SUCCEEDED(ret, "FSSetPosFile")
 
 					// Allocate the file bytes buffer
@@ -862,7 +868,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 
 							// Write the data (and advance file handle position implicitly)
 							ret = FSWriteFile(client, commandBlock, fileBuffer, 1,
-											  dataLength, handle, 0, FS_RET_ALL_ERROR);
+											  dataLength, handle, 0, FS_ERROR_FLAG_ALL);
 							ASSERT_FUNCTION_SUCCEEDED(ret, "FSWriteFile")
 						} else {
 							// Done with receiving the new file
@@ -875,7 +881,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 					// CHECK_FUNCTION_FAILED(ret, "FSFlushFile")
 
 					// Close the file
-					ret = FSCloseFile(client, commandBlock, handle, FS_RET_ALL_ERROR);
+					ret = FSCloseFile(client, commandBlock, handle, FS_ERROR_FLAG_ALL);
 					ASSERT_FUNCTION_SUCCEEDED(ret, "FSCloseFile")
 
 					// Free the file buffer
@@ -1015,6 +1021,9 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 			}
 			case COMMAND_ACCOUNT_IDENTIFIER: {
 				// Acquire the RPL
+				
+				/*Unneeded in WUT
+
 				u32 nn_act_handle;
 				OSDynLoad_Acquire("nn_act.rpl", &nn_act_handle);
 
@@ -1031,13 +1040,16 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 				int (*nn_act_Finalize)(void);
 				OSDynLoad_FindExport(nn_act_handle, 0, "Finalize__Q2_2nn3actFv", &nn_act_Finalize);
 				ASSERT_ALLOCATED(nn_act_Finalize, "nn_act_Finalize")
+				*/
 
 				// Get the identifier
-				ret = nn_act_Initialize();
+				//ret = nn_act_Initialize();
+				nn::Result ret = nn::act::Initialize();
 				// ASSERT_INTEGER(ret, 1, "Initializing account library");
-				unsigned char slotNumber = nn_act_GetSlotNo();
-				unsigned int persistentIdentifier = nn_act_GetPersistentIdEx(slotNumber);
-				ret = nn_act_Finalize();
+
+				nn::act::SlotNo slotNumber = nn::act::GetSlotNo();
+				nn::act::PersistentId persistentIdentifier = nn::act::GetPersistentIdEx(slotNumber);
+				ret = nn::act::Finalize();
 				ASSERT_FUNCTION_SUCCEEDED(ret, "nn_act_Finalize");
 
 				// Send it
@@ -1077,7 +1089,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 
 #define INVALID_ADDRESS -1
 
-				if ((bool) OSIsAddressValid((const void *) destinationAddress)) {
+				if ((bool) OSIsAddressValid(destinationAddress)) {
 					// Apply pointer offsets
 					for (offsetIndex = 0; offsetIndex < offsetsCount; offsetIndex++) {
 						int pointerValue = *(int *) destinationAddress;
@@ -1085,7 +1097,7 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 						destinationAddress = pointerValue + offset;
 
 						// Validate the pointer address
-						bool isValidDestinationAddress = (bool) OSIsAddressValid((const void *) destinationAddress);
+						bool isValidDestinationAddress = (bool) OSIsAddressValid(destinationAddress);
 
 						// Bail out if invalid
 						if (!isValidDestinationAddress) {
@@ -1155,10 +1167,11 @@ static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
 				char *symbolName = (char *) (&buffer[0] + ((int *) buffer)[1]);
 
 				/* Get the symbol and store it in the buffer */
-				u32 module_handle, function_address;
+				OSDynLoad_Module module_handle;
+				void* function_address;
 				OSDynLoad_Acquire(rplName, &module_handle);
 
-				char data = (char) recvbyte(bss, clientfd);
+				OSDynLoad_ExportType data = (OSDynLoad_ExportType) recvbyte(bss, clientfd);
 				OSDynLoad_FindExport(module_handle, data, symbolName, &function_address);
 
 				((int *) buffer)[0] = (int) function_address;
@@ -1421,7 +1434,7 @@ static int runTCPGeckoServer(int argc, void *argv) {
 	bss = (struct pygecko_bss_t *) argv;
 
 	setup_os_exceptions();
-	socket_lib_init();
+	//socket_lib_init();
 	initializeUDPLog();
 
 	while (true) {
@@ -1469,7 +1482,6 @@ static int runTCPGeckoServer(int argc, void *argv) {
 		log_printf("GX2WaitForVsync() outer...\n");
 		GX2WaitForVsync();
 	}
-
 	return 0;
 }
 
@@ -1488,7 +1500,7 @@ static s32 startTCPGeckoThread(s32 argc, void *argv) {
 					   (u32) bss->stack + sizeof(bss->stack),
 					   sizeof(bss->stack), 0,
 					   0xc) == 1) {
-		OSResumeThread(&bss->thread);
+		OSResumeThread(bss->thread);
 	} else {
 		free(bss);
 	}
@@ -1532,14 +1544,17 @@ void startTCPGecko() {
 	unsigned int stack = (unsigned int) memalign(0x40, 0x100);
 	ASSERT_ALLOCATED(stack, "TCP Gecko stack")
 	stack += 0x100;
-	void *thread = memalign(0x40, 0x1000);
+	//void *thread = memalign(0x40, 0x1000);
+	OSThread *thread;
 	ASSERT_ALLOCATED(thread, "TCP Gecko thread")
+
+	
 
 	int status = OSCreateThread(thread, startTCPGeckoThread, (s32) 1,
 								NULL, (s32)(stack + sizeof(stack)),
 								sizeof(stack), 0,
-								(OS_THREAD_ATTR_AFFINITY_CORE1 | OS_THREAD_ATTR_PINNED_AFFINITY |
-								 OS_THREAD_ATTR_DETACH));
+								(OS_THREAD_ATTRIB_AFFINITY_CPU1 | (OSThreadAttributes) OS_THREAD_ATTR_PINNED_AFFINITY |
+								 OS_THREAD_ATTRIB_DETACHED));
 	ASSERT_INTEGER(status, 1, "Creating TCP Gecko thread")
 	// OSSetThreadName(thread, "TCP Gecko");
 	OSResumeThread(thread);

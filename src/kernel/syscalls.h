@@ -12,8 +12,10 @@ void KernelSetupSyscalls(void);
 
 void KernelRestoreInstructions(void);
 
+//KernelCopyData in libkernel
 void SC0x25_KernelCopyData(unsigned int addr, unsigned int src, unsigned int len);
 
+//KernelReadSRs in libkernel
 void SC0x36_KernelReadDBATs(bat_table_t *table);
 
 void SC0x37_KernelWriteDBATs(bat_table_t *table);

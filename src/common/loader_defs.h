@@ -1,7 +1,7 @@
 #ifndef __LOADER_DEFS_H_
 #define __LOADER_DEFS_H_
 
-#include "types.h"
+#include <gctypes.h>
 
 #ifdef __cplusplus
 extern "C" {

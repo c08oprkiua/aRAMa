@@ -44,3 +44,13 @@
 #define COMMAND_GET_VERSION_HASH 0xE0
 #define COMMAND_PERSIST_ASSEMBLY 0xE1
 #define COMMAND_CLEAR_ASSEMBLY 0xE2
+
+//from os_functions.h
+#define PPC_DISASM_MAX_BUFFER 64
+
+#define PPC_DISASM_DEFAULT     0x00000000  // use defaults
+#define PPC_DISASM_SIMPLIFY    0x00000001  // use simplified mnemonics
+#define PPC_DISASM_REG_SPACES  0x00000020  // emit spaces between registers
+#define PPC_DISASM_EMIT_DISASM 0x00000040  // emit only disassembly
+#define PPC_DISASM_EMIT_ADDR   0x00000080  // emit only addresses + disassembly
+#define PPC_DISASM_EMIT_FUNCS  0x00000100  // emit function names before and during disassembly

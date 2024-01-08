@@ -3,7 +3,9 @@
 #include <coreinit/context.h>
 
 #include "../system/exception_handler.h"
-#include "../kernel/syscalls.h"
+//#include "../kernel/syscalls.h"
+#include <kernel/kernel.h>
+
 #include "../common/common.h"
 #include "../utils/logger.h"
 #include "software_breakpoints.h"
@@ -47,7 +49,7 @@ unsigned char basicDABRBreakpointHandler(OSContext *context) {
 	int address = getDABRAddress(context);
 	// log_printf("Got DABR address: %08x\n", address);
 
-	if (OSIsAddressValid((const void *) address)) {
+	if (OSIsAddressValid(address)) {
 		// log_printf("Data breakpoint address: %x08\n", address);
 	} else {
 		// log_printf("Data breakpoint invalid address: %x08\n", address);

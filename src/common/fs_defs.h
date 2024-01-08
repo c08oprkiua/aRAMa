@@ -37,7 +37,8 @@ extern "C" {
 #define FS_CLIENT_SIZE                  0x1700
 #define FS_CMD_BLOCK_SIZE               0xA80
 
-/* typedef struct {
+/* Included in WUT
+typedef struct {
     uint32_t flag;
     uint32_t permission;
     uint32_t owner_id;
@@ -51,7 +52,8 @@ extern "C" {
     uint8_t attributes[48]; //Unique part of this redefine
 } __attribute__((packed)) FSStat; */
 
-/* typedef struct{
+/* Included in WUT
+typedef struct{
     FSStat      stat;
     char        name[FS_MAX_ENTNAME_SIZE];
 } FSDirEntry; */

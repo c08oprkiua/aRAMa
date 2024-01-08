@@ -95,7 +95,7 @@ static void Debugged_Out_1(unsigned int addr, unsigned int src, unsigned int len
 	asm volatile("mtdbatl 1, %0" : : "r" (dbatl1));
 	asm volatile("eieio; isync");
 }
-*/
+
 
 static void KernelReadDBATs(bat_table_t *table) {
 	u32 i = 0;
@@ -209,6 +209,7 @@ void __attribute__ ((noinline)) kern_write(void *addr, uint32_t value) {
 	);
 }
 
+//I think this is handled by WUT and isn't needed anymore
 void KernelSetupSyscalls(void) {
 	//! assign 1 so that this variable gets into the retained .data section
 	static uint8_t ucSyscallsSetupRequired = 1;
@@ -240,7 +241,7 @@ void KernelSetupSyscalls(void) {
 	DCFlushRange(&addr_my_PrepareTitle_hook, sizeof(addr_my_PrepareTitle_hook));
 
 	//SC0x25_KernelCopyData((u32) &origPrepareTitleInstr, (u32) addr_PrepareTitle_hook, 4);
-	KernelCopyData(&origPrepareTitleInstr, addr_my_PrepareTitle_hook,4);
+	KernelCopyData(&origPrepareTitleInstr, addr_PrepareTitle_hook,4);
 	//SC0x25_KernelCopyData((u32) addr_PrepareTitle_hook, (u32) OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
 	KernelCopyData(addr_PrepareTitle_hook, OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
 }

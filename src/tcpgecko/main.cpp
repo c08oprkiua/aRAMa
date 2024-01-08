@@ -7,6 +7,9 @@
 #include <fcntl.h>
 //#include "../dynamic_libs/os_functions.h"
 #include <coreinit/screen.h>
+#include <coreinit/memorymap.h>
+#include <coreinit/cache.h>
+#include <coreinit/internal.h>
 
 //#include "../dynamic_libs/fs_functions.h"
 
@@ -18,9 +21,11 @@
 #include <vpad/input.h>
 
 //#include "../dynamic_libs/socket_functions.h"
-
+#include <nsysnet/socket.h>
 
 #include "../kernel/kernel_functions.h"
+
+
 #include "../system/memory.h"
 #include "../common/common.h"
 #include "main.h"
@@ -50,15 +55,16 @@ void applyFunctionPatches() {
 
 void installCodeHandler() {
 	unsigned int physicalCodeHandlerAddress = (unsigned int) OSEffectiveToPhysical(
-			(void *) CODE_HANDLER_INSTALL_ADDRESS);
+			(uint32_t) CODE_HANDLER_INSTALL_ADDRESS);
 	SC0x25_KernelCopyData((u32) physicalCodeHandlerAddress, (unsigned int) codeHandler, codeHandlerLength);
-	DCFlushRange((const void *) CODE_HANDLER_INSTALL_ADDRESS, (u32) codeHandlerLength);
+	DCFlushRange((void *) CODE_HANDLER_INSTALL_ADDRESS, (u32) codeHandlerLength);
 	isCodeHandlerInstalled = true;
 }
 
 unsigned char *screenBuffer;
 
-#define PRINT_TEXT(x, y, ...) { snprintf(messageBuffer, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, messageBuffer); OSScreenPutFontEx(1, x, y, messageBuffer); }
+//Maybe remap this to be an Aroma notification?
+#define PRINT_TEXT(x, y, ...) { snprintf(messageBuffer, 80, __VA_ARGS__); OSScreenPutFontEx(SCREEN_TV, x, y, messageBuffer); OSScreenPutFontEx(SCREEN_DRC, x, y, messageBuffer); }
 
 void initializeScreen() {
 	// Init screen and screen buffers
@@ -88,11 +94,11 @@ int Menu_Main(void) {
 	//!                   Initialize function pointers                   *
 	//!*******************************************************************
 	//! do OS (for acquire) and sockets first so we got logging
-	InitOSFunctionPointers();
-	InitSocketFunctionPointers();
-	InitFSFunctionPointers();
-	InitVPadFunctionPointers();
-	InitSysFunctionPointers();
+	//InitOSFunctionPointers();
+	//InitSocketFunctionPointers();
+	//InitFSFunctionPointers();
+	//InitVPadFunctionPointers();
+	//InitSysFunctionPointers();
 
 	if (strcasecmp("men.rpx", cosAppXmlInfoStruct.rpx_name) == 0) {
 		return EXIT_RELAUNCH_ON_LOAD;
@@ -149,7 +155,7 @@ int Menu_Main(void) {
 			OSScreenClearBufferEx(0, 0);
 			OSScreenClearBufferEx(1, 0);
 
-			InitSocketFunctionPointers();
+			//InitSocketFunctionPointers();
 
 			// Build the IP address message
 			char ipAddressMessageBuffer[64];
@@ -224,7 +230,7 @@ int Menu_Main(void) {
 	return EXIT_RELAUNCH_ON_LOAD;
 }
 
-//aRAMa code
+//aRAMa code, moved to arama.cpp
 
 #include <wups.h>
 #include <wups/storage.h>

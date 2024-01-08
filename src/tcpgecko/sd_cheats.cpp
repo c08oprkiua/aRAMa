@@ -7,11 +7,15 @@
 //#include "../dynamic_libs/os_functions.h"
 #include <coreinit/memorymap.h>
 #include <coreinit/title.h>
+#include <coreinit/cache.h>
 
 #include "tcp_gecko.h"
-#include "../kernel/syscalls.h"
+//#include "../kernel/syscalls.h"
+#include <kernel/kernel.h>
+
 #include <fat.h>
 #include <iosuhax.h>
+
 
 #define CODE_HANDLER_ENABLED_ADDRESS 0x10014EFC
 #define CODE_LIST_START_ADDRESS 0x01133000
@@ -32,7 +36,8 @@ void kernelCopyData2(unsigned char *destinationBuffer, unsigned char *sourceBuff
 	}
 
 	memcpy(kernelCopyBufferOld2, sourceBuffer, length);
-	SC0x25_KernelCopyData((unsigned int) OSEffectiveToPhysical(destinationBuffer),
+	//SC0x25_KernelCopyData(
+	KernelCopyData((unsigned int) OSEffectiveToPhysical(destinationBuffer),
 						  (unsigned int) &kernelCopyBufferOld2,
 						  length);
 	DCFlushRange(destinationBuffer, (u32) length);
