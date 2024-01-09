@@ -7,6 +7,8 @@ extern "C" {
 
 #include "../tcpgecko/stringify.h"
 
+#include <coreinit/context.h>
+
 #define CPU_STACK_TRACE_DEPTH        10
 
 // http://elixir.free-electrons.com/linux/v2.6.24/source/include/asm-powerpc/reg.h#L713
@@ -24,9 +26,9 @@ typedef struct _framerec {
 
 void setup_os_exceptions(void);
 
-unsigned char dsi_exception_cb(void *context);
-unsigned char isi_exception_cb(void *context);
-unsigned char program_exception_cb(void *context);
+unsigned char dsi_exception_cb(OSContext *context);
+unsigned char isi_exception_cb(OSContext *context);
+unsigned char program_exception_cb(OSContext *context);
 
 #ifdef __cplusplus
 }

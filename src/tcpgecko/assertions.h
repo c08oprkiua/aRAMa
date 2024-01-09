@@ -3,6 +3,7 @@
 
 #include <coreinit/debug.h>
 #include <coreinit/internal.h>
+#include <coreinit/memorymap.h>
 
 #define ASSERT_MINIMUM_HOLDS(actual, minimum, variableName) \
 if(actual < minimum) { \

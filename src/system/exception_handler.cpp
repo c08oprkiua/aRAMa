@@ -35,11 +35,11 @@ static const char exception_print_formats[18][45] = {
 		"%p:  %08X %08X %08X %08X\n",                         // 17
 };
 
-static unsigned char exceptionCallback(void *c, unsigned char exception_type) {
+static unsigned char exceptionCallback(OSContext *c, unsigned char exception_type) {
 	char stackTraceBuffer[850];
 	int pos = 0;
 
-	OSContext *context = (OSContext *) c;
+	OSContext *context = c;
 	/*
 	 * This part is mostly from libogc. Thanks to the devs over there.
 	 */
@@ -71,11 +71,11 @@ static unsigned char exceptionCallback(void *c, unsigned char exception_type) {
 	pos += sprintf(stackTraceBuffer + pos, exception_print_formats[9], context->lr, context->srr0, context->srr1);
 
 	//if(exception_type == OS_EXCEPTION_DSI) {
-	pos += sprintf(stackTraceBuffer + pos, exception_print_formats[10], context->exception_specific1,
-				   context->exception_specific0); // this freezes
+	pos += sprintf(stackTraceBuffer + pos, exception_print_formats[10], context->/*exception_specific1*/srr0, //Guess
+				   context->/*exception_specific0*/dsisr); // this freezes //Guess replacement
 	//}
 
-	void *pc = (void *) context->srr0;
+	void *pc = (void *) context->srr0; //hmmmm
 	void *lr = (void *) context->lr;
 	void *r1 = (void *) context->gpr[1];
 	register uint32_t currentStackTraceDepth = 0;
@@ -130,15 +130,15 @@ static unsigned char exceptionCallback(void *c, unsigned char exception_type) {
 	return 1;
 }
 
-unsigned char dsi_exception_cb(void *context) {
+unsigned char dsi_exception_cb(OSContext *context) {
 	return exceptionCallback(context, 0);
 }
 
-unsigned char isi_exception_cb(void *context) {
+unsigned char isi_exception_cb(OSContext *context) {
 	return exceptionCallback(context, 1);
 }
 
-unsigned char program_exception_cb(void *context) {
+unsigned char program_exception_cb(OSContext *context) {
 	return exceptionCallback(context, 2);
 }
 

@@ -11,7 +11,8 @@ void *disassemblerBufferPointer;
 
 #define DISASSEMBLER_BUFFER_SIZE 0x1024
 
-void formatDisassembled(char *format, ...) {
+/*void formatDisassembled(char *format, ...)*/ 
+DisassemblyPrintFn formatDisassembled(const char *format, ...){
 	if (!disassemblerBuffer) {
 		disassemblerBuffer = (char *) malloc(DISASSEMBLER_BUFFER_SIZE);
 		ASSERT_ALLOCATED(disassemblerBuffer, "Disassembler buffer")

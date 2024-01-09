@@ -1,9 +1,14 @@
 #include <malloc.h>
 #include "../common/common.h"
-#include "../dynamic_libs/os_functions.h"
-#include "../dynamic_libs/socket_functions.h"
+//#include "../dynamic_libs/os_functions.h"
+
+//#include "../dynamic_libs/socket_functions.h"
+
+
 #include "fs_logger.h"
-#include "../utils/utils.h"
+//#include "../utils/utils.h"
+#define ROUNDUP(val, align)     ROUNDDOWN(((val) + (align-1)), align)
+
 
 #define CHECK_ERROR(cond) if (cond) { goto error; }
 

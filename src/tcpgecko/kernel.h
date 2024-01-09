@@ -10,6 +10,8 @@
 #include <coreinit/memorymap.h>
 #include <coreinit/cache.h>
 
+#include <kernel/kernel.h>
+
 // TODO Variable size, not hard-coded
 unsigned char *kernelCopyBufferOld[DATA_BUFFER_SIZE];
 
@@ -20,17 +22,16 @@ void kernelCopyData(unsigned char *destinationBuffer, unsigned char *sourceBuffe
 	}
 
 	memcpy(kernelCopyBufferOld, sourceBuffer, length);
-	SC0x25_KernelCopyData((unsigned int) OSEffectiveToPhysical(destinationBuffer), (unsigned int) &kernelCopyBufferOld,
-						  length);
-	DCFlushRange(destinationBuffer, (u32) length);
+	KernelCopyData(OSEffectiveToPhysical((uint32_t) destinationBuffer), (unsigned int) &kernelCopyBufferOld, length);
+	DCFlushRange(destinationBuffer, length);
 }
 
 unsigned char *kernelCopyBuffer[sizeof(int)];
 
 void kernelCopyInt(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
 	memcpy(kernelCopyBuffer, sourceBuffer, length);
-	unsigned int destinationAddress = (unsigned int) OSEffectiveToPhysical(destinationBuffer);
-	SC0x25_KernelCopyData(destinationAddress, (unsigned int) &kernelCopyBuffer, length);
+	unsigned int destinationAddress = OSEffectiveToPhysical((uint32_t) destinationBuffer);
+	KernelCopyData(destinationAddress, (unsigned int) &kernelCopyBuffer, length);
 	DCFlushRange(destinationBuffer, (u32) length);
 }
 
@@ -127,7 +128,7 @@ void executeAssembly(unsigned char buffer[], unsigned int size) {
 	// Write the assembly to an executable code region
 	int destinationAddress = 0x10000000 - size;
 	//kernelCopyData((unsigned char *) destinationAddress, buffer, size);
-	KernelCopyData(destinationAddress, buffer, size);
+	KernelCopyData(destinationAddress, (uint32_t) buffer, size);
 
 	// Execute the assembly from there
 	void (*function)() = (void (*)()) destinationAddress;
@@ -136,5 +137,5 @@ void executeAssembly(unsigned char buffer[], unsigned int size) {
 	// Clear the memory contents again
 	memset((void *) buffer, 0, size);
 	//kernelCopyData((unsigned char *) destinationAddress, buffer, size);
-	KernelCopyData(destinationAddress,buffer, size);
+	KernelCopyData(destinationAddress, (uint32_t) buffer, size);
 }

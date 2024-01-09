@@ -13,6 +13,6 @@ bool isRunningAllowedTitleID() {
 	return OSGetTitleID != 0
 		   && !isRunningTitleID(TITLE_ID_MII_VERSE)
 		   && !isRunningTitleID(TITLE_ID_MII_MAKER)
-		   // && !isRunningTitleID(TITLE_ID_BAYONETTA_2)
+		   // && !isRunningTitleID(TITLE_ID_BAYONETTA_2) //Lmao
 		   && !isRunningTitleID(TITLE_ID_INTERNET_BROWSER);
 }

@@ -1,6 +1,9 @@
 #ifndef TCPGECKO_DISASSEMBLER_H
 #define TCPGECKO_DISASSEMBLER_H
 
-void formatDisassembled(char *format, ...);
+#include <coreinit/debug.h>
+
+DisassemblyPrintFn formatDisassembled(const char *format, ...);
+//void formatDisassembled(char *format, ...);
 
 #endif

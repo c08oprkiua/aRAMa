@@ -11,6 +11,9 @@
 //#include "kernel.h"
 #include <kernel/kernel.h>
 
+//What the heck does the avm module do
+#include <avm/drc.h>
+
 int (*AVMGetDRCScanMode)(int);
 
 unsigned long getConsoleStatePatchAddress() {
@@ -19,10 +22,10 @@ unsigned long getConsoleStatePatchAddress() {
 	} else {
 		// Acquire the RPL and function
 		log_print("Acquiring...\n");
-		u32 avm_handle;
+		OSDynLoad_Module avm_handle;
 		OSDynLoad_Acquire("avm.rpl", &avm_handle);
 		ASSERT_ALLOCATED(avm_handle, "avm.rpl")
-		OSDynLoad_FindExport((u32) avm_handle, 0, "AVMGetDRCScanMode", &AVMGetDRCScanMode);
+		OSDynLoad_FindExport(avm_handle, 0, "AVMGetDRCScanMode", &AVMGetDRCScanMode);
 		ASSERT_ALLOCATED(AVMGetDRCScanMode, "AVMGetDRCScanMode")
 		log_print("Acquired!\n");
 	}

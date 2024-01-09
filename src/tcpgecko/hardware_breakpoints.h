@@ -39,8 +39,8 @@ static void RegisterDataBreakpointHandler(unsigned char (*breakpointHandler)(OSC
 	bHandler = breakpointHandler;
 }
 
-static inline int getDABRAddress(void *interruptedContext) {
-	OSContext *context = (OSContext *) interruptedContext;
+static inline int getDABRAddress(OSContext *interruptedContext) {
+	OSContext *context = interruptedContext;
 	return (int) context->srr0; // Offset 0xA4
 }
 
@@ -83,7 +83,7 @@ static void SetDataBreakpoint(unsigned int address, bool read, bool write) {
 	// log_print("DABR set!\n");
 }
 
-static unsigned char DataBreakpoints_DSIHandler(void *ctx) {
+static unsigned char DataBreakpoints_DSIHandler(OSContext *ctx) {
 	// log_print("DSI handler\n");
 	/*OSContext *context = (OSContext *) ctx;
 	if (context->dsisr & DSISR_DABR_MATCH) {
@@ -104,7 +104,7 @@ static void DataBreakpoints_Install() {
 	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x2D * 4)), (unsigned int) &KernelSetDABR);
 	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x2D * 4)), (unsigned int) &KernelSetDABR);
 
-	OSSetExceptionCallback((u8) OS_EXCEPTION_DSI, &DataBreakpoints_DSIHandler);
+	OSSetExceptionCallback(OS_EXCEPTION_TYPE_DSI, &DataBreakpoints_DSIHandler);
 }
 
 // Special purpose registers
@@ -144,7 +144,8 @@ static inline int getIABRAddress() {
 
 static inline int getIABRMatch(void *interruptedContext) {
 	OSContext *context = (OSContext *) interruptedContext;
-	return (int) context->exception_specific1; // Offset 0x98
+	//return (int) context->exception_specific1; // Offset 0x98
+	return context->srr0; //Guess based on the above comment and the offset check in WUT
 }
 
 unsigned char breakPointHandler(void *interruptedContext);
@@ -155,7 +156,7 @@ void registerBreakPointHandler() {
 	// OSSetExceptionCallback((u8) OS_EXCEPTION_DSI, &breakPointHandler);
 	// OSSetExceptionCallback((u8) OS_EXCEPTION_ISI, &breakPointHandler);
 	// OSSetExceptionCallback((u8) OS_EXCEPTION_PROGRAM, &breakPointHandler);
-	OSSetExceptionCallbackEx((u8) OS_EXCEPTION_MODE_GLOBAL_ALL_CORES, (u8) OS_EXCEPTION_PROGRAM, &breakPointHandler);
+	OSSetExceptionCallbackEx(OS_EXCEPTION_MODE_GLOBAL_ALL_CORES, OS_EXCEPTION_TYPE_PROGRAM, &breakPointHandler);
 	// __OSSetInterruptHandler((u8) OS_EXCEPTION_PROGRAM, &breakPointHandler);
 	// log_print("Breakpoint handler(s) registered!\n");
 }
@@ -213,17 +214,17 @@ void setInstructionBreakpoint(unsigned int address) {
 	// log_printf("IABR spr value: %08x\n", returnedAddress);*/
 }
 
-unsigned char breakPointHandler(void *interruptedContext) {
+unsigned char breakPointHandler(OSContext *interruptedContext) {
 	// Check for data breakpoints
 	int dataAddress = getDABRAddress(interruptedContext);
-	if (OSIsAddressValid((const void *) dataAddress)) {
+	if (OSIsAddressValid(dataAddress)) {
 		// log_printf("Data breakpoint address: %x08\n", dataAddress);
 	} else {
 		// log_printf("Data breakpoint invalid address: %x08\n", dataAddress);
 
 		// Check for instruction breakpoints
 		int instructionAddress = getIABRMatch(interruptedContext);
-		if (OSIsAddressValid((const void *) instructionAddress)) {
+		if (OSIsAddressValid(instructionAddress)) {
 			// log_printf("Instruction breakpoint address: %x08\n", dataAddress);
 		} else {
 			// log_print("Instruction breakpoint failed!\n");
