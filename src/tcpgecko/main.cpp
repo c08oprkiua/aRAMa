@@ -24,14 +24,13 @@
 #include <nsysnet/socket.h>
 
 #include "../kernel/kernel_functions.h"
-
+#include <kernel/kernel.h>
 
 #include "../system/memory.h"
 #include "../common/common.h"
 #include "main.h"
 #include "code_handler.h"
 #include "../utils/logger.h"
-//#include "../utils/function_patcher.h"
 #include "../patcher/function_patcher_gx2.h"
 #include "../patcher/function_patcher_coreinit.h"
 #include "sd_ip_reader.h"
@@ -56,7 +55,7 @@ void applyFunctionPatches() {
 void installCodeHandler() {
 	unsigned int physicalCodeHandlerAddress = (unsigned int) OSEffectiveToPhysical(
 			(uint32_t) CODE_HANDLER_INSTALL_ADDRESS);
-	SC0x25_KernelCopyData((u32) physicalCodeHandlerAddress, (unsigned int) codeHandler, codeHandlerLength);
+	KernelCopyData((u32) physicalCodeHandlerAddress, (unsigned int) codeHandler, codeHandlerLength);
 	DCFlushRange((void *) CODE_HANDLER_INSTALL_ADDRESS, (u32) codeHandlerLength);
 	isCodeHandlerInstalled = true;
 }

@@ -50,7 +50,8 @@ void SetupKernelCallback(void)
 
 void KernelSetDBATs(bat_table_t * table)
 {
-    SC0x36_KernelReadDBATs(table);
+    //SC0x36_KernelReadDBATs
+    KernelReadSRs(table);
     bat_table_t bat_table_copy = *table;
 
     // try to use a free slot

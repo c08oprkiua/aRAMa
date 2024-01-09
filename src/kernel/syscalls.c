@@ -249,5 +249,5 @@ void KernelSetupSyscalls(void) {
 
 void KernelRestoreInstructions(void) {
 	if (origPrepareTitleInstr != 0)
-		SC0x25_KernelCopyData((u32) addr_PrepareTitle_hook, (u32) &origPrepareTitleInstr, 4);
+		KernelCopyData((u32) addr_PrepareTitle_hook, (u32) &origPrepareTitleInstr, 4);
 }

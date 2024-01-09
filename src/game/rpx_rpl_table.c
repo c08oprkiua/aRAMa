@@ -1,7 +1,11 @@
 #include <string.h>
 #include "rpx_rpl_table.h"
 #include "../kernel/kernel_functions.h"
+#include <kernel/kernel.h>
+
 #include "../common/common.h"
+
+
 
 //! static container holding our retain data
 static unsigned char ucRpxData[0xffff];
@@ -141,7 +145,7 @@ int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, const u8 *dat
             continue;
         }
 
-        SC0x25_KernelCopyData(mem_area_addr_dest, (u32)&data[copiedBytes], blockSize);
+        KernelCopyData(mem_area_addr_dest, (u32)&data[copiedBytes], blockSize);
         mem_area_offset += blockSize;
         copiedBytes += blockSize;
     }
@@ -201,7 +205,7 @@ int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, u8 *data, u
             continue;
         }
 
-        SC0x25_KernelCopyData((u32)&data[copiedBytes], mem_area_addr_dest, blockSize);
+        KernelCopyData((u32)&data[copiedBytes], mem_area_addr_dest, blockSize);
         mem_area_offset += blockSize;
         copiedBytes += blockSize;
     }
