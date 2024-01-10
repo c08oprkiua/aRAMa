@@ -1,6 +1,4 @@
 #include "command_handler.h"
-#include "shared_functions.h"
-#include "shared_vars.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -13,6 +11,8 @@
 #include <coreinit/filesystem.h>
 #include <coreinit/thread.h> 
 #include <coreinit/memory.h>
+#include <coreinit/dynload.h>
+#include <coreinit/mcp.h>
 
 #include <nn/act.h>
 
@@ -23,17 +23,18 @@
 
 #include <kernel/kernel.h>
 
-#include "../address.h"
-#include "../assertions.h"
-#include "../disassembler.h"
-#include "../threads.h"
-
+#include "../arama.h"
+#include "../tcpgecko/address.h"
+#include "../tcpgecko/assertions.h"
+#include "../tcpgecko/disassembler.h"
+#include "../tcpgecko/threads.h"
+#include "../tcpgecko/kernel.h"
 
 #define CHECK_ERROR(cond)     \
 	if (cond)                 \
 	{                         \
-		bss->line = __LINE__; \
-		goto error;           \
+		line = __LINE__; \
+		goto error;       \
 	}
 
 #define errno2 (*__gh_errno_ptr())
@@ -45,6 +46,16 @@
 #define ONLY_ZEROS_READ 0xB0
 #define NON_ZEROS_READ 0xBD
 #define VERSION_HASH 0x7FB223
+
+#define FS_MAX_LOCALPATH_SIZE           511
+#define FS_MAX_MOUNTPATH_SIZE           128
+#define FS_MAX_FULLPATH_SIZE            (FS_MAX_LOCALPATH_SIZE + FS_MAX_MOUNTPATH_SIZE)
+
+#define DISASSEMBLER_BUFFER_SIZE 0x1024
+
+// The time the producer and consumer wait while there is nothing to do
+#define WAITING_TIME_MILLISECONDS 1
+
 
 
 void CommandHandler::command_write_8()
@@ -79,8 +90,8 @@ void CommandHandler::command_write_32()
 	destinationAddress = ((int *)buffer)[0];
 	value = ((int *)buffer)[1];
 
-	// kernelCopyData((unsigned char *) destinationAddress, (unsigned char *) &value, sizeof(int));
-	KernelCopyData(destinationAddress, value, sizeof(int));
+	GeckoKernelCopyData((unsigned char *) destinationAddress, (unsigned char *) &value, sizeof(int));
+	
 };
 
 void CommandHandler::command_read_memory()
@@ -346,7 +357,7 @@ void CommandHandler::command_memory_disassemble(){
 			int value = *(int *)currentAddress;
 			((int *)buffer)[currentIntegerIndex++] = value;
 			char *opCodeBuffer = (char *)malloc(bufferSize);
-			bool status = (bool)DisassemblePPCOpcode(currentAddress, opCodeBuffer, bufferSize,
+			bool status = (bool)DisassemblePPCOpcode(&currentAddress, opCodeBuffer, bufferSize,
 													 OSGetSymbolName,
 													 (DisassemblePPCFlags)disassemblerOptions);
 
@@ -431,9 +442,9 @@ void CommandHandler::command_read_memory_compressed(){
 	ASSERT_ALLOCATED(compressedBuffer, "Compressed buffer")
 
 	unsigned int zlib_handle;
-	OSDynLoad_Acquire("zlib125.rpl", (u32 *) &zlib_handle);
+	OSDynLoad_Acquire("zlib125.rpl", (uint32_t *) &zlib_handle);
 	int (*compress2)(char *, int *, const char *, int, int);
-	OSDynLoad_FindExport((u32) zlib_handle, 0, "compress2", &compress2);
+	OSDynLoad_FindExport((uint32_t) zlib_handle, 0, "compress2", &compress2);
 
 	int destinationBufferSize;
 	int status = compress2((char *) compressedBuffer, &destinationBufferSize,
@@ -518,7 +529,7 @@ void CommandHandler::command_take_screenshot(){
 	// TODO Initialize colorBuffer!
 	GX2Surface surface = colorBuffer.surface;
 	void *image_data = surface.image_data;
-	u32 image_size = surface.image_size;
+	uint32_t image_size = surface.image_size;
 
 	// Send the image size so that the client knows how much to read
 	ret = sendwait(bss, clientfd, (unsigned char *) &image_size, sizeof(int));
@@ -561,8 +572,7 @@ void CommandHandler::command_upload_memory(){
 
 		ret = recvwait(length);
 		CHECK_ERROR(ret < 0)
-		//kernelCopyData(currentAddress, buffer, (unsigned int) length);
-		KernelCopyData(currentAddress, buffer, length);
+		GeckoKernelCopyData(currentAddress, buffer, (unsigned int) length);
 
 		currentAddress += length;
 	}
@@ -755,7 +765,7 @@ void CommandHandler::command_replace_file(){
 				ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (File buffer)")
 
 				// Write the data (and advance file handle position implicitly)
-				ret = FSWriteFile(client, commandBlock, fileBuffer, 1,
+				ret = FSWriteFile(client, commandBlock, (uint8_t *)fileBuffer, 1,
 								  dataLength, handle, 0, FS_ERROR_FLAG_ALL);
 				ASSERT_FUNCTION_SUCCEEDED(ret, "FSWriteFile")
 			}
@@ -826,7 +836,7 @@ void CommandHandler::command_account_identifier(){
 
 	/*Unneeded in WUT
 
-	u32 nn_act_handle;
+	uint32_t nn_act_handle;
 	OSDynLoad_Acquire("nn_act.rpl", &nn_act_handle);
 
 	// Acquire the functions via their mangled file names
@@ -1075,9 +1085,14 @@ void CommandHandler::command_is_console_paused(){
 };
 
 void CommandHandler::command_get_os_version(){
-	//Lies, this doesn't get the actual OS version :moyai:
-	//I will fix this to actually do it's job in the future
-	((int *)buffer)[0] = (int)OS_FIRMWARE;
+	MCPSystemVersion version;
+	//Idk what to put for handle
+	MCP_GetSystemVersion(0, &version);
+
+	((int *)buffer)[0] = version.major;
+	((int *)buffer)[1] = version.minor;
+	((int *)buffer)[2] = version.patch;
+	buffer[3] = version.region;
 	ret = sendwait(sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (OS version)");
 };
@@ -1171,8 +1186,8 @@ void CommandHandler::command_get_stack_trace(){
 };
 
 void CommandHandler::commmand_get_entry_point_address(){
-	u32 *entryPointAddress = (u32 *)*((u32 *)OS_SPECIFICS->addr_OSTitle_main_entry);
-	((u32 *)buffer)[0] = (u32)entryPointAddress;
+	uint32_t *entryPointAddress = (uint32_t *)*((uint32_t *)OS_SPECIFICS->addr_OSTitle_main_entry);
+	((uint32_t *)buffer)[0] = (uint32_t)entryPointAddress;
 	ret = sendwait(sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (Entry point address)");
 };

@@ -8,12 +8,14 @@
 #include "kernel.h"
 #include <stddef.h> /* size_t */
 
-void writeCode(u32 address, u32 instruction) {
-	u32 *pointer = (u32 *) (address + 0xA0000000);
+void writeCode(uint32_t address, uint32_t instruction) {
+	uint32_t *pointer = (uint32_t *) (address + 0xA0000000);
 	*pointer = instruction;
 	DCFlushRange(pointer, 4);
 	ICInvalidateRange(pointer, 4);
 }
+
+/* Neither of these are used...?
 
 void patchFunction(char *function, char *patchBytes, unsigned int patchBytesSize, int functionOffset) {
 	log_print("Patching function...\n");
@@ -33,5 +35,5 @@ int memoryCompare(const void *s1, const void *s2, size_t n) {
 			p1++, p2++;
 	return 0;
 }
-
+*/
 #endif

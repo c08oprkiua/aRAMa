@@ -22,13 +22,13 @@ public:
 
 	CFile(const std::string &filepath, eOpenTypes mode);
 
-	CFile(const u8 *memory, int memsize);
+	CFile(const uint8_t *memory, int memsize);
 
 	virtual ~CFile();
 
 	int open(const std::string &filepath, eOpenTypes mode);
 
-	int open(const u8 *memory, int memsize);
+	int open(const uint8_t *memory, int memsize);
 
 	bool isOpen() const {
 		if (iFd >= 0)
@@ -42,9 +42,9 @@ public:
 
 	void close();
 
-	int read(u8 *ptr, size_t size);
+	int read(uint8_t *ptr, size_t size);
 
-	int write(const u8 *ptr, size_t size);
+	int write(const uint8_t *ptr, size_t size);
 
 	int fwrite(const char *format, ...);
 
@@ -58,7 +58,7 @@ public:
 
 protected:
 	int iFd;
-	const u8 *mem_file;
+	const uint8_t *mem_file;
 	u64 filesize;
 	u64 pos;
 };

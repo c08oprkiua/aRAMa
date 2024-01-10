@@ -103,9 +103,9 @@ typedef struct {
 	unsigned char alreadyPatched;
 } FunctionHook;
 
-void printFunctionHooks(FunctionHook *functionHooks, u32 functionHooksSize);
+void printFunctionHooks(FunctionHook *functionHooks, uint32_t functionHooksSize);
 
-bool setRealAddress(FunctionHook functionHooks[], int functionHooksSize, const char *functionName, u32 address);
+bool setRealAddress(FunctionHook functionHooks[], int functionHooksSize, const char *functionName, uint32_t address);
 
 void patchIndividualMethodHooks(FunctionHook *functionHook, int hook_information_size,
 								volatile unsigned int *dynamic_method_calls);

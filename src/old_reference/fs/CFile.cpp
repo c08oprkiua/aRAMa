@@ -14,7 +14,7 @@ CFile::CFile(const std::string &filepath, eOpenTypes mode) {
 	this->open(filepath, mode);
 }
 
-CFile::CFile(const u8 *mem, int size) {
+CFile::CFile(const uint8_t *mem, int size) {
 	iFd = -1;
 	this->open(mem, size);
 }
@@ -59,7 +59,7 @@ int CFile::open(const std::string &filepath, eOpenTypes mode) {
 	return 0;
 }
 
-int CFile::open(const u8 *mem, int size) {
+int CFile::open(const uint8_t *mem, int size) {
 	this->close();
 
 	mem_file = mem;
@@ -78,7 +78,7 @@ void CFile::close() {
 	pos = 0;
 }
 
-int CFile::read(u8 *ptr, size_t size) {
+int CFile::read(uint8_t *ptr, size_t size) {
 	if (iFd >= 0) {
 		int ret = ::read(iFd, ptr, size);
 		if (ret > 0)
@@ -103,7 +103,7 @@ int CFile::read(u8 *ptr, size_t size) {
 	return -1;
 }
 
-int CFile::write(const u8 *ptr, size_t size) {
+int CFile::write(const uint8_t *ptr, size_t size) {
 	if (iFd >= 0) {
 		size_t done = 0;
 		while (done < size) {
@@ -158,7 +158,7 @@ int CFile::seek(long int offset, int origin) {
 	va_list va;
 	va_start(va, format);
 	if ((vasprintf(&tmp, format, va) >= 0) && tmp) {
-		result = this->write((u8 *) tmp, strlen(tmp));
+		result = this->write((uint8_t *) tmp, strlen(tmp));
 	}
 	va_end(va);
 

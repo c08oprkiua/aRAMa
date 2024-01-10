@@ -58,10 +58,10 @@ inline const char * FullpathToFilename(const char *path)
 
 inline void RemoveDoubleSlashs(std::string &str)
 {
-	u32 length = str.size();
+	uint32_t length = str.size();
 
 	//! clear path of double slashes
-	for(u32 i = 1; i < length; ++i)
+	for(uint32_t i = 1; i < length; ++i)
 	{
 		if(str[i-1] == '/' && str[i] == '/')
 		{

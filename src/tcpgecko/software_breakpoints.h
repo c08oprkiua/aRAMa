@@ -11,8 +11,8 @@
 #include <coreinit/exception.h>
 
 struct Breakpoint {
-	u32 address;
-	u32 instruction;
+	uint32_t address;
+	uint32_t instruction;
 };
 
 #define INSTRUCTION_TRAP 0x7FE00008 // https://stackoverflow.com/a/10286705/3764804
@@ -54,15 +54,15 @@ void removeAllBreakpoints() {
 	}
 }
 
-struct Breakpoint *setBreakpoint(struct Breakpoint *breakpoint, u32 address) {
+struct Breakpoint *setBreakpoint(struct Breakpoint *breakpoint, uint32_t address) {
 	breakpoint->address = address;
-	breakpoint->instruction = *(u32 *) address;
+	breakpoint->instruction = address;
 	writeCode(address, (u32) INSTRUCTION_TRAP);
 
 	return breakpoint;
 }
 
-struct Breakpoint *getBreakpoint(u32 address, int size) {
+struct Breakpoint *getBreakpoint(uint32_t address, int size) {
 	for (int index = 0; index < GENERAL_BREAKPOINTS_COUNT; index++) {
 		if (breakpoints[index].address == address) {
 			return &breakpoints[index];
@@ -88,7 +88,7 @@ struct Breakpoint *allocateBreakpoint() {
 }
 
 // TODO
-u32 stepSource;
+uint32_t stepSource;
 
 void RestoreStepInstructions() {
 	writeCode(breakpoints[STEP1].address, breakpoints[STEP1].instruction);
@@ -102,20 +102,20 @@ void RestoreStepInstructions() {
 
 	struct Breakpoint *breakpoint = getBreakpoint(stepSource, GENERAL_BREAKPOINTS_COUNT);
 	if (breakpoint) {
-		writeCode(breakpoint->address, (u32) INSTRUCTION_TRAP);
+		writeCode(breakpoint->address, (uint32_t) INSTRUCTION_TRAP);
 	}
 }
 
-u32 getInstruction(u32 address) {
+uint32_t getInstruction(uint32_t address) {
 	struct Breakpoint *breakpoint = getBreakpoint(address, GENERAL_BREAKPOINTS_COUNT + STEP_BREAKPOINTS_COUNT);
 	if (breakpoint != NULL) {
 		return breakpoint->instruction;
 	}
 
-	return *(u32 *) address;
+	return *(uint32_t *) address;
 }
 
-struct Breakpoint *getBreakpointRange(u32 address, u32 length, struct Breakpoint *previousBreakpoint) {
+struct Breakpoint *getBreakpointRange(uint32_t address, uint32_t length, struct Breakpoint *previousBreakpoint) {
 	unsigned long startingIndex = 0;
 	if (previousBreakpoint) {
 		startingIndex = (previousBreakpoint - breakpoints) + 1;
@@ -136,17 +136,17 @@ struct Breakpoint *getBreakpointRange(u32 address, u32 length, struct Breakpoint
 OSContext crashContext;
 
 void predictStepAddresses(bool stepOver) {
-	u32 currentAddress = crashContext.srr0;
-	u32 instruction = getInstruction(currentAddress);
+	uint32_t currentAddress = crashContext.srr0;
+	uint32_t instruction = getInstruction(currentAddress);
 
 	struct Breakpoint *step1 = &breakpoints[STEP1];
 	struct Breakpoint *step2 = &breakpoints[STEP2];
 	step1->address = currentAddress + 4;
 	step2->address = 0;
 
-	u8 opcode = instruction >> 26;
+	uint8_t opcode = instruction >> 26;
 	if (opcode == 19) {
-		u16 XO = (instruction >> 1) & 0x3FF;
+		uint16_t XO = (instruction >> 1) & 0x3FF;
 		bool LK = instruction & 1;
 		if (!LK || !stepOver) {
 			if (XO == 16) step2->address = crashContext.lr; // bclr
@@ -155,7 +155,7 @@ void predictStepAddresses(bool stepOver) {
 	} else if (opcode == 18) { //b
 		bool AA = instruction & 2;
 		bool LK = instruction & 1;
-		u32 LI = instruction & 0x3FFFFFC;
+		uint32_t LI = instruction & 0x3FFFFFC;
 		if (!LK || !stepOver) {
 			if (AA) step1->address = LI;
 			else {
@@ -166,7 +166,7 @@ void predictStepAddresses(bool stepOver) {
 	} else if (opcode == 16) { //bc
 		bool AA = instruction & 2;
 		bool LK = instruction & 1;
-		u32 BD = instruction & 0xFFFC;
+		uint32_t BD = instruction & 0xFFFC;
 		if (!LK || !stepOver) {
 			if (AA) step2->address = BD;
 			else {
@@ -177,7 +177,7 @@ void predictStepAddresses(bool stepOver) {
 	}
 }
 
-void ReportCrash(u32 msg) {
+void ReportCrash(uint32_t msg) {
 	/*crashState = CRASH_STATE_UNRECOVERABLE;
 
 	struct OSMessage messageStruct;
@@ -221,10 +221,10 @@ void ReportCrash(u32 msg) {
 		}
 
 		PredictStepAddresses((u32) message.message == CLIENT_MESSAGE_STEP_OVER);
-		breakpoints[STEP1].instruction = *(u32 * )(breakpoints[STEP1].address);
+		breakpoints[STEP1].instruction = *(uint32_t * )(breakpoints[STEP1].address);
 		writeCode(breakpoints[STEP1].address, TRAP);
 		if (breakpoints[STEP2].address) {
-			breakpoints[STEP2].instruction = *(u32 * )(breakpoints[STEP2].address);
+			breakpoints[STEP2].instruction = *(uint32_t * )(breakpoints[STEP2].address);
 			writeCode(breakpoints[STEP2].address, TRAP);
 		}
 

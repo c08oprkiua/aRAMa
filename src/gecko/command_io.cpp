@@ -1,27 +1,19 @@
-#include "shared_vars.h"
-#include "../assertions.h"
+#include "command_io.h"
+#include "../tcpgecko/assertions.h"
 
 #include <nsysnet/socket.h>
 #include <coreinit/debug.h>
-
 
 //KNOWN ISSUE: Because of buffer originally being redefined per function,
 //The current implementation sends a really big empty buffer instead of a 
 //small buffer of just the relevant info
 
-
-
 #define CHECK_ERROR(cond)     \
 	if (cond)                 \
 	{                         \
-		bss->line = __LINE__; \
+		line = __LINE__; \
 		goto error;           \
 	}
-
-void CommandIO::check_err(bool check){
-    //CHECK_ERROR(check)
-    return;
-}
 
 int CommandIO::recvwait_buffer(unsigned char *buffer, int len){
 	while (len > 0) {
@@ -33,7 +25,7 @@ int CommandIO::recvwait_buffer(unsigned char *buffer, int len){
 	return 0;
 
 	error:
-	bss->error = ret;
+	error = ret;
 	return ret;
 }
 
@@ -47,13 +39,12 @@ int CommandIO::recvwait(int len){
 	return 0;
 
 	error:
-	bss->error = ret;
+	error = ret;
 	return ret;
 }
 
 int CommandIO::recvbyte(){
 	unsigned char buffer[1];
-	//int ret;
 
 	ret = recvwait(1);
 	if (ret < 0) return ret;
@@ -79,7 +70,7 @@ int CommandIO::sendwait(int len){
 	}
 	return;
 	error:
-	bss->error = ret;
+	error = ret;
 	return ret;
 }
 

@@ -12,10 +12,64 @@ As stated previously, this project is not done yet. However, I will list the lib
 
 To compile this, you will (probably) need:
 * `devkitpro`:
-  * `libogc`
+  * `libogc` (I'm gonna work on removing this requirement)
   * `wut`
-* `libfunctionpatcher`
 * `libkernel`
+
+# Feature re-implementation checklist:
+Though I tried, I cannot guarantee that everything works, because of what was necessarily changed in porting TCPGecko from the old libraries to the new equivalents. 
+
+* Things related to kernel access may be depreciated and/or redundant to their non-kernel counterparts in the future
+* **Old codes are expected to not work due to RAM offsets, so please do not report old codes not working as an issue.**
+
+I am reliant on people testing it and getting back to me on the status of various features. A checklist of what has been reported to work is below. 
+
+Commands:
+- [ ] Write 8 bit value
+- [ ] Write 16 bit value
+- [ ] Write 32 bit value
+- [ ] Read memory
+- [ ] Read memory with kernel access
+- [ ] Validate address range
+- [ ] Disassemble range (currently disabled)
+- [ ] Disassemble memory
+- [ ] Read compressed memory
+- [ ] Write with kernel access
+- [ ] Read with kernel access 
+- [ ] Take a screenshot
+- [ ] Upload memory
+- [ ] Get the size of data buffer
+- [ ] Read a file
+- [ ] Read a directory
+- [ ] Replace a file
+- [ ] "IOSU read file" (currently disabled)
+- [ ] Get version hash
+- [ ] Get code handler address
+- [ ] Read threads
+- [ ] Get account identifier
+- [ ] Write screen (currently disabled)
+- [ ] Follow pointer
+- [ ] Get server status
+- [ ] Remote procedure call
+- [ ] Get symbol
+- [ ] Search memory 32
+- [ ] Advanced memory search
+- [ ] Execute assembly
+- [ ] Pause the console
+- [ ] Unpause the console
+- [ ] See whether the console is paused or not
+- [ ] Get server version
+- [ ] Get OS version 
+- [ ] Set data breakpoint
+- [ ] Set instruction breakpoint
+- [ ] Toggle breakpoint
+- [ ] Remove all breakpoints
+- [ ] Get stack trace
+- [ ] Poke registers
+- [ ] Get entry point address
+- [ ] Run kernel copy service
+- [ ] Persist assembly
+- [ ] Clear assembly
 
 
 # Credits

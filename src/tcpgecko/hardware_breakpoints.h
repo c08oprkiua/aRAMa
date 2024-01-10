@@ -138,6 +138,14 @@ static inline void setIABR(unsigned int address) {
 	isync();
 }
 
+// http://elixir.free-electrons.com/linux/v2.6.24/source/include/asm-powerpc/reg.h#L713
+#define mfspr(spr) \
+({    register uint32_t _rval = 0; \
+    asm volatile("mfspr %0," __stringify(spr) \
+    : "=r" (_rval));\
+    _rval; \
+})
+
 static inline int getIABRAddress() {
 	return mfspr(IABR);
 }

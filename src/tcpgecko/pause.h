@@ -11,26 +11,14 @@
 //#include "kernel.h"
 #include <kernel/kernel.h>
 
-//What the heck does the avm module do
+//audio video manager
 #include <avm/drc.h>
 
-int (*AVMGetDRCScanMode)(int);
-
 unsigned long getConsoleStatePatchAddress() {
-	if (AVMGetDRCScanMode) {
-		log_print("Already acquired!\n");
-	} else {
-		// Acquire the RPL and function
-		log_print("Acquiring...\n");
-		OSDynLoad_Module avm_handle;
-		OSDynLoad_Acquire("avm.rpl", &avm_handle);
-		ASSERT_ALLOCATED(avm_handle, "avm.rpl")
-		OSDynLoad_FindExport(avm_handle, 0, "AVMGetDRCScanMode", &AVMGetDRCScanMode);
-		ASSERT_ALLOCATED(AVMGetDRCScanMode, "AVMGetDRCScanMode")
-		log_print("Acquired!\n");
-	}
+	AVMDrcScanMode mode;
+	AVMGetDRCScanMode(&mode);
 
-	return (unsigned long) ((char *) AVMGetDRCScanMode + 0x44);
+	return (unsigned long) ((char *) mode + 0x44);
 }
 
 typedef enum {
@@ -38,6 +26,7 @@ typedef enum {
 	RUNNING = 0x38000000
 } ConsoleState;
 
+//Before you ask: no, I don't know what voodoo is happening here
 void writeConsoleState(ConsoleState state) {
 	// Get the value to write
 	int patchValue = state;
@@ -46,8 +35,7 @@ void writeConsoleState(ConsoleState state) {
 	// Write the value
 	unsigned int patchAddress = getConsoleStatePatchAddress();
 	log_printf("Patch address: %x\n", patchAddress);
-	//kernelCopyData((unsigned char *) patchAddress, (unsigned char *) &patchValue, 4);
-	KernelCopyData(patchAddress, &patchValue, 4);
+	GeckoKernelCopyData((unsigned char *) patchAddress, (unsigned char *) &patchValue, 4);
 }
 
 bool isConsolePaused() {

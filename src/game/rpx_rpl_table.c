@@ -58,7 +58,7 @@ int rpxRplTableGetCount(void)
     return iRpxRplCount;
 }
 
-s_mem_area *rpxRplTableGetNextFreeMemArea(u32 * mem_area_addr_start, u32 * mem_area_addr_end, u32 * mem_area_offset)
+s_mem_area *rpxRplTableGetNextFreeMemArea(uint32_t * mem_area_addr_start, uint32_t * mem_area_addr_end, uint32_t * mem_area_offset)
 {
     s_mem_area * mem_area = memoryGetAreaTable();
     s_rpx_rpl *rpl_struct = rpxRplTableGet();
@@ -99,12 +99,12 @@ s_mem_area *rpxRplTableGetNextFreeMemArea(u32 * mem_area_addr_start, u32 * mem_a
     return mem_area;
 }
 
-int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, const u8 *data, u32 dataSize)
+int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, uint32_t fileOffset, const uint8_t *data, uint32_t dataSize)
 {
     s_mem_area *mem_area = rpx_rpl_struct->area;
-    u32 mem_area_addr_start = mem_area->address;
-    u32 mem_area_addr_end   = mem_area_addr_start + mem_area->size;
-    u32 mem_area_offset     = rpx_rpl_struct->offset;
+    uint32_t mem_area_addr_start = mem_area->address;
+    uint32_t mem_area_addr_end   = mem_area_addr_start + mem_area->size;
+    uint32_t mem_area_offset     = rpx_rpl_struct->offset;
 
     // add to offset
     mem_area_offset += fileOffset;
@@ -123,11 +123,11 @@ int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, const u8 *dat
     }
 
     // copy to memory
-    u32 copiedBytes = 0;
+    uint32_t copiedBytes = 0;
     while(copiedBytes < dataSize)
     {
-        u32 blockSize = dataSize - copiedBytes;
-        u32 mem_area_addr_dest = mem_area_addr_start + mem_area_offset;
+        uint32_t blockSize = dataSize - copiedBytes;
+        uint32_t mem_area_addr_dest = mem_area_addr_start + mem_area_offset;
 
         if((mem_area_addr_dest + blockSize) > mem_area_addr_end)
             blockSize = mem_area_addr_end - mem_area_addr_dest;
@@ -145,7 +145,7 @@ int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, const u8 *dat
             continue;
         }
 
-        KernelCopyData(mem_area_addr_dest, (u32)&data[copiedBytes], blockSize);
+        KernelCopyData(mem_area_addr_dest, (uint32_t)&data[copiedBytes], blockSize);
         mem_area_offset += blockSize;
         copiedBytes += blockSize;
     }
@@ -153,12 +153,12 @@ int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, const u8 *dat
     return copiedBytes;
 }
 
-int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, u8 *data, u32 dataSize)
+int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, uint32_t fileOffset, uint8_t *data, uint32_t dataSize)
 {
     s_mem_area *mem_area = rpx_rpl_struct->area;
-    u32 mem_area_addr_start = mem_area->address;
-    u32 mem_area_addr_end   = mem_area_addr_start + mem_area->size;
-    u32 mem_area_offset     = rpx_rpl_struct->offset;
+    uint32_t mem_area_addr_start = mem_area->address;
+    uint32_t mem_area_addr_end   = mem_area_addr_start + mem_area->size;
+    uint32_t mem_area_offset     = rpx_rpl_struct->offset;
 
     if(fileOffset > rpx_rpl_struct->size)
         return 0;
@@ -183,11 +183,11 @@ int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, u8 *data, u
     }
 
     // copy to memory
-    u32 copiedBytes = 0;
+    uint32_t copiedBytes = 0;
     while(copiedBytes < dataSize)
     {
-        u32 blockSize = dataSize - copiedBytes;
-        u32 mem_area_addr_dest = mem_area_addr_start + mem_area_offset;
+        uint32_t blockSize = dataSize - copiedBytes;
+        uint32_t mem_area_addr_dest = mem_area_addr_start + mem_area_offset;
 
         if((mem_area_addr_dest + blockSize) > mem_area_addr_end)
             blockSize = mem_area_addr_end - mem_area_addr_dest;
@@ -205,7 +205,7 @@ int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, u8 *data, u
             continue;
         }
 
-        KernelCopyData((u32)&data[copiedBytes], mem_area_addr_dest, blockSize);
+        KernelCopyData((uint32_t)&data[copiedBytes], mem_area_addr_dest, blockSize);
         mem_area_offset += blockSize;
         copiedBytes += blockSize;
     }

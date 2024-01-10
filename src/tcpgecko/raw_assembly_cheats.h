@@ -17,8 +17,7 @@ void persistAssembly(unsigned char buffer[], unsigned int size) {
 
 	// Write the assembly to an executable code region
 	unsigned int startAddress = getStartAddress();
-	//kernelCopyData((unsigned char *) startAddress, buffer, assemblySize);
-	KernelCopyData(startAddress,buffer, assemblySize);
+	GeckoKernelCopyData((unsigned char *) startAddress, buffer, assemblySize);
 }
 
 void executeAssembly() {

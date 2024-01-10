@@ -48,7 +48,7 @@ int UmountFS(void *pClient, void *pCmd, const char *mountPath) {
 	return FSUnmount(pClient, pCmd, mountPath, -1);
 }
 
-int LoadFileToMem(const char *filepath, u8 **inbuffer, u32 *size) {
+int LoadFileToMem(const char *filepath, uint8_t **inbuffer, uint32_t *size) {
 	// Always initialize input
 	*inbuffer = NULL;
 	if (size)
@@ -58,17 +58,17 @@ int LoadFileToMem(const char *filepath, u8 **inbuffer, u32 *size) {
 	if (iFd < 0)
 		return -1;
 
-	u32 filesize = lseek(iFd, 0, SEEK_END);
+	uint32_t filesize = lseek(iFd, 0, SEEK_END);
 	lseek(iFd, 0, SEEK_SET);
 
-	u8 *buffer = (u8 *) malloc(filesize);
+	uint8_t *buffer = (uint8_t *) malloc(filesize);
 	if (buffer == NULL) {
 		close(iFd);
 		return -2;
 	}
 
-	u32 blocksize = 0x4000;
-	u32 done = 0;
+	uint32_t blocksize = 0x4000;
+	uint32_t done = 0;
 	int readBytes = 0;
 
 	while (done < filesize) {

@@ -41,7 +41,7 @@ DirList::DirList()
 	Filter = 0;
 }
 
-DirList::DirList(const std::string & path, const char *filter, u32 flags)
+DirList::DirList(const std::string & path, const char *filter, uint32_t flags)
 {
 	this->LoadPath(path, filter, flags);
 	this->SortList();
@@ -52,7 +52,7 @@ DirList::~DirList()
 	ClearList();
 }
 
-bool DirList::LoadPath(const std::string & folder, const char *filter, u32 flags)
+bool DirList::LoadPath(const std::string & folder, const char *filter, uint32_t flags)
 {
 	if(folder.empty()) return false;
 
@@ -60,7 +60,7 @@ bool DirList::LoadPath(const std::string & folder, const char *filter, u32 flags
 	Filter = filter;
 
 	std::string folderpath(folder);
-	u32 length = folderpath.size();
+	uint32_t length = folderpath.size();
 
 	//! clear path of double slashes
 	RemoveDoubleSlashs(folderpath);
@@ -157,7 +157,7 @@ void DirList::AddEntrie(const std::string &filepath, const char * filename, bool
 
 void DirList::ClearList()
 {
-	for(u32 i = 0; i < FileInfo.size(); ++i)
+	for(uint32_t i = 0; i < FileInfo.size(); ++i)
 	{
 		if(FileInfo[i].FilePath)
 			free(FileInfo[i].FilePath);
@@ -214,7 +214,7 @@ int DirList::GetFileIndex(const char *filename) const
 	if(!filename)
 		return -1;
 
-	for (u32 i = 0; i < FileInfo.size(); ++i)
+	for (uint32_t i = 0; i < FileInfo.size(); ++i)
 	{
 		if (strcasecmp(GetFilename(i), filename) == 0)
 			return i;

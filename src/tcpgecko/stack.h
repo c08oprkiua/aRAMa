@@ -5,22 +5,22 @@
 //#include "cafe.h"
 #include <coreinit/context.h>
 
-bool isValidStackPointer(u32 stackPointer) {
+bool isValidStackPointer(uint32_t stackPointer) {
 	return stackPointer >= 0x10000000 && stackPointer < 0x20000000;
 }
 
 struct node *getStackTrace(OSContext *context) {
 	struct node *stackTrace = NULL;
-	u32 stackPointer = context->gpr[1];
-	u32 stackPointersCount = 0;
+	uint32_t stackPointer = context->gpr[1];
+	uint32_t stackPointersCount = 0;
 
 	while (isValidStackPointer(stackPointer)) {
-		stackPointer = *(u32 *) stackPointer;
+		stackPointer = *(uint32_t *) stackPointer;
 		if (!isValidStackPointer(stackPointer)) {
 			break;
 		}
 
-		int data = *(u32 * )(stackPointer + 4);
+		int data = *(uint32_t * )(stackPointer + 4);
 		stackTrace = insert(stackTrace, (void *) data);
 		stackPointersCount++;
 	}

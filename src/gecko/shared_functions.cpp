@@ -1,5 +1,5 @@
 #include "shared_functions.h"
-#include "../assertions.h"
+#include "../tcpgecko/assertions.h"
 
 #include <stdlib.h>
 

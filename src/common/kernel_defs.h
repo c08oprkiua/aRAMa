@@ -101,8 +101,8 @@ typedef struct
 
 typedef struct _bat_t
 {
-    u32 h;
-    u32 l;
+    uint32_t h;
+    uint32_t l;
 } bat_t;
 
 typedef struct _bat_table_t

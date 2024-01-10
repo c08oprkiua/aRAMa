@@ -98,7 +98,7 @@ static void Debugged_Out_1(unsigned int addr, unsigned int src, unsigned int len
 
 
 static void KernelReadDBATs(bat_table_t *table) {
-	u32 i = 0;
+	uint32_t i = 0;
 
 	asm volatile("eieio; isync");
 
@@ -129,7 +129,7 @@ static void KernelReadDBATs(bat_table_t *table) {
 }
 
 static void KernelWriteDBATs(bat_table_t *table) {
-	u32 i = 0;
+	uint32_t i = 0;
 
 	asm volatile("eieio; isync");
 
@@ -161,11 +161,14 @@ static void KernelWriteDBATs(bat_table_t *table) {
 	asm volatile("eieio; isync");
 }
 
-/* Read a 32-bit word with kernel permissions */
+/* Read a 32-bit word with kernel permissions 
+
+This is identical to kern_read in KernelModule
+*/
 uint32_t __attribute__ ((noinline)) kern_read(const void *addr) {
 	uint32_t result;
 	asm volatile (
-	"li 3,1\n"
+			"li 3,1\n"
 			"li 4,0\n"
 			"li 5,0\n"
 			"li 6,0\n"
@@ -237,17 +240,17 @@ void KernelSetupSyscalls(void) {
 	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x25 * 4)), (unsigned int) KernelCopyData);
 
 	//! write our hook to the
-	u32 addr_my_PrepareTitle_hook = ((u32) my_PrepareTitle_hook) | 0x48000003;
+	uint32_t addr_my_PrepareTitle_hook = ((u32) my_PrepareTitle_hook) | 0x48000003;
 	DCFlushRange(&addr_my_PrepareTitle_hook, sizeof(addr_my_PrepareTitle_hook));
 
-	//SC0x25_KernelCopyData((u32) &origPrepareTitleInstr, (u32) addr_PrepareTitle_hook, 4);
+	//SC0x25_KernelCopyData((uint32_t) &origPrepareTitleInstr, (uint32_t) addr_PrepareTitle_hook, 4);
 	KernelCopyData(&origPrepareTitleInstr, addr_PrepareTitle_hook,4);
-	//SC0x25_KernelCopyData((u32) addr_PrepareTitle_hook, (u32) OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
+	//SC0x25_KernelCopyData((uint32_t) addr_PrepareTitle_hook, (uint32_t) OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
 	KernelCopyData(addr_PrepareTitle_hook, OSEffectiveToPhysical(&addr_my_PrepareTitle_hook), 4);
 }
 
 
 void KernelRestoreInstructions(void) {
 	if (origPrepareTitleInstr != 0)
-		KernelCopyData((u32) addr_PrepareTitle_hook, (u32) &origPrepareTitleInstr, 4);
+		KernelCopyData((uint32_t) addr_PrepareTitle_hook, (uint32_t) &origPrepareTitleInstr, 4);
 }

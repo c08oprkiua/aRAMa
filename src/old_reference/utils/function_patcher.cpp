@@ -24,14 +24,14 @@
 #define CODE_RW_BASE_OFFSET                             0x00000000
 #define DEBUG_LOG_DYN                                   1
 
-void printFunctionHooks(FunctionHook *functionHooks, u32 functionHooksSize) {
+void printFunctionHooks(FunctionHook *functionHooks, uint32_t functionHooksSize) {
 	for (unsigned int functionHookIndex = 0; functionHookIndex < functionHooksSize; functionHookIndex++) {
 		log_printf("Real address (%s): %08x\n", functionHooks[functionHookIndex].functionName,
 				   functionHooks[functionHookIndex].realAddress);
 	}
 }
 
-bool setRealAddress(FunctionHook functionHooks[], int functionHooksSize, const char *functionName, u32 address) {
+bool setRealAddress(FunctionHook functionHooks[], int functionHooksSize, const char *functionName, uint32_t address) {
 	for (int functionHookIndex = 0; functionHookIndex < functionHooksSize; functionHookIndex++) {
 		if (strncmp(functionName, functionHooks[functionHookIndex].functionName, 50) == 0) {
 			functionHooks[functionHookIndex].realAddress = address;
@@ -58,10 +58,10 @@ void patchIndividualMethodHooks(FunctionHook *functionHook, int hook_information
 
 	int method_hooks_count = hook_information_size;
 
-	u32 skipInstructionLength = 1;
-	u32 myInstructionLength = 6;
-	u32 instructionLength = myInstructionLength + skipInstructionLength;
-	u32 flush_len = 4 * instructionLength;
+	uint32_t skipInstructionLength = 1;
+	uint32_t myInstructionLength = 6;
+	uint32_t instructionLength = myInstructionLength + skipInstructionLength;
+	uint32_t flush_len = 4 * instructionLength;
 	for (int functionIndex = 0; functionIndex < method_hooks_count; functionIndex++) {
 		log_printf("Patching %s...\n", functionHook[functionIndex].functionName);
 		if (functionHook[functionIndex].functionType == STATIC_FUNCTION &&
@@ -77,7 +77,7 @@ void patchIndividualMethodHooks(FunctionHook *functionHook, int hook_information
 			}
 		}
 
-		u32 physical = 0;
+		uint32_t physical = 0;
 		unsigned int replaceAddress = functionHook[functionIndex].replaceAddress;
 		unsigned int callAddress = functionHook[functionIndex].replaceCall;
 
@@ -183,7 +183,7 @@ void restoreIndividualInstructions(FunctionHook *functionHooks, int hook_informa
 			continue;
 		}
 
-		u32 physical = (u32) OSEffectiveToPhysical((void *) realAddress);
+		uint32_t physical = (u32) OSEffectiveToPhysical((void *) realAddress);
 		if (!physical) {
 			log_printf("Something is wrong with the physical address\n");
 			continue;
@@ -215,7 +215,7 @@ bool isDynamicFunction(unsigned int physicalAddress) {
 
 unsigned int getRPLHandle(int library, const char *functionName) {
 	unsigned int rplHandle = 0;
-	u32 gx2_handle = 0;
+	uint32_t gx2_handle = 0;
 
 	switch (library) {
 		case LIB_CORE_INIT:

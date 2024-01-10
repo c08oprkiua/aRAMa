@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string.h> //memcpy
 //#include "../kernel/syscalls.h"
 
 #include "assertions.h"
@@ -12,11 +13,11 @@
 
 #include <kernel/kernel.h>
 
-// TODO Variable size, not hard-coded
-unsigned char *kernelCopyBufferOld[DATA_BUFFER_SIZE];
-
-//replaced in libkernel?
-void kernelCopyData(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
+//This is a TCPGecko-specific wrapper over directly copying data with libkernel
+void GeckoKernelCopyData(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
+	// TODO Variable size, not hard-coded
+	unsigned char *kernelCopyBufferOld[DATA_BUFFER_SIZE];
+	
 	if (length > DATA_BUFFER_SIZE) {
 		OSFatal("Kernel copy buffer size exceeded");
 	}
@@ -32,7 +33,7 @@ void kernelCopyInt(unsigned char *destinationBuffer, unsigned char *sourceBuffer
 	memcpy(kernelCopyBuffer, sourceBuffer, length);
 	unsigned int destinationAddress = OSEffectiveToPhysical((uint32_t) destinationBuffer);
 	KernelCopyData(destinationAddress, (unsigned int) &kernelCopyBuffer, length);
-	DCFlushRange(destinationBuffer, (u32) length);
+	DCFlushRange(destinationBuffer, length);
 }
 
 void writeKernelMemory(const void *address, uint32_t value) {
@@ -56,13 +57,13 @@ int readKernelMemory(const void *address) {
 
 #define KERNEL_COPY_SOURCE_ADDRESS 0x10100000
 
-s32 kernelCopyService(s32 argc, void *argv) {
+signed int kernelCopyService(signed int argc, void *argv) {
 	while (true) {
 		// Read the destination address from the source address
 		int destinationAddress = *(int *) KERNEL_COPY_SOURCE_ADDRESS;
 
 		// Avoid crashing
-		if (OSIsAddressValid((const void *) destinationAddress)) {
+		if (OSIsAddressValid(destinationAddress)) {
 			// Perform memory copy
 			unsigned char *valueBuffer = (unsigned char *) (KERNEL_COPY_SOURCE_ADDRESS + 4);
 			kernelCopyInt((unsigned char *) destinationAddress, valueBuffer, 4);
@@ -97,9 +98,7 @@ void startKernelCopyService() {
 #define MINIMUM_KERNEL_COMPARE_LENGTH 4
 #define KERNEL_MEMORY_COMPARE_STEP_SIZE 1
 
-int kernelMemoryCompare(const char *sourceBuffer,
-						const char *destinationBuffer,
-						int length) {
+int kernelMemoryCompare(const char *sourceBuffer, const char *destinationBuffer, int length) {
 	if (length < MINIMUM_KERNEL_COMPARE_LENGTH) {
 		ASSERT_MINIMUM_HOLDS(length, MINIMUM_KERNEL_COMPARE_LENGTH, "length");
 	}
@@ -127,8 +126,7 @@ int kernelMemoryCompare(const char *sourceBuffer,
 void executeAssembly(unsigned char buffer[], unsigned int size) {
 	// Write the assembly to an executable code region
 	int destinationAddress = 0x10000000 - size;
-	//kernelCopyData((unsigned char *) destinationAddress, buffer, size);
-	KernelCopyData(destinationAddress, (uint32_t) buffer, size);
+	GeckoKernelCopyData((unsigned char *) destinationAddress, buffer, size);
 
 	// Execute the assembly from there
 	void (*function)() = (void (*)()) destinationAddress;
@@ -136,6 +134,5 @@ void executeAssembly(unsigned char buffer[], unsigned int size) {
 
 	// Clear the memory contents again
 	memset((void *) buffer, 0, size);
-	//kernelCopyData((unsigned char *) destinationAddress, buffer, size);
-	KernelCopyData(destinationAddress, (uint32_t) buffer, size);
+	GeckoKernelCopyData((unsigned char *) destinationAddress, buffer, size);
 }

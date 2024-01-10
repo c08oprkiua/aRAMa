@@ -30,31 +30,31 @@ typedef struct OSContext {
 	uint32_t exception_specific0;
 	uint32_t exception_specific1;
 
-	u32 exception_type;
-	u32 reserved;
+	uint32_t exception_type;
+	uint32_t reserved;
 
 	double fpscr;
 	double fpr[32];
 
-	u16 spinLockCount;
-	u16 state;
+	uint16_t spinLockCount;
+	uint16_t state;
 
-	u32 gqr[8];
-	u32 pir;
+	uint32_t gqr[8];
+	uint32_t pir;
 	double psf[32];
 
 	u64 coretime[3];
 	u64 starttime;
 
-	u32 error;
-	u32 attributes;
+	uint32_t error;
+	uint32_t attributes;
 
-	u32 pmc1;
-	u32 pmc2;
-	u32 pmc3;
-	u32 pmc4;
-	u32 mmcr0;
-	u32 mmcr1;
+	uint32_t pmc1;
+	uint32_t pmc2;
+	uint32_t pmc3;
+	uint32_t pmc4;
+	uint32_t mmcr0;
+	uint32_t mmcr1;
 } OSContext;
 
 #define CPU_STACK_TRACE_DEPTH        10

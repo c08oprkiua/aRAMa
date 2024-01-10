@@ -1,8 +1,10 @@
-#include "shared_vars.h"
+#include "command_io.h"
 
 class CommandHandler: public CommandIO
 {
 public:
+
+    static void reportIllegalCommandByte(int byte);
 
     void command_write_8();
     void command_write_16();

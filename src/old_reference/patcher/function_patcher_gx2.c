@@ -48,7 +48,7 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorB
 
 			while (remainingImageSize > 0) {
 				bufferedImageData = malloc(bufferSize);
-				u32 imageSizeRead = totalImageSize - remainingImageSize;
+				uint32_t imageSizeRead = totalImageSize - remainingImageSize;
 				memcpy(bufferedImageData, imageData + imageSizeRead, bufferSize);
 				bufferedImageSize = bufferSize;
 
@@ -67,7 +67,7 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorB
 
 		gdImagePtr gdImagePtr = 0;
 		bool no_convert;
-		u8 *image_data = NULL;
+		uint8_t *image_data = NULL;
 		int img_size = 0;
 		if (format == 0x1A) {
 			UnormR8G8B8A82Yuv420p(&image_data, surface.image_data, &img_size, surface.width, surface.height,
@@ -79,7 +79,7 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorB
 			no_convert = true;
 		}
 
-		u32 imd_size = 0;
+		uint32_t imd_size = 0;
 		void *data = gdImageJpegPtr(gdImagePtr, &imd_size, 95);
 		if (data) {
 			JpegData jpeg;
@@ -103,7 +103,7 @@ WUPS_MUST_REPLACE(GX2CopyColorBufferToScanBuffer, WUPS_LOADER_LIBRARY_GX2, GX2Co
 		// makeFunctionHook(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION)
 };
 
-u32 method_hooks_size_gx2 __attribute__((section(".data"))) = sizeof(method_hooks_gx2) / sizeof(FunctionHook);
+uint32_t method_hooks_size_gx2 __attribute__((section(".data"))) = sizeof(method_hooks_gx2) / sizeof(FunctionHook);
 
 volatile unsigned int method_calls_gx2[sizeof(method_hooks_gx2) / sizeof(FunctionHook) *
 									   FUNCTION_PATCHER_METHOD_STORE_SIZE] __attribute__((section(".data")));

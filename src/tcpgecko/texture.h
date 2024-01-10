@@ -9,22 +9,22 @@
 
 typedef struct
 {
-	u32 img_size;
-	u32 img_id;
+	uint32_t img_size;
+	uint32_t img_id;
 	void * img_data;
 } JpegData;
 
 typedef struct _R8G8B8A8_COLOR {
-	u8 R, G, B, A;
+	uint8_t R, G, B, A;
 } R8G8B8A8_COLOR;
 
-void UnormR8G8B8A8TogdImage(gdImagePtr *gdImgTmp, void *image_data, u32 width, u32 rows, u32 pitch) {
+void UnormR8G8B8A8TogdImage(gdImagePtr *gdImgTmp, void *image_data, uint32_t width, uint32_t rows, uint32_t pitch) {
 	*gdImgTmp = gdImageCreateTrueColor(width / 2, rows / 2);
 
 	R8G8B8A8_COLOR *buffer = (R8G8B8A8_COLOR *) image_data;
 	R8G8B8A8_COLOR val;
-	for (u32 row = 0; row < rows; ++row) {
-		for (u32 x = 0; x < width; ++x) {
+	for (uint32_t row = 0; row < rows; ++row) {
+		for (uint32_t x = 0; x < width; ++x) {
 			val = buffer[row * pitch + x];
 			gdImageSetPixel(*gdImgTmp, x / 2, row / 2, gdTrueColor(val.R, val.G, val.B));
 			++x;
@@ -33,16 +33,16 @@ void UnormR8G8B8A8TogdImage(gdImagePtr *gdImgTmp, void *image_data, u32 width, u
 	}
 }
 
-void UnormR8G8B8A82Yuv420p(u8 **destination_, void *image_data, int *dest_img_size, u32 width, u32 height, u32 pitch) {
-	u32 image_size = width * height;
-	u32 upos = image_size;
-	u32 vpos = upos + upos / 4;
+void UnormR8G8B8A82Yuv420p(uint8_t **destination_, void *image_data, int *dest_img_size, uint32_t width, uint32_t height, uint32_t pitch) {
+	uint32_t image_size = width * height;
+	uint32_t upos = image_size;
+	uint32_t vpos = upos + upos / 4;
 	*dest_img_size = (vpos + upos / 4);
 	if (*destination_) {
 		free(destination_);
 	}
-	*destination_ = (u8 *) malloc(sizeof(u8) * *dest_img_size);
-	u8 *destination = *destination_;
+	*destination_ = (uint8_t *) malloc(sizeof(u8) * *dest_img_size);
+	uint8_t *destination = *destination_;
 	if (!destination) {
 		*dest_img_size = 0;
 		return;
@@ -51,14 +51,14 @@ void UnormR8G8B8A82Yuv420p(u8 **destination_, void *image_data, int *dest_img_si
 
 	R8G8B8A8_COLOR *buffer = (R8G8B8A8_COLOR *) image_data;
 
-	u32 i = 0;
+	uint32_t i = 0;
 
-	for (u32 line = 0; line < height; ++line) {
+	for (uint32_t line = 0; line < height; ++line) {
 		if (!(line % 2)) {
-			for (u32 x = 0; x < width; x += 2) {
-				u8 r = buffer[line * pitch + x].R;
-				u8 g = buffer[line * pitch + x].G;
-				u8 b = buffer[line * pitch + x].B;
+			for (uint32_t x = 0; x < width; x += 2) {
+				uint8_t r = buffer[line * pitch + x].R;
+				uint8_t g = buffer[line * pitch + x].G;
+				uint8_t b = buffer[line * pitch + x].B;
 
 				destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
 
@@ -72,10 +72,10 @@ void UnormR8G8B8A82Yuv420p(u8 **destination_, void *image_data, int *dest_img_si
 				destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
 			}
 		} else {
-			for (u32 x = 0; x < width; x += 1) {
-				u8 r = buffer[line * pitch + x].R;
-				u8 g = buffer[line * pitch + x].G;
-				u8 b = buffer[line * pitch + x].B;
+			for (uint32_t x = 0; x < width; x += 1) {
+				uint8_t r = buffer[line * pitch + x].R;
+				uint8_t g = buffer[line * pitch + x].G;
+				uint8_t b = buffer[line * pitch + x].B;
 
 				destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
 			}
@@ -85,11 +85,11 @@ void UnormR8G8B8A82Yuv420p(u8 **destination_, void *image_data, int *dest_img_si
 	log_printf("done %d \n", *dest_img_size);
 }
 
-void UnormR10G10B10A2TogdImage(gdImagePtr *gdImgTmp, void *image_data, u32 width, u32 rows, u32 pitch) {
-	u32 *buffer = (u32 *) image_data;
-	u32 val = 0;
-	for (u32 row = 0; row < rows; ++row) {
-		for (u32 x = 0; x < width; ++x) {
+void UnormR10G10B10A2TogdImage(gdImagePtr *gdImgTmp, void *image_data, uint32_t width, uint32_t rows, uint32_t pitch) {
+	uint32_t *buffer = (uint32_t *) image_data;
+	uint32_t val = 0;
+	for (uint32_t row = 0; row < rows; ++row) {
+		for (uint32_t x = 0; x < width; ++x) {
 			/*
 				R ((test >> 24) & 0xFF))
 				G ((test >> 14) & 0xFF))

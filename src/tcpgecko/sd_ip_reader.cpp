@@ -19,7 +19,7 @@ void initializeUDPLog() {
 
 		std::string strBuffer;
 		strBuffer.resize(file.size());
-		file.read((u8 *) &strBuffer[0], strBuffer.size());
+		file.read((uint8_t *) &strBuffer[0], strBuffer.size());
 
 		if (strBuffer.length() >= sizeof(ipFromSd)) {
 			log_printf("Loading ip from sd failed. String was too long: %s\n", strBuffer.c_str());

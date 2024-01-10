@@ -1690,7 +1690,7 @@ static inline void memoryAddArea(int start, int end, int cur_index)
 /* Create memory areas arrays */
 void memoryInitAreaTable()
 {
-    u32 ApplicationMemoryEnd;
+    uint32_t ApplicationMemoryEnd;
 
     asm volatile("lis %0, __CODE_END@h; ori %0, %0, __CODE_END@l" : "=r" (ApplicationMemoryEnd));
 

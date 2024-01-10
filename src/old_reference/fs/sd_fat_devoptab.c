@@ -946,7 +946,7 @@ No memory is free'd here. Maybe a problem?!?!?
 
 void deleteDevTabsNames(){
 	const devoptab_t * devoptab = NULL;
-	u32 last_entry = (u32) devoptab_list[STD_MAX-1];
+	uint32_t last_entry = (u32) devoptab_list[STD_MAX-1];
 	for (int i = 3; i < STD_MAX; i++) {
 		devoptab = devoptab_list[i];
 

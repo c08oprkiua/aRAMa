@@ -30,16 +30,15 @@ u64 cachedTitleID;
 
 unsigned char *kernelCopyBufferOld2[DATA_BUFFER_SIZE];
 
+//Literally identical to GeckoKernelCopyData but it uses the buffer in this file, lol
 void kernelCopyData2(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
 	if (length > DATA_BUFFER_SIZE) {
 		OSFatal("Kernel copy buffer size exceeded");
 	}
 
 	memcpy(kernelCopyBufferOld2, sourceBuffer, length);
-	//SC0x25_KernelCopyData(
-	KernelCopyData((unsigned int) OSEffectiveToPhysical(destinationBuffer),
-						  (unsigned int) &kernelCopyBufferOld2,
-						  length);
+	//SC0x25_KernelCopyData
+	KernelCopyData(OSEffectiveToPhysical(destinationBuffer), (unsigned int) &kernelCopyBufferOld2, length);
 	DCFlushRange(destinationBuffer, (u32) length);
 }
 
@@ -101,7 +100,7 @@ void considerApplyingSDCheats() {
 		log_printf("File Path: %s\n", filePath);
 
 		unsigned char *codes = NULL;
-		u32 codesSize = 0;
+		uint32_t codesSize = 0;
 		result = LoadFileToMem((const char *) filePath, &codes, &codesSize);
 
 		if (result < 0) {

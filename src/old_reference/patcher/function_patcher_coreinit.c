@@ -64,7 +64,7 @@ WUPS_MUST_REPLACE(FSGetStatAsync,WUPS_LOADER_LIBRARY_COREINIT,FSGetStatAsync);
 		makeFunctionHook(FSGetStatAsync, LIB_CORE_INIT, STATIC_FUNCTION),
 };
 
-u32 method_hooks_size_coreinit __attribute__((section(".data"))) = sizeof(method_hooks_coreinit) / sizeof(FunctionHook);
+uint32_t method_hooks_size_coreinit __attribute__((section(".data"))) = sizeof(method_hooks_coreinit) / sizeof(FunctionHook);
 
 volatile unsigned int method_calls_coreinit[sizeof(method_hooks_coreinit) / sizeof(FunctionHook) * FUNCTION_PATCHER_METHOD_STORE_SIZE] __attribute__((section(".data")));
 */

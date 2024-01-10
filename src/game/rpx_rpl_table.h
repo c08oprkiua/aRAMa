@@ -25,9 +25,9 @@ s_rpx_rpl* rpxRplTableAddEntry(const char *name, int offset, int size, int is_rp
 s_rpx_rpl* rpxRplTableGet(void);
 int rpxRplTableGetCount(void);
 
-s_mem_area *rpxRplTableGetNextFreeMemArea(u32 * mem_area_addr_start, u32 * mem_area_addr_end, u32 * mem_area_offset);
-int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, const u8 *data, u32 dataSize);
-int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, u32 fileOffset, u8 *data, u32 dataSize);
+s_mem_area *rpxRplTableGetNextFreeMemArea(uint32_t * mem_area_addr_start, uint32_t * mem_area_addr_end, uint32_t * mem_area_offset);
+int rpxRplCopyDataToMem(s_rpx_rpl *rpx_rpl_struct, uint32_t fileOffset, const uint8_t *data, uint32_t dataSize);
+int rpxRplCopyDataFromMem(s_rpx_rpl *rpx_rpl_struct, uint32_t fileOffset, uint8_t *data, uint32_t dataSize);
 
 #ifdef __cplusplus
 }

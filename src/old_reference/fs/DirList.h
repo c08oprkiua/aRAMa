@@ -45,11 +45,11 @@ public:
 	//!\param path Path from where to load the filelist of all files
 	//!\param filter A fileext that needs to be filtered
 	//!\param flags search/filter flags from the enum
-	DirList(const std::string & path, const char *filter = NULL, u32 flags = Files | Dirs);
+	DirList(const std::string & path, const char *filter = NULL, uint32_t flags = Files | Dirs);
 	//!Destructor
 	virtual ~DirList();
 	//! Load all the files from a directory
-	bool LoadPath(const std::string & path, const char *filter = NULL, u32 flags = Files | Dirs);
+	bool LoadPath(const std::string & path, const char *filter = NULL, uint32_t flags = Files | Dirs);
 	//! Get a filename of the list
 	//!\param list index
 	const char * GetFilename(int index) const;
@@ -85,9 +85,9 @@ protected:
 	//! Clear the list
 	void ClearList();
 	//! Check if valid pos is requested
-	inline bool valid(u32 pos) const { return (pos < FileInfo.size()); };
+	inline bool valid(uint32_t pos) const { return (pos < FileInfo.size()); };
 
-	u32 Flags;
+	uint32_t Flags;
 	const char *Filter;
 	std::vector<DirEntry> FileInfo;
 };

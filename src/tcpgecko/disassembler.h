@@ -3,7 +3,7 @@
 
 #include <coreinit/debug.h>
 
-DisassemblyPrintFn formatDisassembled(const char *format, ...);
 //void formatDisassembled(char *format, ...);
+DisassemblyPrintFn formatDisassembled(const char *format, ...);
 
 #endif

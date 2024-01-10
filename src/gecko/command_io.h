@@ -18,20 +18,22 @@ FSClient *client;
 FSCmdBlock *commandBlock;
 bool kernelCopyServiceStarted;
 
-struct pygecko_bss_t {
+/*struct pygecko_bss_t {
 	int error, line;
 	//void *thread;
 	OSThread *thread;
 	unsigned char stack[0x6F00];
-};
+};*/
 
 class CommandIO {
 public:
 
-	int ret;
-	pygecko_bss_t *bss;
-	int clientfd;
-    int sock;
+    bool offline = true; //Offline be default so SD codes will work without init TCP
+	//pygecko_bss_t *bss;
+
+    OSThread *thread;
+	uint32_t ret, error, line, clientfd, sock;
+    unsigned char stack[0x6F00];
 
 	unsigned char buffer[0x5001];
 

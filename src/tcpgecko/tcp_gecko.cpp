@@ -18,9 +18,9 @@
 #include "hardware_breakpoints.h"
 #include "linked_list.h"
 #include "address.h"
-#include "stack.h"
+//#include "stack.h"
 #include "pause.h"
-#include "sd_ip_reader.h"
+//#include "sd_ip_reader.h"
 //#include "../patcher/function_patcher_gx2.h"
 //#include "sd_cheats.h"
 //#include "threads.h"
@@ -36,8 +36,7 @@
 
 //Regorganization based includes
 #include "tcp_gecko_commands.h"
-#include "command_handling/shared_functions.h"
-#include "command_handling/command_handler.h"
+#include "../gecko/gecko_processor.h"
 
 #include "assertions.h"
 #include "raw_assembly_cheats.h"
@@ -110,273 +109,6 @@ void considerInitializingFileSystem() {
 	}
 }
 
-#define ERROR_BUFFER_SIZE 150
-
-static int processCommands(struct pygecko_bss_t *bss, int clientfd) {
-
-	CommandHandler handler;
-	handler.clientfd = clientfd;
-	handler.bss = bss;
-
-	// Run the RPC server
-	while (true) {
-		handler.checkbyte();
-		if (handler.ret < 0) {
-			CHECK_ERROR(errno2 != E_WOULD_BLOCK);
-			GX2WaitForVsync();
-			continue;
-		}
-		switch (handler.ret) {
-			case COMMAND_WRITE_8: {
-				handler.command_write_8();
-				break;
-			}
-			case COMMAND_WRITE_16: {
-				handler.command_write_16();
-				break;
-			}
-			case COMMAND_WRITE_32: {
-				handler.command_write_32();
-				break;
-			}
-			case COMMAND_READ_MEMORY: {
-				handler.command_read_memory();
-				break;
-			}
-			case COMMAND_READ_MEMORY_KERNEL: {
-				handler.command_read_memory_kernel();
-				break;
-			}
-			case COMMAND_VALIDATE_ADDRESS_RANGE: {
-				handler.command_validate_address_range();
-				break;
-			}
-			/*case COMMAND_DISASSEMBLE_RANGE: {
-				handler.command_disassemble_range();
-				break;
-			}*/
-			case COMMAND_MEMORY_DISASSEMBLE: {
-				handler.command_memory_disassemble();
-				break;
-			}
-				case COMMAND_READ_MEMORY_COMPRESSED: {
-				handler.command_read_memory_compressed();
-				break;
-			}
-			case COMMAND_KERNEL_WRITE: {
-				handler.command_kernel_write();
-				break;
-			}
-			case COMMAND_KERNEL_READ: {
-				handler.command_kernel_read();
-				break;
-			}
-			case COMMAND_TAKE_SCREEN_SHOT: {
-				handler.command_take_screenshot();
-				break;
-			}
-			case COMMAND_UPLOAD_MEMORY: {
-				handler.command_upload_memory();
-				break;
-			}
-			case COMMAND_GET_DATA_BUFFER_SIZE: {
-				handler.command_get_data_buffer_size();
-				break;
-			}
-			case COMMAND_READ_FILE: {
-				handler.command_read_file();
-				break;
-			}
-			case COMMAND_READ_DIRECTORY: {
-				handler.command_read_directory();
-				break;
-			}
-			case COMMAND_REPLACE_FILE: {
-				handler.command_replace_file();
-				break;
-			}
-			case COMMAND_IOSU_HAX_READ_FILE: {
-				handler.command_iosu_hax_read_file();
-				break;
-			}
-			case COMMAND_GET_VERSION_HASH: {
-				handler.command_get_version_hash();
-				break;
-			}
-			case COMMAND_GET_CODE_HANDLER_ADDRESS: {
-				handler.command_get_code_handler_address();
-				break;
-			}
-			case COMMAND_READ_THREADS: {
-				handler.command_read_threads();
-				break;
-			}
-			case COMMAND_ACCOUNT_IDENTIFIER: {
-				handler.command_account_identifier();
-				break;
-			}
-			/*case COMMAND_WRITE_SCREEN: {
-				handler.command_write_screen();
-			}*/
-			case COMMAND_FOLLOW_POINTER: {
-				handler.command_follow_pointer();
-				break;
-			}
-			case COMMAND_SERVER_STATUS: {
-				handler.command_server_status();
-				break;
-			}
-			case COMMAND_REMOTE_PROCEDURE_CALL: {
-				handler.command_remote_procedure_call();
-				break;
-			}
-			case COMMAND_GET_SYMBOL: {
-				handler.command_get_symbol();
-				break;
-			}
-			case COMMAND_MEMORY_SEARCH_32: {
-				handler.command_memory_search_32();
-				break;
-			}
-			case COMMAND_ADVANCED_MEMORY_SEARCH: {
-				handler.command_advanced_memory_search();
-				break;
-			}
-			case COMMAND_EXECUTE_ASSEMBLY: {
-				handler.command_execute_assembly();
-				break;
-			}
-			case COMMAND_PAUSE_CONSOLE: {
-				handler.command_pause_console();
-				break;
-			}
-			case COMMAND_RESUME_CONSOLE: {
-				handler.command_resume_console();
-				break;
-			}
-			case COMMAND_IS_CONSOLE_PAUSED: {
-				handler.command_is_console_paused();
-				break;
-			}
-			case COMMAND_SERVER_VERSION: {
-				handler.command_server_version();
-				break;
-			}
-			case COMMAND_GET_OS_VERSION: {
-				handler.command_get_os_version();
-				break;
-			}
-			case COMMAND_SET_DATA_BREAKPOINT: {
-				handler.command_set_data_breakpoint();
-				break;
-			}
-			case COMMAND_SET_INSTRUCTION_BREAKPOINT: {
-				handler.command_set_instruction_breakpoint();
-				break;
-			}
-			case COMMAND_TOGGLE_BREAKPOINT: {
-				handler.command_toggle_breakpoint();
-				break;
-			}
-			case COMMAND_REMOVE_ALL_BREAKPOINTS: {
-				handler.command_remove_all_breakpoints();
-				break;
-			}
-			case COMMAND_GET_STACK_TRACE: {
-				handler.command_get_stack_trace();
-				break;
-			}
-			case COMMAND_POKE_REGISTERS: {
-				handler.command_poke_registers();
-				break;
-			}
-			case COMMAND_GET_ENTRY_POINT_ADDRESS: {
-				handler.commmand_get_entry_point_address();
-				break;
-			}
-			case COMMAND_RUN_KERNEL_COPY_SERVICE: {
-				handler.command_run_kernel_copy_service();
-				break;
-			}
-			case COMMAND_PERSIST_ASSEMBLY: {
-				handler.command_persist_assembly();
-				break;
-			}
-			case COMMAND_CLEAR_ASSEMBLY: {
-				handler.command_clear_assembly();
-				break;
-			}
-			default: {
-				reportIllegalCommandByte(ret);
-				break;
-			}
-		}
-	}
-
-	error:
-	bss->error = ret;
-	return 0;
-}
-
-int sockfd = -1, clientfd = -1, ret = 0, len;
-struct sockaddr_in socketAddress;
-struct pygecko_bss_t *bss;
-
-static int runTCPGeckoServer(int argc, void *argv) {
-	bss = (struct pygecko_bss_t *) argv;
-
-	setup_os_exceptions();
-	//socket_lib_init();
-	initializeUDPLog();
-
-	while (true) {
-		socketAddress.sin_family = AF_INET;
-		socketAddress.sin_port = 7331;
-		socketAddress.sin_addr.s_addr = 0;
-
-		log_printf("socket()...\n");
-		sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		CHECK_ERROR(sockfd == -1)
-
-		log_printf("bind()...\n");
-		ret = bind(sockfd, (struct sockaddr *) &socketAddress, (s32) 16);
-		CHECK_ERROR(ret < 0)
-
-		log_printf("listen()...\n");
-		ret = listen(sockfd, (s32) 20);
-		CHECK_ERROR(ret < 0)
-
-		while (true) {
-			len = 16;
-			log_printf("before accept()...\n");
-			clientfd = accept(sockfd, (struct sockaddr *) &socketAddress, (s32 * ) &len);
-			log_printf("after accept()...\n");
-			CHECK_ERROR(clientfd == -1)
-			log_printf("commands()...\n");
-			ret = processCommands(bss, clientfd);
-			CHECK_ERROR(ret < 0)
-			socketclose(clientfd);
-			clientfd = -1;
-
-			log_printf("GX2WaitForVsync() inner...\n");
-			GX2WaitForVsync();
-		}
-
-		error:
-		log_printf("error, closing connection...\n");
-		if (clientfd != -1)
-			socketclose(clientfd);
-		if (sockfd != -1)
-			socketclose(sockfd);
-		bss->error = ret;
-
-		// Fix the console freezing when e.g. going to the friend list
-		log_printf("GX2WaitForVsync() outer...\n");
-		GX2WaitForVsync();
-	}
-	return 0;
-}
-
 static s32 startTCPGeckoThread(s32 argc, void *argv) {
 	log_print("Starting TCP Gecko thread...\n");
 
@@ -440,11 +172,14 @@ void startTCPGecko() {
 	OSThread *thread;
 	ASSERT_ALLOCATED(thread, "TCP Gecko thread")
 
-	int status = (int) OSCreateThread(thread, startTCPGeckoThread, (s32) 1,
-								NULL, (s32)(stack + sizeof(stack)),
-								sizeof(stack), 0,
-								(OS_THREAD_ATTRIB_AFFINITY_CPU1 | (OSThreadAttributes) OS_THREAD_ATTR_PINNED_AFFINITY |
-								 OS_THREAD_ATTRIB_DETACHED));
+	int status = (int) OSCreateThread(
+		thread, 
+		startTCPGeckoThread, 
+		(s32) 1,
+		NULL, 
+		(s32)(stack + sizeof(stack)),
+		sizeof(stack), 0,
+		(OS_THREAD_ATTRIB_AFFINITY_CPU1 /*| (OSThreadAttributes) OS_THREAD_ATTR_PINNED_AFFINITY*/ |OS_THREAD_ATTRIB_DETACHED));
 	ASSERT_INTEGER(status, 1, "Creating TCP Gecko thread")
 	// OSSetThreadName(thread, "TCP Gecko");
 	OSResumeThread(thread);

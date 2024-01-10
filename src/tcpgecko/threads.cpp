@@ -6,21 +6,28 @@
 
 #include "../utils/logger.h"
 
+
+
 struct node *getAllThreads() {
 	struct node *threads = NULL;
-	int currentThreadAddress = OSGetCurrentThread();
+	//int currentThreadAddress = OSGetCurrentThread();
+	OSThread *currentThreadAddress = OSGetCurrentThread();
 	log_printf("Thread address: %08x\n", currentThreadAddress);
-	int iterationThreadAddress = currentThreadAddress;
-	int temporaryThreadAddress;
+	//int iterationThreadAddress = currentThreadAddress;
+	OSThread *iterationThreadAddress = currentThreadAddress;
+	//int temporaryThreadAddress;
+	OSThread *temporaryThreadAddress;
 
 	// Follow "previous thread" pointers back to the beginning
-	while ((temporaryThreadAddress = *(int *) (iterationThreadAddress + PREVIOUS_THREAD)) != 0) {
+	//while ((temporartThreadAddress = (int *) (iterationThreadAddress + PREVIOUS_THREAD)) != 0)
+	while ((temporaryThreadAddress = iterationThreadAddress->link.prev) != 0) {
 		log_printf("Temporary thread address going backwards: %08x\n", temporaryThreadAddress);
 		iterationThreadAddress = temporaryThreadAddress;
 	}
 
 	// Now iterate over all threads
-	while ((temporaryThreadAddress = *(int *) (iterationThreadAddress + NEXT_THREAD)) != 0) {
+	//while ((temporaryThreadAddress = *(int *) (iterationThreadAddress + NEXT_THREAD)) != 0))
+	while ((temporaryThreadAddress = iterationThreadAddress->link.next) != 0) {
 		// Grab the thread's address
 		log_printf("Temporary thread address going forward: %08x\n", temporaryThreadAddress);
 		threads = insert(threads, (void *) iterationThreadAddress);
@@ -36,3 +43,4 @@ struct node *getAllThreads() {
 
 	return threads;
 }
+

@@ -184,7 +184,7 @@ int Menu_Main(void) {
 			OSScreenFlipBuffersEx(1);
 		}
 
-		u32 pressedButtons = vpad_data.trigger | vpad_data.hold;
+		uint32_t pressedButtons = vpad_data.trigger | vpad_data.hold;
 
 		// Home Button
 		if (pressedButtons & VPAD_BUTTON_HOME) {
@@ -227,57 +227,4 @@ int Menu_Main(void) {
 
 	// For each title load, relaunch the TCP Gecko
 	return EXIT_RELAUNCH_ON_LOAD;
-}
-
-//aRAMa code, moved to arama.cpp
-
-#include <wups.h>
-#include <wups/storage.h>
-#include <notifications/notifications.h>
-
-//Metadata
-WUPS_PLUGIN_NAME("aRAMa");
-WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma");
-WUPS_PLUGIN_VERSION("v0");
-WUPS_PLUGIN_AUTHOR("Rewrite & Aroma port: c08o.prkiua \n Original legacy version: wj444 + contributors");
-WUPS_PLUGIN_LICENSE("GPLv3");
-
-WUPS_USE_STORAGE("aRAMa");
-
-INITIALIZE_PLUGIN(){
-	
-	/*WUPSStorageError storag_err = WUPS_OpenStorage();
-
-	if (storag_err == WUPS_STORAGE_ERROR_SUCCESS){
-		wups_storage_item_t sd_codes;
-		sd_codes.key = ""
-	}*/
-		
-	//look for the "use SD codes" setting
-
-	//if that is true, check titleid
-
-	//if the titleID has codes stored for it (also in storage), load them
-	startTCPGecko();
-}
-
-DEINITIALIZE_PLUGIN(){
-
-}
-
-//Based on entry.c
-ON_APPLICATION_START(){
-	if (isRunningAllowedTitleID()){
-		log_print("OSGetTitleID checks passed...\n");
-
-	}
-	//Todo: Figure out what all TCPGecko does on an application launch:
-
-	//TCPGecko apparently would relaunch itself every time you open a title (maybe change that)
-
-	//Apply game specific stored codes if that is enabled
-}
-
-ON_APPLICATION_REQUESTS_EXIT(){
-	//Prolly some code that unpatches the game specific function patches TCPGecko employs
 }

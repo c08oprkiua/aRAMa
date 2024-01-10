@@ -4,4 +4,7 @@
 //Create all the settings in WUPS storage
 void InitaRAMaSettings();
 
-WUPSStorageError GetCodesByTitle();
+//Get codes based on the TitleID
+void GetCodesByTitle();
+
+void StoreSentCode();

@@ -8,21 +8,21 @@
 	OSThread *head;
 	OSThread *tail;
 	void *parentStruct;
-	u32 reserved;
+	uint32_t reserved;
 } OSThreadQueue; */
 
 /* Notable difference: data0-3 instead of args[3]
 typedef struct OSMessage {
-	u32 message;
-	u32 data0;
-	u32 data1;
-	u32 data2;
+	uint32_t message;
+	uint32_t data0;
+	uint32_t data1;
+	uint32_t data2;
 } OSMessage; */
 
 /* typedef struct OSMessageQueue {
-	u32 tag;
+	uint32_t tag;
 	char *name;
-	u32 reserved;
+	uint32_t reserved;
 
 	OSThreadQueue sendQueue;
 	OSThreadQueue recvQueue;
@@ -35,44 +35,44 @@ typedef struct OSMessage {
 /* typedef struct OSContext {
 	char tag[8];
 
-	u32 gpr[32];
+	uint32_t gpr[32];
 
-	u32 cr;
-	u32 lr;
-	u32 ctr;
-	u32 xer;
+	uint32_t cr;
+	uint32_t lr;
+	uint32_t ctr;
+	uint32_t xer;
 
-	u32 srr0;
-	u32 srr1;
+	uint32_t srr0;
+	uint32_t srr1;
 
-	u32 ex0;
-	u32 ex1;
+	uint32_t ex0;
+	uint32_t ex1;
 
-	u32 exception_type;
-	u32 reserved;
+	uint32_t exception_type;
+	uint32_t reserved;
 
 	double fpscr;
 	double fpr[32];
 
-	u16 spinLockCount;
-	u16 state;
+	uint16_t spinLockCount;
+	uint16_t state;
 
-	u32 gqr[8];
-	u32 pir;
+	uint32_t gqr[8];
+	uint32_t pir;
 	double psf[32];
 
 	u64 coretime[3];
 	u64 starttime;
 
-	u32 error;
-	u32 attributes;
+	uint32_t error;
+	uint32_t attributes;
 
-	u32 pmc1;
-	u32 pmc2;
-	u32 pmc3;
-	u32 pmc4;
-	u32 mmcr0;
-	u32 mmcr1;
+	uint32_t pmc1;
+	uint32_t pmc2;
+	uint32_t pmc3;
+	uint32_t pmc4;
+	uint32_t mmcr0;
+	uint32_t mmcr1;
 } OSContext;
 
 typedef int (*ThreadFunc)(int argc, void *argv);
@@ -80,9 +80,9 @@ typedef int (*ThreadFunc)(int argc, void *argv);
 typedef struct OSThread {
 	OSContext context;
 
-	u32 txtTag; //uint32_t tag
-	u8 state; //OSThreadState state
-	u8 attr; //OSThreadAttributes attr
+	uint32_t txtTag; //uint32_t tag
+	uint8_t state; //OSThreadState state
+	uint8_t attr; //OSThreadAttributes attr
 
 	short threadId; 
 	int suspend; //
