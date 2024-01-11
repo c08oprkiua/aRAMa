@@ -9,7 +9,7 @@
 #include <coreinit/filesystem.h>
 #include <wups.h>
 #include <wups/storage.h>
-#include <notifications/notifications.h>
+//#include <notifications/notifications.h>
 
 //Metadata
 WUPS_PLUGIN_NAME("aRAMa");

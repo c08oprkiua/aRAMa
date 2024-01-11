@@ -2,7 +2,6 @@
 #define TCPGECKO_STACK_H
 
 #include "linked_list.h"
-//#include "cafe.h"
 #include <coreinit/context.h>
 
 bool isValidStackPointer(uint32_t stackPointer) {

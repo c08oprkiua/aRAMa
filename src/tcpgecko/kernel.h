@@ -2,6 +2,7 @@
 
 #include <string.h> //memcpy
 //#include "../kernel/syscalls.h"
+#include <kernel/kernel.h>
 
 #include "assertions.h"
 #include "tcp_gecko.h"
@@ -10,8 +11,6 @@
 //WUT includes
 #include <coreinit/memorymap.h>
 #include <coreinit/cache.h>
-
-#include <kernel/kernel.h>
 
 //This is a TCPGecko-specific wrapper over directly copying data with libkernel
 void GeckoKernelCopyData(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
@@ -83,12 +82,12 @@ void startKernelCopyService() {
 
 	if (stack != 0) {
 		stack += 0x100;
-		void *thread = memalign(0x40, 0x1000);
+		OSThread *thread /*= memalign(0x40, 0x1000)*/;
 		ASSERT_ALLOCATED(thread, "Kernel copy thread")
 
-		int status = OSCreateThread(thread, kernelCopyService, 1, NULL, (u32) stack + sizeof(stack), sizeof(stack), 31,
-									OS_THREAD_ATTR_AFFINITY_CORE1 | OS_THREAD_ATTR_PINNED_AFFINITY |
-									OS_THREAD_ATTR_DETACH);
+		int status = (int) OSCreateThread(thread, kernelCopyService, 1, NULL, (void *) stack + sizeof(stack), sizeof(stack), 31,
+									OS_THREAD_ATTRIB_AFFINITY_CPU1 | OS_THREAD_ATTR_PINNED_AFFINITY |
+									OS_THREAD_ATTRIB_DETACHED);
 		ASSERT_INTEGER(status, 1, "Creating kernel copy thread")
 		// OSSetThreadName(thread, "Kernel Copier");
 		OSResumeThread(thread);

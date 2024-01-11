@@ -1,10 +1,16 @@
 #include "gecko/gecko_processor.h"
 #include "arama.h"
 
+#include "tcpgecko/raw_assembly_codes.h"
+#include "tcpgecko/sd_codes.h"
+
 #include <nsysnet/socket.h>
 #include <gx2/event.h>
 
-static int runGeckoServer(GeckoProcessor *processor){
+
+
+int runGeckoServer(uint32_t argc, char *argv){
+	GeckoProcessor *processor;
 
     int sockfd = -1, len;
     struct sockaddr_in socketAddress;
@@ -63,7 +69,7 @@ static int runGeckoServer(GeckoProcessor *processor){
 	return 0;
 }
 
-static s32 startTCPGeckoThread(s32 argc, void *argv) {
+static signed int startTCPGeckoThread(signed int argc, void *argv) {
 	log_print("Starting TCP Gecko thread...\n");
 
 	// Run the TCP Gecko Installer server
@@ -76,9 +82,16 @@ static s32 startTCPGeckoThread(s32 argc, void *argv) {
 	memset(bss, 0, sizeof(struct pygecko_bss_t));
     */
 
-	if (OSCreateThread(geck_proc.thread, runGeckoServer, (uint32_t) geck_proc,
-					   geck_proc.stack + sizeof(geck_proc.stack), sizeof(geck_proc.stack), 0, 0xc) == 1) {
-		OSResumeThread(bss->thread);
+	if (OSCreateThread(geck_proc.thread, 
+	runGeckoServer, 
+	(uint32_t) 1, 
+	(char *) &geck_proc,
+	(void *)geck_proc.stack + sizeof(geck_proc.stack), 
+	sizeof(geck_proc.stack), 
+	0, 
+	0xc) 
+	== 1) {
+		OSResumeThread(geck_proc.thread);
 	}
 
 	log_print("TCP Gecko thread started...\n");
@@ -108,5 +121,5 @@ static s32 startTCPGeckoThread(s32 argc, void *argv) {
 		log_print("Code handler not installed...\n");
 	}
 
-	return (s32) 0;
+	return (signed int) 0;
 }

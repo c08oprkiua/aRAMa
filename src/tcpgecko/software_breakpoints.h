@@ -45,15 +45,6 @@ struct Breakpoint *removeBreakpoint(struct Breakpoint *breakpoint) {
 	return breakpoint;
 }
 
-void removeAllBreakpoints() {
-	for (int index = 0; index < GENERAL_BREAKPOINTS_COUNT; index++) {
-		struct Breakpoint *breakpoint = &breakpoints[index];
-		if (breakpoint->address != 0) {
-			removeBreakpoint(breakpoint);
-		}
-	}
-}
-
 struct Breakpoint *setBreakpoint(struct Breakpoint *breakpoint, uint32_t address) {
 	breakpoint->address = address;
 	breakpoint->instruction = address;

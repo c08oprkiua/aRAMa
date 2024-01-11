@@ -19,7 +19,7 @@ struct node *getAllThreads() {
 	OSThread *temporaryThreadAddress;
 
 	// Follow "previous thread" pointers back to the beginning
-	//while ((temporartThreadAddress = (int *) (iterationThreadAddress + PREVIOUS_THREAD)) != 0)
+	//while ((temporaryThreadAddress = (int *) (iterationThreadAddress + PREVIOUS_THREAD)) != 0)
 	while ((temporaryThreadAddress = iterationThreadAddress->link.prev) != 0) {
 		log_printf("Temporary thread address going backwards: %08x\n", temporaryThreadAddress);
 		iterationThreadAddress = temporaryThreadAddress;
