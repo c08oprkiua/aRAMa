@@ -34,42 +34,25 @@ WUPS_USE_WUT_MALLOC(); //Idk
 WUPS_USE_STORAGE("aRAMa");
 
 INITIALIZE_PLUGIN(){
+	/*
+	InitOSFunctionPointers();
+	InitSocketFunctionPointers();
+	InitGX2FunctionPointers();
+
+	log_init(COMPUTER_IP_ADDRESS);
+	startTCPGecko();
+		setup_os_exceptions();
+		socket_lib_init();
+		initializeUDPLog();
+	*/
 	InitaRAMaSettings();
 	aRAMaReInit(); //"Re"Init, but init and reinit are identical, so
 }
 
-/** the functions from entry.c, for reference purposes
- 
- int entry() {
-	if (isRunningAllowedTitleID()) {
-		//InitOSFunctionPointers();
-		InitSocketFunctionPointers();
-		InitGX2FunctionPointers();
-
-		log_init(COMPUTER_IP_ADDRESS);
-		log_print("OSGetTitleID checks passed...\n");
-		startTCPGecko();
-
-		return EXIT_RELAUNCH_ON_LOAD;
-	}
-
-	//! *******************************************************************
-	//! *                 Jump to our application                    *
-	//! *******************************************************************
-	return Menu_Main();
-}
-
-int __entry_menu(int argc, char **argv) {
-	return entry();
-}
-
- */
-
 DEINITIALIZE_PLUGIN(){
-
+	aRAMaDeINit();
 }
 
-//Note to self, maybe switch to a switch statement for readability
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
 	if (!(arama_settings && ARAMA_SET_ACTIVE)){
@@ -100,7 +83,7 @@ void aRAMaReInit(){
 	else{
 		
 		//This setting has not changed, and it returns the opposite of the previous check,
-		//So it can be used to check for Gecko being 
+		//So it can be used to check for Gecko being initialized
 		if (!(arama_settings && ARAMA_SET_SD_CODES_ACTIVE)){
 			//Gecko was not initialized earlier, so init now
 			//Init Gecko
@@ -112,11 +95,9 @@ void aRAMaReInit(){
 }
 
 void aRAMaDeINit(){
-
+	//Something something free GeckoProcessor
 }
 
-
-//Based on entry.c
 ON_APPLICATION_START(){
 	aRAMaReInit();
 	//Todo: Figure out what all TCPGecko does on an application launch:
@@ -126,13 +107,13 @@ ON_APPLICATION_START(){
 }
 
 ON_APPLICATION_REQUESTS_EXIT(){
-	//Prolly some code that unpatches the game specific function patches TCPGecko employs
-	//Idea: Clean up/remove ASM codes, cause leaving those executing might break stuff
+	//Prolly clean up/remove ASM codes, cause leaving those executing might break stuff
 }
 
 WUPS_GET_CONFIG(){
 
 }
+
 WUPS_CONFIG_CLOSED(){
 	//Save settings, and then
 	aRAMaReInit();

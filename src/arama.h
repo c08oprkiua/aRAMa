@@ -5,6 +5,8 @@
 #define ARAMA_SET_NOTIFICATIONS_ON 1 << 2
 #define ARAMA_SET_NO_ONLINE 1 << 3
 #define ARAMA_SET_AUTO_STORE_CODES 1 << 4
+#define ARAMA_ENABLE_CAFFIINE 1 << 5
+#define ARAMA_ENABLE_SAVIINE 1 << 6
 
 //This is a bitfield of STORED values
 //It has to be uint32_t for WUPS storage

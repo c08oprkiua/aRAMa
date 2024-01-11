@@ -1,4 +1,4 @@
-#include "command_io.h"
+#include "network/net_common.h"
 
 class CommandHandler: public CommandIO
 {
@@ -36,7 +36,7 @@ public:
     void command_read_directory();
     void command_replace_file();
 
-    void command_get_code_handler_address(); // Depreciate?
+    void command_get_code_handler_address();
     void command_read_threads();
     void command_account_identifier();
     void command_write_screen();

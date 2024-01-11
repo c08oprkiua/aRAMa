@@ -11,11 +11,12 @@ void CommandHandler::command_persist_assembly(){
 	assemblySize = length;
 
 	// Write the assembly to an executable code region
+
+	//Todo: See if this works in Aroma (probably not) and fix it to work if not
 	unsigned int startAddress = getStartAddress();
 	GeckoKernelCopyData((unsigned char *) startAddress, buffer, assemblySize);
 };
 
-//clearAssembly
 void CommandHandler::command_clear_assembly(){
 	assemblySize = 0;
 	log_print("[Clear assembly] Assembly size 0\n");

@@ -1,6 +1,8 @@
 #include <coreinit/thread.h>
 #include <coreinit/filesystem.h>
 
+#include "./network/net_common.h"
+
 #define SERVER_VERSION "06/03/2017"
 
 #define MSG_DONT_WAIT 32
@@ -11,6 +13,12 @@
 #define ERROR_BUFFER_SIZE 150
 #define DATA_BUFFER_SIZE 0x5000
 
+#define CHECK_ERROR(cond)     \
+	if (cond)                 \
+	{                         \
+		line = __LINE__; \
+		goto error;       \
+	}
 
 //void *client;
 FSClient *client;
@@ -32,27 +40,38 @@ public:
 	//pygecko_bss_t *bss;
 
     OSThread *thread;
-	uint32_t ret, error, line, clientfd, sock;
+    
+    //ret must be signed because it is set to -1 for errors, idk if any of the others 
+    //share a similar requirement to be signed, or to be large numbers
+    int32_t ret;
+	uint32_t error, line, clientfd, sock;
+
     unsigned char stack[0x6F00];
 
 	unsigned char buffer[0x5001];
 
+    int getMode(int *result);
+
     void check_err(bool cond);
-
-    int recvwait(int len);
-
-    int recvwait_buffer(unsigned char *buffer, int len);
-
-    int recvbyte();
+    void check_ret_error();
 
     int checkbyte();
 
-    int sendwait(int len);
+    int recvwait(int len);
+    int recvwait_buffer(unsigned char *buffer, int len);
 
+    int recvwaitlen(int len);
+    int recvwaitlen_buffer(void *buffer, int len);
+
+    int recvbyte();
+
+    int sendwait(int len);
     int sendwait_buffer(unsigned char *buffer, int len);
 
     int sendByte(u_char byte);
 
     unsigned int receiveString(unsigned char *stringBuffer, unsigned int bufferSize);
+
+    void log_string(const char *str, char flag_byte);
 
 };

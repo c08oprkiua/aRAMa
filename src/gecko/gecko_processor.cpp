@@ -222,10 +222,6 @@ int GeckoProcessor::processCommands() {
 
 int GeckoProcessor::runProcessServer(){
 
-	//setup_os_exceptions();
-	//socket_lib_init();
-	//initializeUDPLog();
-
 	struct sockaddr_in socketAddress;
 
 	int sockfd = -1, len;

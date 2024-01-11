@@ -190,3 +190,85 @@ void CommandHandler::command_replace_file(){
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (status)")
 	}
 };
+
+void CommandHandler::command_iosu_hax_read_file(){
+	/*log_print("COMMAND_IOSUHAX_READ_FILE");
+
+	// TODO Crashes console on this call
+	int returnValue = IOSUHAX_Open(NULL);
+	log_print("IOSUHAX_Open Done");
+	log_printf("IOSUHAX_Open: %i", returnValue);
+
+	if (returnValue < 0) {
+		goto IOSUHAX_OPEN_FAILED;
+	}
+
+	int fileSystemFileDescriptor = IOSUHAX_FSA_Open();
+	log_printf("IOSUHAX_FSA_Open: %i", fileSystemFileDescriptor);
+
+	if (fileSystemFileDescriptor < 0) {
+		goto IOSUHAX_FSA_OPEN_FAILED;
+	}
+
+	int fileDescriptor;
+	const char *filePath = "/vol/storage_usb/usr/title/0005000e/1010ed00/content/audio/stream/pBGM_GBA_CHEESELAND_F.bfstm";
+	returnValue = IOSUHAX_FSA_OpenFile(fileSystemFileDescriptor, filePath, "rb", &fileDescriptor);
+	log_printf("IOSUHAX_FSA_OpenFile: %i", returnValue);
+
+	if (returnValue < 0) {
+		goto IOSUHAX_OPEN_FILE_FAILED;
+	}
+
+	fileStat_s fileStat;
+	returnValue = IOSUHAX_FSA_StatFile(fileSystemFileDescriptor, fileDescriptor, &fileStat);
+	log_printf("IOSUHAX_FSA_StatFile: %i", returnValue);
+
+	if (returnValue < 0) {
+		goto IOSUHAX_READ_FILE_FAILED_CLOSE;
+	}
+
+	void *fileBuffer = MEMBucket_alloc(fileStat.size, 4);
+	log_printf("File Buffer: %p", fileBuffer);
+
+	if (!fileBuffer) {
+		goto IOSUHAX_READ_FILE_FAILED_CLOSE;
+	}
+
+	size_t totalBytesRead = 0;
+	while (totalBytesRead < fileStat.size) {
+		size_t remainingBytes = fileStat.size - totalBytesRead;
+		int bytesRead = IOSUHAX_FSA_ReadFile(fileSystemFileDescriptor,
+											 fileBuffer + totalBytesRead,
+											 0x01,
+											 remainingBytes,
+											 fileDescriptor,
+											 0);
+		log_printf("IOSUHAX_FSA_ReadFile: %i", bytesRead);
+
+		if (bytesRead <= 0) {
+			goto IOSUHAX_READ_FILE_FAILED_CLOSE;
+		} else {
+			totalBytesRead += bytesRead;
+		}
+	}
+
+	log_printf("Bytes read: %i", totalBytesRead);
+
+	IOSUHAX_READ_FILE_FAILED_CLOSE:
+
+	returnValue = IOSUHAX_FSA_CloseFile(fileSystemFileDescriptor, fileDescriptor);
+	log_printf("IOSUHAX_FSA_CloseFile: %i", returnValue);
+
+	IOSUHAX_OPEN_FILE_FAILED:
+
+	returnValue = IOSUHAX_FSA_Close(fileSystemFileDescriptor);
+	log_printf("IOSUHAX_FSA_Close: %i", returnValue);
+
+	IOSUHAX_FSA_OPEN_FAILED:
+
+	returnValue = IOSUHAX_Close();
+	log_printf("IOSUHAX_Close: %i", returnValue);
+
+	IOSUHAX_OPEN_FAILED:*/
+
+};

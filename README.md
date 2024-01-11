@@ -85,3 +85,8 @@ Commands:
 ## aRAMa credits:
 * **Maschell** for help on Discord
 * **Lulsec2#0064** on Discord, for coming up with the name "aRAMa"
+
+# Help, inquiries, etc.
+For help with or questions about JGecko U or the original TCPGecko, join [the JGecko U Discord](https://discord.com/invite/rSRM3RWDq4)
+
+For help with or questions about aRAMa, join [my Discord](https://discord.com/invite/VPHr56hnbQ)

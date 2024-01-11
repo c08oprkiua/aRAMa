@@ -42,7 +42,7 @@ Commands:
 - [ ] Read a file
 - [ ] Read a directory
 - [ ] Replace a file
-- [ ] "IOSU read file" (I don't know what this is and it was disabled, I'm just listing it here for completion's sake)
+- [ ] "IOSU read file" (currently disabled)
 - [ ] Get version hash
 - [ ] Get code handler address
 - [ ] Read threads
@@ -85,3 +85,8 @@ Commands:
 ## aRAMa credits:
 * **Maschell** for help on Discord
 * **Lulsec2#0064** on Discord, for coming up with the name "aRAMa"
+
+# Help, inquiries, etc.
+For help with or questions about JGecko U or the original TCPGecko, join [the JGecko U Discord](https://discord.com/invite/rSRM3RWDq4)
+
+For help with or questions about aRAMa, join [my Discord]()

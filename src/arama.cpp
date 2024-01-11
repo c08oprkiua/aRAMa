@@ -7,6 +7,7 @@
 #include <nsysnet/socket.h>
 #include <gx2/event.h>
 
+#define CODE_HANDLER_INSTALL_ADDRESS 0x010F4000
 
 
 int runGeckoServer(uint32_t argc, char *argv){
@@ -66,6 +67,7 @@ int runGeckoServer(uint32_t argc, char *argv){
 		log_printf("GX2WaitForVsync() outer...\n");
 		GX2WaitForVsync();
 	}
+	
 	return 0;
 }
 
