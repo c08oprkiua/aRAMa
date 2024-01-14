@@ -66,7 +66,7 @@ enum gecko_commands{
 //from os_functions.h
 #define PPC_DISASM_MAX_BUFFER 64
 
-#define PPC_DISASM_DEFAULT     0x00000000  // use defaults
+#define PPC_DISASM_DEFAULT     0  // use defaults
 #define PPC_DISASM_SIMPLIFY    0x00000001  // use simplified mnemonics
 #define PPC_DISASM_REG_SPACES  0x00000020  // emit spaces between registers
 #define PPC_DISASM_EMIT_DISASM 0x00000040  // emit only disassembly

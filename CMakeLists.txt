@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Set the project name
-set(PROJECT_NAME "tcpgecko")
+set(PROJECT_NAME "arama")
 project(${PROJECT_NAME})
 
 # Set the C++ standard
@@ -11,13 +11,14 @@ set(CMAKE_CXX_STANDARD 20)
 # add_definitions(-D__WIIU__)
 
 # Add extra include directories (for use with a Linux distribution or WSL in CLion)
-set(DEVKITPPC /mnt/c/devkitPro)
-set(WUT ${DEVKITPPC}/mnt/c/devkitPro/wut/include)
-set(POWERPCEABI ${DEVKITPPC}/devkitPPC/powerpc-eabi/include)
-set(LIBOGC ${DEVKITPPC}/libogc/include)
-set(PORTLIBS ${DEVKITPPC}/portlibs/ppc/include)
-set(WUPS ${DEVKITPPC}/wups/include)
-set(WUMS ${DEVKITPPC}/wums/include)
+set(DEVKITPRO /opt/devkitPro)
+set(DEVKITPPC ${DEVKITPRO}/devkitPPC)
+set(WUT ${DEVKITPRO}/wut/include)
+set(POWERPCEABI ${DEVKITPPC}/powerpc-eabi/include)
+set(LIBOGC ${DEVKITPRO}/libogc/include)
+set(PORTLIBS ${DEVKITPRO}/portlibs/ppc/include)
+set(WUPS ${DEVKITPRO}/wups/include)
+set(WUMS ${DEVKITPRO}/wums/include)
 include_directories(${PORTLIBS})
 include_directories(${POWERPCEABI})
 include_directories(${LIBOGC})
@@ -25,7 +26,28 @@ include_directories(${WUT})
 include_directories(${WUPS})
 include_directories(${WUMS})
 
-add_executable(${PROJECT_NAME} src/entry.c
+add_executable(${PROJECT_NAME} src/main.cpp
+
+        src/arama.cpp
+        src/arama.h
+        src/code_storage.cpp
+        src/code_storage.h
+        src/fs_hooks.cpp
+
+        src/gecko/command_handler.cpp
+        src/gecko/command_handler.h
+        src/gecko/gecko_processor.cpp
+        src/gecko/gecko_processor.h
+        src/gecko/comm_hand_backend/comm_asm.cpp
+        src/gecko/comm_hand_backend/comm_breakpoint.cpp
+        src/gecko/comm_hand_backend/comm_disassemble.cpp
+        src/gecko/comm_hand_backend/comm_fs.cpp
+        src/gecko/comm_hand_backend/comm_kernel.cpp
+        src/gecko/comm_hand_backend/comm_memory.cpp
+        src/gecko/comm_hand_backend/comm_metainfo.cpp
+        src/gecko/comm_hand_backend/comm_pause.cpp
+        src/gecko/comm_hand_backend/comm_screen.cpp
+        src/gecko/comm_hand_backend/comm_write_int.cpp
 
         src/common/common.h
         src/common/fs_defs.h

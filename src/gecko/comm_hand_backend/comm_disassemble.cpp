@@ -1,5 +1,6 @@
 #include "../command_handler.h"
 
+#include <coreinit/debug.h>
 
 void CommandHandler::command_disassemble_range(){
 	// Receive the starting, ending address and the disassembler options

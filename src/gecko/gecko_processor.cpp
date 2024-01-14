@@ -7,21 +7,12 @@
 #include <newlib.h>
 #include <coreinit/internal.h>
 
-#define errno2 (*__gh_errno_ptr())
-
-#define CHECK_ERROR(cond)     \
-	if (cond)                 \
-	{                         \
-		line = __LINE__; \
-		goto error;           \
-	}
-
 int GeckoProcessor::processCommands() {
 	// Run the RPC server
 	while (true) {
 	    ret = checkbyte();
 		if (ret < 0) {
-			//CHECK_ERROR(errno2 != E_WOULD_BLOCK);
+			CHECK_ERROR(errno2 != E_WOULD_BLOCK);
 			GX2WaitForVsync();
 			continue;
 		}
@@ -213,11 +204,11 @@ int GeckoProcessor::processCommands() {
 			}
 		}
 	}
-	/*
+	
 	error:
 	bss->error = ret;
 	return 0;
-	*/
+	
 }
 
 int GeckoProcessor::runProcessServer(){

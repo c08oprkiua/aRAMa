@@ -1,4 +1,4 @@
-#include "network/net_common.h"
+#include "../network/command_io/command_io.h"
 
 class CommandHandler: public CommandIO
 {

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <malloc.h>
 
+/*
 #include <coreinit/cache.h>
 #include <coreinit/debug.h>
 #include <coreinit/filesystem.h>
@@ -21,19 +22,19 @@
 #include <gx2/event.h>
 
 #include <kernel/kernel.h>
-
+*/
 #include "../arama.h"
+/*
 #include "../tcpgecko/address.h"
 #include "../tcpgecko/assertions.h"
 #include "../tcpgecko/disassembler.h"
 #include "../tcpgecko/threads.h"
 #include "../tcpgecko/kernel.h"
-
+*/
 #define errno2 (*__gh_errno_ptr())
 #define MSG_DONT_WAIT 32
 #define E_WOULD_BLOCK 6
 #define WRITE_SCREEN_MESSAGE_BUFFER_SIZE 100
-
 
 #define ONLY_ZEROS_READ 0xB0
 #define NON_ZEROS_READ 0xBD
@@ -43,6 +44,8 @@
 #define FS_MAX_FULLPATH_SIZE            (FS_MAX_LOCALPATH_SIZE + FS_MAX_MOUNTPATH_SIZE)
 
 #define DISASSEMBLER_BUFFER_SIZE 0x1024
+
+#define INVALID_ADDRESS -1
 
 // The time the producer and consumer wait while there is nothing to do
 #define WAITING_TIME_MILLISECONDS 1
@@ -59,8 +62,6 @@ void CommandHandler::command_validate_address_range(){
 
 	sendByte((unsigned char)isAddressRangeValid);
 };
-
-
 
 void CommandHandler::command_read_threads(){
 	struct node *threads = getAllThreads();
@@ -110,8 +111,6 @@ void CommandHandler::command_follow_pointer(){
 	}
 
 	int destinationAddress = baseAddress;
-
-#define INVALID_ADDRESS -1
 
 	if ((bool)OSIsAddressValid(destinationAddress))
 	{
@@ -193,7 +192,7 @@ void CommandHandler::command_get_symbol(){
 	void *function_address;
 	OSDynLoad_Acquire(rplName, &module_handle);
 
-	OSDynLoad_ExportType data = (OSDynLoad_ExportType)recvbyte(bss, clientfd);
+	OSDynLoad_ExportType data = (OSDynLoad_ExportType) recvbyte();
 	OSDynLoad_FindExport(module_handle, data, symbolName, &function_address);
 
 	((int *)buffer)[0] = (int)function_address;

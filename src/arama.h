@@ -13,13 +13,13 @@
 uint32_t arama_settings = (ARAMA_SET_ACTIVE | ARAMA_SET_NOTIFICATIONS_ON);
 
 //Todo: Get IP from console, display in WUPS menu a la FTPiiU
-char *ip_address;
+uint32_t ip_address;
 
-bool GeckoSetUp = false;
-bool TCPSetUp = false;
+bool geckoSetUp = false;
+bool isOnline = true;
 bool shouldTakeScreenShot = false;
 bool isCodeHandlerInstalled = false;
-
+bool areNotificationsOn = true;
 
 static int CreateGeckoThread();
 static int runGeckoServer(GeckoProcessor *processor);

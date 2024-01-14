@@ -31,10 +31,12 @@
 #include "main.h"
 #include "code_handler.h"
 #include "../utils/logger.h"
+/*
 #include "../patcher/function_patcher_gx2.h"
 #include "../patcher/function_patcher_coreinit.h"
 #include "sd_ip_reader.h"
 #include "title.h"
+*/
 #include "tcp_gecko.h"
 
 

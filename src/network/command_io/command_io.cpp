@@ -4,19 +4,6 @@
 #include <nsysnet/socket.h>
 #include <coreinit/debug.h>
 
-void CommandIO::check_err(bool cond){
-	if (!cond){
-		//Log here
-	}
-}
-
-void CommandIO::check_ret_error(){
-	if (ret < 0){
-		//Log here
-		ret = 0;
-	}
-}
-
 int CommandIO::getMode(int * result){
 	while (iLock)
 		usleep(5000);

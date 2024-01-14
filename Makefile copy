@@ -9,11 +9,15 @@ endif
 ifeq ($(strip $(DEVKITPRO)),)
 $(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>devkitPRO")
 endif
+
 export PATH			:=	$(DEVKITPPC)/bin:$(PORTLIBS)/bin:$(PATH)
-export WUMS_ROOT    := $(DEVKITPRO)/wums
+
 export LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 export LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
 export PORTLIBS		:=	$(DEVKITPRO)/portlibs/ppc
+
+WUT_ROOT  := $(DEVKITPRO)/wut
+WUMS_ROOT    := $(DEVKITPRO)/wums
 
 PREFIX	:=	powerpc-eabi-
 
@@ -29,19 +33,17 @@ export OBJCOPY	:=	$(PREFIX)objcopy
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
-TARGET		:=	tcpgecko
+TARGET		:=	arama
 BUILD		:=	build
 BUILD_DBG	:=	$(TARGET)_dbg
 SOURCES		:=	src \
-				src/dynamic_libs \
-				src/game \
-				src/fs \
+				src/gecko \
 				src/kernel \
-				src/patcher \
-				src/system \
+				src/network \
+				src/tcpgecko \
 				src/utils \
-				src/tcpgecko
-DATA		:=	
+				src/common \
+DATA		:=	data
 
 INCLUDES	:=  src
 
@@ -50,7 +52,7 @@ INCLUDES	:=  src
 #---------------------------------------------------------------------------------
 CFLAGS	:=  -std=gnu11 -mrvl -mcpu=750 -meabi -mhard-float -ffast-math \
 		    -O3 -Wall -Wextra -D_GNU_SOURCE -Wno-unused-parameter -Wno-strict-aliasing $(INCLUDE)
-CXXFLAGS := -std=gnu++11 -mrvl -mcpu=750 -meabi -mhard-float -ffast-math \
+CXXFLAGS := -std=gnu++20 # -mrvl -mcpu=750 -meabi -mhard-float -ffast-math \
 		    -O3 -Wall -Wextra -D_GNU_SOURCE -Wno-unused-parameter -Wno-strict-aliasing $(INCLUDE)
 ASFLAGS	:= -mregnames
 
@@ -67,7 +69,7 @@ MAKEFLAGS += --no-print-directory
 
 #LIBS	:= -lm -lfat -lz -liosuhax -lgd
 
-LIBS    := -lkernel 
+LIBS    := -wups -lwut -lkernel 
 
 
 #---------------------------------------------------------------------------------

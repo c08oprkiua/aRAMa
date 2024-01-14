@@ -1,7 +1,7 @@
 #include <coreinit/thread.h>
 #include <coreinit/filesystem.h>
 
-#include "./network/net_common.h"
+#include "../net_common.h"
 
 #define SERVER_VERSION "06/03/2017"
 
@@ -20,24 +20,23 @@
 		goto error;       \
 	}
 
-//void *client;
 FSClient *client;
-//void *commandBlock;
 FSCmdBlock *commandBlock;
 bool kernelCopyServiceStarted;
 
-/*struct pygecko_bss_t {
-	int error, line;
-	//void *thread;
-	OSThread *thread;
-	unsigned char stack[0x6F00];
-};*/
+enum code_mode{
+    CODE_SD_CARD,
+    CODE_TCP,
+    CODE_USB, // Future plans
+    CODE_OTHER, //Just in case
+}
 
-class CommandIO {
+class CommandIO
+{
 public:
 
-    bool offline = true; //Offline be default so SD codes will work without init TCP
-	//pygecko_bss_t *bss;
+    //Tells the backing code where to point to for retrieving codes
+    code_mode mode = CODE_SD_CARD;
 
     OSThread *thread;
     
@@ -51,9 +50,6 @@ public:
 	unsigned char buffer[0x5001];
 
     int getMode(int *result);
-
-    void check_err(bool cond);
-    void check_ret_error();
 
     int checkbyte();
 
@@ -73,5 +69,4 @@ public:
     unsigned int receiveString(unsigned char *stringBuffer, unsigned int bufferSize);
 
     void log_string(const char *str, char flag_byte);
-
 };

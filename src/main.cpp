@@ -50,16 +50,17 @@ INITIALIZE_PLUGIN(){
 }
 
 DEINITIALIZE_PLUGIN(){
-	aRAMaDeINit();
+	aRAMaDeInit();
 }
 
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
-	if (!(arama_settings && ARAMA_SET_ACTIVE)){
+	if (!(arama_settings & ARAMA_SET_ACTIVE)){
 		return;
 	}
+	
 	//SD codes get priority, regardless of being online
-	if (arama_settings && ARAMA_SET_SD_CODES_ACTIVE){
+	if (arama_settings & ARAMA_SET_SD_CODES_ACTIVE){
 		//Init Gecko so it can load SD codes
 
 		log_print("aRAMa is active, checking for local codes for this title...\n");
@@ -68,17 +69,16 @@ void aRAMaReInit(){
 
 		//deinit if offline and no codes are found
 	}
-	//Check if offline to potentially skip initializing TCP unnecessarily
-	if (arama_settings && ARAMA_SET_NO_ONLINE){
+	if (arama_settings & ARAMA_SET_NO_ONLINE){
+		isOnline = false;
 		//If aRAMa is active and offline, but SD codes are disabled, no reason
 		//to keep it loaded in cause it'll sit there doing nothing
-		if (!(arama_settings && ARAMA_SET_SD_CODES_ACTIVE)){
-			aRAMaDeINit();
+		if (!(arama_settings & ARAMA_SET_SD_CODES_ACTIVE)){
+			aRAMaDeInit();
 		}
 		//Start aRAMa offline, with only SD codes
 		return;
 	}
-
 	//If we're not offline, we must be online :bigbrain:
 	else{
 		
@@ -94,7 +94,7 @@ void aRAMaReInit(){
 	}
 }
 
-void aRAMaDeINit(){
+void aRAMaDeInit(){
 	//Something something free GeckoProcessor
 }
 

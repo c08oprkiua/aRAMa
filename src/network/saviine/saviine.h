@@ -1,4 +1,4 @@
-#include "./network/command_io/command_io.h"
+#include "../command_io/command_io.h"
 
 class Saviine: public CommandIO {
     int start_injection(long persistentID, int *mask);
