@@ -1,8 +1,11 @@
 #include "../network/command_io/command_io.h"
 
+#include <whb/log.h>
+
 class CommandHandler: public CommandIO
 {
 public:
+
 
     static void reportIllegalCommandByte(int byte);
 

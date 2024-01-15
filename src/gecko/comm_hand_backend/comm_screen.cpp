@@ -7,7 +7,8 @@
 #include <gx2/swap.h>
 #include <gx2/surface.h>
 
-#include "arama.h"
+#include <notifications/notifications.h>
+
 #include "../command_handler.h"
 
 // The dynamically allocated buffer size for the image copy
@@ -16,15 +17,25 @@
 // The time the producer and consumer wait while there is nothing to do
 #define WAITING_TIME_MILLISECONDS 1
 
+#define WRITE_SCREEN_MESSAGE_BUFFER_SIZE 100
+
+//Screenshot variables
+static volatile int executionCounter = 0;
+unsigned int remainingImageSize = 0;
+unsigned int totalImageSize = 0;
+int bufferedImageSize = 0;
+void *bufferedImageData = nullptr;
+bool shouldTakeScreenShot = false;
+
 DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorBuffer, s32 scan_target){
 	if (executionCounter > 120) {
 		GX2Surface surface = colorBuffer->surface;
-		log_printf("GX2CopyColorBufferToScanBuffer {surface width:%d, height:%d, image size:%d, image data:%x}\n",
-				   surface.width, surface.height, surface.image_size, surface.image_data);
+		WHBLogPrintf("GX2CopyColorBufferToScanBuffer {surface width:%d, height:%d, image size:%d, image data:%x}\n",
+				   surface.width, surface.height, surface.imageSize, surface.image_data);
 
 		if (shouldTakeScreenShot) {
 			void *imageData = surface.image_data;
-			totalImageSize = surface.image_size;
+			totalImageSize = surface.imageSize;
 			remainingImageSize = totalImageSize;
 			int bufferSize = IMAGE_BUFFER_SIZE;
 
@@ -87,7 +98,7 @@ void CommandHandler::command_take_screenshot(){
 
 	// Tell the client the size of the upcoming image
 	ret = sendwait_buffer((unsigned char *)&totalImageSize, sizeof(int));
-	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (total image size)")
+	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (total image size)");
 
 	// Keep sending the image data
 	while (remainingImageSize > 0)
@@ -110,11 +121,11 @@ void CommandHandler::command_take_screenshot(){
 
 		// Send the size of the current chunk
 		ret = sendwait_buffer((unsigned char *)&bufferPosition, sizeof(int));
-		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (image data chunk size)")
+		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (image data chunk size)");
 
 		// Send the image data itself
 		ret = sendwait(bufferPosition);
-		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (image data)")
+		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (image data)");
 	}
 
 	/*GX2ColorBuffer colorBuffer;
@@ -145,6 +156,7 @@ void CommandHandler::command_take_screenshot(){
 	}*/
 };
 
+//TODO: Make this cause a notification to appear onscreen
 void CommandHandler::command_write_screen(){
 	char message[WRITE_SCREEN_MESSAGE_BUFFER_SIZE];
 	ret = recvwait(4);

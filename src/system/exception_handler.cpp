@@ -3,7 +3,8 @@
 #include <coreinit/exception.h>
 #include <coreinit/debug.h>
 
-#include "../utils/logger.h"
+//#include "../utils/logger.h"
+#include <whb/log.h>
 #include "exception_handler.h"
 
 
@@ -124,7 +125,7 @@ static unsigned char exceptionCallback(OSContext *c, unsigned char exception_typ
 					   pAdd[currentStackTraceDepth], pAdd[currentStackTraceDepth + 1], pAdd[currentStackTraceDepth + 2],
 					   pAdd[currentStackTraceDepth + 3]);
 	//}
-	log_print(stackTraceBuffer);
+	WHBLogPrint(stackTraceBuffer);
 	OSFatal(stackTraceBuffer);
 
 	return 1;

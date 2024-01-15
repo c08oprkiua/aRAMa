@@ -48,7 +48,7 @@ struct Breakpoint *removeBreakpoint(struct Breakpoint *breakpoint) {
 struct Breakpoint *setBreakpoint(struct Breakpoint *breakpoint, uint32_t address) {
 	breakpoint->address = address;
 	breakpoint->instruction = address;
-	writeCode(address, (u32) INSTRUCTION_TRAP);
+	writeCode(address, (uint32_t) INSTRUCTION_TRAP);
 
 	return breakpoint;
 }

@@ -126,7 +126,7 @@ void CommandHandler::command_read_memory_kernel(){
 
 	while (startingAddress != endingAddress)
 	{
-		log_printf("Reading memory from %08x to %08x with kernel %i\n", startingAddress, endingAddress,
+		WHBLogPrintf("Reading memory from %08x to %08x with kernel %i\n", startingAddress, endingAddress,
 				   useKernRead);
 
 		unsigned int length = (unsigned int)(endingAddress - startingAddress);
@@ -138,7 +138,7 @@ void CommandHandler::command_read_memory_kernel(){
 		}
 
 		// Figure out if all bytes are zero to possibly avoid sending them
-		log_print("Checking for all zero bytes...\n");
+		WHBLogPrint("Checking for all zero bytes...\n");
 		unsigned int rangeIterationIndex = 0;
 		for (; rangeIterationIndex < length; rangeIterationIndex++)
 		{
@@ -150,19 +150,19 @@ void CommandHandler::command_read_memory_kernel(){
 			}
 		}
 
-		log_print("Preparing to send...\n");
+		WHBLogPrint("Preparing to send...\n");
 		if (rangeIterationIndex == length)
 		{
 			// No need to send all zero bytes for performance
-			log_print("All zero...\n");
+			WHBLogPrint("All zero...\n");
 			ret = sendByte(bss, clientfd, ONLY_ZEROS_READ);
 			ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (only zero bytes read byte)")
-			log_print("Sent!\n");
+			WHBLogPrint("Sent!\n");
 		}
 		else
 		{
 			// Send the real bytes now
-			log_print("Real bytes...\n");
+			WHBLogPrint("Real bytes...\n");
 			buffer[0] = NON_ZEROS_READ;
 
 			if (useKernRead)
@@ -172,28 +172,28 @@ void CommandHandler::command_read_memory_kernel(){
 				{
 					*((int *)(buffer + 1) + offset / sizeof(int)) = readKernelMemory(
 						startingAddress + offset);
-					log_printf("Offset: %x\n", offset);
+					WHBLogPrintf("Offset: %x\n", offset);
 				}
 
-				log_print("Done kernel reading!\n");
+				WHBLogPrint("Done kernel reading!\n");
 			}
 			else
 			{
-				log_print("Memory copying...\n");
+				WHBLogPrint("Memory copying...\n");
 				memcpy(buffer + 1, startingAddress, length);
-				log_print("Done copying!\n");
+				WHBLogPrint("Done copying!\n");
 			}
 
-			log_print("Sending everything...\n");
+			WHBLogPrint("Sending everything...\n");
 			ret = sendwait(bss, clientfd, buffer, length + 1);
 			ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (read bytes buffer)")
-			log_print("Sent!\n");
+			WHBLogPrint("Sent!\n");
 		}
 
 		startingAddress += length;
 	}
 
-	log_print("Done reading...\n");
+	WHBLogPrint("Done reading...\n");
 	*/
 };
 

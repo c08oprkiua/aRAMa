@@ -4,37 +4,38 @@
 
 #include <gctypes.h>
 
-#include "utils/logger.h"
+//#include "utils/logger.h"
+#include <whb/log.h>
 
 //FS logging hooks
 
 DECL_FUNCTION(int, FSOpenFile, void *pClient, void *pCmd, const char *path, const char *mode, int *fd, int errHandling){
-	log_printf("FSOpenFile(): %s", path);
+	WHBLogPrintf("FSOpenFile(): %s", path);
 	return real_FSOpenFile(pClient, pCmd, path, mode, fd, errHandling);
 }
 
 DECL_FUNCTION(int, FSOpenFileAsync, void *pClient, void *pCmd, const char *path, const char *mode, int *handle, int error, const void *asyncParams) {
-	log_printf("FSOpenFileAsync(): %s", path);
+	WHBLogPrintf("FSOpenFileAsync(): %s", path);
 	return real_FSOpenFileAsync(pClient, pCmd, path, mode, handle, error, asyncParams);
 }
 
 DECL_FUNCTION(int, FSOpenDir, void *pClient, void *pCmd, const char *path, s32 *dh, int errHandling) {
-	log_printf("FSOpenDir(): %s", path);
+	WHBLogPrintf("FSOpenDir(): %s", path);
 	return real_FSOpenDir(pClient, pCmd, path, dh, errHandling);
 }
 
 DECL_FUNCTION(int, FSOpenDirAsync, void *pClient, void *pCmd, const char *path, int *handle, int error, void *asyncParams) {
-	log_printf("FSOpenDirAsync(): %s", path);
+	WHBLogPrintf("FSOpenDirAsync(): %s", path);
 	return real_FSOpenDirAsync(pClient, pCmd, path, handle, error, asyncParams);
 }
 
 DECL_FUNCTION(int, FSGetStat, void *pClient, void *pCmd, const char *path, FSStat *stats, int errHandling) {
-	log_printf("FSGetStat(): %s", path);
+	WHBLogPrintf("FSGetStat(): %s", path);
 	return real_FSGetStat(pClient, pCmd, path, stats, errHandling);
 }
 
 DECL_FUNCTION(int, FSGetStatAsync, void *pClient, void *pCmd, const char *path, FSStat *stats, int errHandling, void *asyncParams) {
-	log_printf("FSGetStatAsync(): %s", path);
+	WHBLogPrintf("FSGetStatAsync(): %s", path);
 	return real_FSGetStatAsync(pClient, pCmd, path, stats, errHandling, asyncParams);
 }
 

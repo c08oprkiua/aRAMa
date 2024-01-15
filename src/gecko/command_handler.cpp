@@ -12,7 +12,6 @@
 #include <coreinit/filesystem.h>
 #include <coreinit/thread.h> 
 #include <coreinit/memory.h>
-#include <coreinit/dynload.h>
 #include <coreinit/mcp.h>
 
 #include <nn/act.h>
@@ -26,15 +25,18 @@
 #include "../arama.h"
 /*
 #include "../tcpgecko/address.h"
-#include "../tcpgecko/assertions.h"
 #include "../tcpgecko/disassembler.h"
 #include "../tcpgecko/threads.h"
 #include "../tcpgecko/kernel.h"
 */
+
+#include <coreinit/dynload.h>
+#include "../tcpgecko/assertions.h"
+
+
 #define errno2 (*__gh_errno_ptr())
 #define MSG_DONT_WAIT 32
 #define E_WOULD_BLOCK 6
-#define WRITE_SCREEN_MESSAGE_BUFFER_SIZE 100
 
 #define ONLY_ZEROS_READ 0xB0
 #define NON_ZEROS_READ 0xBD
@@ -66,10 +68,10 @@ void CommandHandler::command_validate_address_range(){
 void CommandHandler::command_read_threads(){
 	struct node *threads = getAllThreads();
 	int threadCount = length(threads);
-	log_printf("Thread Count: %i\n", threadCount);
+	WHBLogPrintf("Thread Count: %i\n", threadCount);
 
 	// Send the thread count
-	log_print("Sending thread count...\n");
+	WHBLogPrint("Sending thread count...\n");
 	((int *)buffer)[0] = threadCount;
 	ret = sendwait(sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (thread count)");
@@ -79,10 +81,10 @@ void CommandHandler::command_read_threads(){
 	while (currentThread != NULL)
 	{
 		int data = (int)currentThread->data;
-		log_printf("Thread data: %08x\n", data);
+		WHBLogPrintf("Thread data: %08x\n", data);
 		((int *)buffer)[0] = (int)currentThread->data;
 		memcpy(buffer + sizeof(int), currentThread->data, THREAD_SIZE);
-		log_print("Sending node...\n");
+		WHBLogPrint("Sending node...\n");
 		ret = sendwait(sizeof(int) + THREAD_SIZE);
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (thread address and data)")
 
@@ -148,10 +150,10 @@ void CommandHandler::command_follow_pointer(){
 void CommandHandler::command_remote_procedure_call(){
 	int r3, r4, r5, r6, r7, r8, r9, r10;
 
-	log_print("Receiving RPC information...\n");
+	WHBLogPrint("Receiving RPC information...\n");
 	ret = recvwait(sizeof(int) + 8 * sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "revcwait() Receiving RPC information")
-	log_print("RPC information received...\n");
+	WHBLogPrint("RPC information received...\n");
 
 	long long (*function)(int, int, int, int, int, int, int, int);
 	function = (long long int (*)(int, int, int, int, int, int, int, int))((void **)buffer)[0];
@@ -164,16 +166,16 @@ void CommandHandler::command_remote_procedure_call(){
 	r9 = ((int *)buffer)[7];
 	r10 = ((int *)buffer)[8];
 
-	log_print("Calling function...\n");
+	WHBLogPrint("Calling function...\n");
 	long long result = function(r3, r4, r5, r6, r7, r8, r9, r10);
-	log_printf("Function successfully called with return value: 0x%08x 0x%08x\n", (int)(result >> 32),
+	WHBLogPrintf("Function successfully called with return value: 0x%08x 0x%08x\n", (int)(result >> 32),
 			   (int)result);
 
-	log_print("Sending result...\n");
+	WHBLogPrint("Sending result...\n");
 	((long long *)buffer)[0] = result;
 	ret = sendwait(sizeof(long long));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait() Sending return value")
-	log_print("Result successfully sent...\n");
+	WHBLogPrint("Result successfully sent...\n");
 };
 
 void CommandHandler::command_get_symbol(){
@@ -201,17 +203,17 @@ void CommandHandler::command_get_symbol(){
 };
 
 void CommandHandler::command_poke_registers(){
-	log_print("Receiving poke registers data...\n");
+	WHBLogPrint("Receiving poke registers data...\n");
 	int gprSize = 4 * 32;
 	int fprSize = 8 * 32;
 	ret = recvwait(gprSize + fprSize);
-	log_print("Poking registers...\n");
+	WHBLogPrint("Poking registers...\n");
 	memcpy((void *)crashContext.gpr, (const void *)buffer, gprSize);
 	memcpy((void *)crashContext.fpr, (const void *)buffer, fprSize);
 };
 
 void CommandHandler::command_get_stack_trace(){
-	log_print("Getting stack trace...\n");
+	WHBLogPrint("Getting stack trace...\n");
 	struct node *stackTrace = getStackTrace(NULL);
 	int stackTraceLength = length(stackTrace);
 
@@ -223,13 +225,13 @@ void CommandHandler::command_get_stack_trace(){
 	while (currentStackTraceElement != NULL)
 	{
 		int address = (int)currentStackTraceElement->data;
-		log_printf("Stack trace element address: %08x\n", address);
+		WHBLogPrintf("Stack trace element address: %08x\n", address);
 		((int *)buffer)[bufferIndex++] = (int)currentStackTraceElement->data;
 
 		currentStackTraceElement = currentStackTraceElement->next;
 	}
 
-	log_printf("Sending stack trace with length %i\n", stackTraceLength);
+	WHBLogPrintf("Sending stack trace with length %i\n", stackTraceLength);
 	ret = sendwait(sizeof(int) + stackTraceLength);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (stack trace)");
 };

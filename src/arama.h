@@ -17,17 +17,9 @@ uint32_t ip_address;
 
 bool geckoSetUp = false;
 bool isOnline = true;
-bool shouldTakeScreenShot = false;
 bool isCodeHandlerInstalled = false;
 bool areNotificationsOn = true;
 
 static int CreateGeckoThread();
 static int runGeckoServer(GeckoProcessor *processor);
 
-//Screenshot variables
-static volatile int executionCounter = 0;
-//These might be unneeded here, so they may move to screenshot.cpp
-unsigned int remainingImageSize = 0;
-unsigned int totalImageSize = 0;
-int bufferedImageSize = 0;
-void *bufferedImageData = nullptr;

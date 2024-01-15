@@ -1,5 +1,8 @@
 #include "../command_handler.h"
 
+#include <whb/log.h>
+#include <coreinit/mcp.h>
+
 #define VERSION_HASH 0x7FB223
 #define SERVER_VERSION "01/11/2024"
 
@@ -72,11 +75,11 @@ void CommandHandler::command_get_os_version(){
 };
 
 void CommandHandler::command_get_data_buffer_size(){
-	log_printf("COMMAND_GET_DATA_BUFFER_SIZE...\n");
+	WHBLogPrintf("COMMAND_GET_DATA_BUFFER_SIZE...\n");
 	((int *)buffer)[0] = DATA_BUFFER_SIZE;
-	log_printf("Sending buffer size...\n");
+	WHBLogPrintf("Sending buffer size...\n");
 	ret = sendwait(sizeof(int));
-	log_printf("Sent: %i\n", ret);
+	WHBLogPrintf("Sent: %i\n", ret);
 	CHECK_ERROR(ret < 0)
 };
 

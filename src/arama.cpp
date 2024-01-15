@@ -28,36 +28,36 @@ int runGeckoServer(uint32_t argc, char *argv){
 		socketAddress.sin_port = 7331;
 		socketAddress.sin_addr.s_addr = 0;
 
-		log_printf("socket()...\n");
+		WHBLogPrintf("socket()...\n");
 		sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		CHECK_ERROR(sockfd == -1);
 
-		log_printf("bind()...\n");
+		WHBLogPrintf("bind()...\n");
 		processor->ret = bind(sockfd, (struct sockaddr *) &socketAddress, (socklen_t) 16);
 		CHECK_ERROR(processor->ret < 0);
 
-		log_printf("listen()...\n");
+		WHBLogPrintf("listen()...\n");
 		processor->ret = listen(sockfd, (int) 20);
 		CHECK_ERROR(processor->ret < 0);
 
 		while (true) {
 			len = 16;
-			log_printf("before accept()...\n");
+			WHBLogPrintf("before accept()...\n");
 			processor->clientfd = accept(sockfd, (struct sockaddr *) &socketAddress, (socklen_t *) &len);
-			log_printf("after accept()...\n");
+			WHBLogPrintf("after accept()...\n");
 			CHECK_ERROR(processor->clientfd == -1);
-			log_printf("commands()...\n");
+			WHBLogPrintf("commands()...\n");
 			processor->ret = processor->processCommands();
 			CHECK_ERROR(processor->ret < 0);
 			socketclose(processor->clientfd);
 			processor->clientfd = -1;
 
-			log_printf("GX2WaitForVsync() inner...\n");
+			WHBLogPrintf("GX2WaitForVsync() inner...\n");
 			GX2WaitForVsync();
 		}
 
 		error:
-		log_printf("error, closing connection...\n");
+		WHBLogPrintf("error, closing connection...\n");
 		if (processor->clientfd != -1)
 			socketclose(processor->clientfd);
 		if (sockfd != -1)
@@ -65,7 +65,7 @@ int runGeckoServer(uint32_t argc, char *argv){
 		processor->error = processor->ret;
 
 		// Fix the console freezing when e.g. going to the friend list
-		log_printf("GX2WaitForVsync() outer...\n");
+		WHBLogPrintf("GX2WaitForVsync() outer...\n");
 		GX2WaitForVsync();
 	}
 	
@@ -74,11 +74,12 @@ int runGeckoServer(uint32_t argc, char *argv){
 */
 
 static int CreateGeckoThread(){
-	
+	WHBLogPrint("Starting aRAMa thread. Welcome To The Next Level!\n");
+	GeckoProcessor geck_proc;
 }
 
 static signed int startTCPGeckoThread(signed int argc, void *argv) {
-	log_print("Starting TCP Gecko thread...\n");
+	WHBLogPrint("Starting TCP Gecko thread...\n");
 
 	// Run the TCP Gecko Installer server
 	GeckoProcessor geck_proc;
@@ -104,20 +105,20 @@ static signed int startTCPGeckoThread(signed int argc, void *argv) {
 		OSResumeThread(geck_proc.thread);
 	}
 
-	log_print("TCP Gecko thread started...\n");
+	WHBLogPrint("TCP Gecko thread started...\n");
 
 	// Execute the code handler if it is installed
 	if (isCodeHandlerInstalled) {
-		log_print("Code handler installed...\n");
+		WHBLogPrint("Code handler installed...\n");
 		void (*codeHandlerFunction)() = (void (*)()) CODE_HANDLER_INSTALL_ADDRESS;
 
 		while (true) {
 			usleep(9000);
 
 			// considerApplyingSDCheats();
-			// log_print("Running code handler...\n");
+			// WHBLogPrint("Running code handler...\n");
 			codeHandlerFunction();
-			// log_print("Code handler done executing...\n");
+			// WHBLogPrint("Code handler done executing...\n");
 
 			if (assemblySize > 0) {
 				executeAssembly();
@@ -128,7 +129,7 @@ static signed int startTCPGeckoThread(signed int argc, void *argv) {
 			}
 		}
 	} else {
-		log_print("Code handler not installed...\n");
+		WHBLogPrint("Code handler not installed...\n");
 	}
 
 	return (signed int) 0;
@@ -206,7 +207,7 @@ void considerInitializingFileSystem() {
 }
 
 static s32 startTCPGeckoThread(s32 argc, void *argv) {
-	log_print("Starting TCP Gecko thread...\n");
+	WHBLogPrint("Starting TCP Gecko thread...\n");
 
 	// Run the TCP Gecko Installer server
 	struct pygecko_bss_t *bss;
@@ -225,20 +226,20 @@ static s32 startTCPGeckoThread(s32 argc, void *argv) {
 		free(bss);
 	}
 
-	log_print("TCP Gecko thread started...\n");
+	WHBLogPrint("TCP Gecko thread started...\n");
 
 	// Execute the code handler if it is installed
 	if (isCodeHandlerInstalled) {
-		log_print("Code handler installed...\n");
+		WHBLogPrint("Code handler installed...\n");
 		void (*codeHandlerFunction)() = (void (*)()) CODE_HANDLER_INSTALL_ADDRESS;
 
 		while (true) {
 			usleep(9000);
 
 			// considerApplyingSDCheats();
-			// log_print("Running code handler...\n");
+			// WHBLogPrint("Running code handler...\n");
 			codeHandlerFunction();
-			// log_print("Code handler done executing...\n");
+			// WHBLogPrint("Code handler done executing...\n");
 
 			if (assemblySize > 0) {
 				executeAssembly();
@@ -249,14 +250,14 @@ static s32 startTCPGeckoThread(s32 argc, void *argv) {
 			}
 		}
 	} else {
-		log_print("Code handler not installed...\n");
+		WHBLogPrint("Code handler not installed...\n");
 	}
 
 	return (s32) 0;
 }
 
 void startTCPGecko() {
-	log_print("Starting TCP Gecko...\n");
+	WHBLogPrint("Starting TCP Gecko...\n");
 
 	// Force the debugger to be initialized by default
 	// writeInt((unsigned int) (OSIsDebuggerInitialized + 0x1C), 0x38000001); // li r3, 1
@@ -280,7 +281,7 @@ void startTCPGecko() {
 	// OSSetThreadName(thread, "TCP Gecko");
 	OSResumeThread(thread);
 
-	log_print("TCP Gecko started...\n");
+	WHBLogPrint("TCP Gecko started...\n");
 }
 
 */

@@ -1,6 +1,7 @@
 //TCPGecko includes
 #include "tcpgecko/tcp_gecko.h"
-#include "utils/logger.h"
+//#include "utils/logger.h"
+#include <whb/log.h>
 
 //aRAMa code
 #include "arama.h"
@@ -9,7 +10,8 @@
 #include <coreinit/filesystem.h>
 #include <wups.h>
 #include <wups/storage.h>
-//#include <notifications/notifications.h>
+
+#include <whb/log_udp.h>
 
 //Metadata
 WUPS_PLUGIN_NAME("aRAMa");
@@ -34,6 +36,8 @@ WUPS_USE_WUT_MALLOC(); //Idk
 WUPS_USE_STORAGE("aRAMa");
 
 INITIALIZE_PLUGIN(){
+	WHBLogUdpInit();
+
 	/*
 	InitOSFunctionPointers();
 	InitSocketFunctionPointers();
@@ -56,6 +60,7 @@ DEINITIALIZE_PLUGIN(){
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
 	if (!(arama_settings & ARAMA_SET_ACTIVE)){
+		aRAMaDeInit();
 		return;
 	}
 	
@@ -63,7 +68,7 @@ void aRAMaReInit(){
 	if (arama_settings & ARAMA_SET_SD_CODES_ACTIVE){
 		//Init Gecko so it can load SD codes
 
-		log_print("aRAMa is active, checking for local codes for this title...\n");
+		WHBLogPrint("aRAMa is active, checking for local codes for this title...\n");
 
 		//Check SD codes
 
@@ -81,20 +86,21 @@ void aRAMaReInit(){
 	}
 	//If we're not offline, we must be online :bigbrain:
 	else{
-		
+		isOnline = true;
 		//This setting has not changed, and it returns the opposite of the previous check,
 		//So it can be used to check for Gecko being initialized
 		if (!(arama_settings && ARAMA_SET_SD_CODES_ACTIVE)){
 			//Gecko was not initialized earlier, so init now
 			//Init Gecko
 		}
-		if (TCPSetUp == false){
+		if (isOnline == true){
 			//Init TCP function
 		}
 	}
 }
 
 void aRAMaDeInit(){
+	WHBLogUdpDeinit();
 	//Something something free GeckoProcessor
 }
 

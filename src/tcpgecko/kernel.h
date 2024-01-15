@@ -6,11 +6,14 @@
 
 #include "assertions.h"
 #include "tcp_gecko.h"
-#include "../utils/logger.h"
+
+//#include "../utils/logger.h"
+#include <whb/log.h>
 
 //WUT includes
 #include <coreinit/memorymap.h>
 #include <coreinit/cache.h>
+#include <coreinit/thread.h>
 
 //This is a TCPGecko-specific wrapper over directly copying data with libkernel
 void GeckoKernelCopyData(unsigned char *destinationBuffer, unsigned char *sourceBuffer, unsigned int length) {
@@ -43,11 +46,11 @@ void writeKernelMemory(const void *address, uint32_t value) {
 int readKernelMemory(const void *address) {
 	// For addresses in that range use Chadderz' function to avoid crashing
 	if (address > (const void *) 0xF0000000) {
-		log_print("Using Chadderz' kern_read()...\n");
+		WHBLogPrint("Using Chadderz' kern_read()...\n");
 		return kern_read(address);
 	}
 
-	log_print("Using dimok's kernelCopy()...\n");
+	WHBLogPrint("Using dimok's kernelCopy()...\n");
 	unsigned char *readBuffer[sizeof(int)];
 	kernelCopyInt((unsigned char *) readBuffer, (unsigned char *) address, sizeof(int));
 

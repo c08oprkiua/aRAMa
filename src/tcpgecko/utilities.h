@@ -4,7 +4,8 @@
 //#include "../dynamic_libs/os_functions.h"
 #include <coreinit/cache.h>
 
-#include "../utils/logger.h"
+//#include "../utils/logger.h"
+#include <whb/log.h>
 #include "kernel.h"
 #include <stddef.h> /* size_t */
 
@@ -18,11 +19,11 @@ void writeCode(uint32_t address, uint32_t instruction) {
 /* Neither of these are used...?
 
 void patchFunction(char *function, char *patchBytes, unsigned int patchBytesSize, int functionOffset) {
-	log_print("Patching function...\n");
+	WHBLogPrint("Patching function...\n");
 	void *patchAddress = function + functionOffset;
-	log_printf("Patch address: %p\n", patchAddress);
+	WHBLogPrintf("Patch address: %p\n", patchAddress);
 	kernelCopyInt((unsigned char *) patchAddress, (unsigned char *) patchBytes, patchBytesSize);
-	log_print("Successfully patched!\n");
+	WHBLogPrint("Successfully patched!\n");
 }
 
 int memoryCompare(const void *s1, const void *s2, size_t n) {

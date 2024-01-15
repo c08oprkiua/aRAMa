@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "function_patcher.h": "c",
-        "cstdlib": "cpp",
-        "buffer": "cpp"
-    }
-}

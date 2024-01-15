@@ -29,7 +29,7 @@ enum code_mode{
     CODE_TCP,
     CODE_USB, // Future plans
     CODE_OTHER, //Just in case
-}
+};
 
 class CommandIO
 {

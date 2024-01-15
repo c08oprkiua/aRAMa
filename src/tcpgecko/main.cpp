@@ -85,7 +85,7 @@ void initializeScreen() {
 void install() {
 	installCodeHandler();
 	initializeUDPLog();
-	//log_print("Patching functions\n");
+	//WHBLogPrint("Patching functions\n");
 	//applyFunctionPatches();
 }
 

@@ -1,6 +1,5 @@
 #include "../command_handler.h"
 
-#include "../utils/logger.h"
 #include "assertions.h"
 //#include "../dynamic_libs/os_functions.h"
 #include <coreinit/dynload.h>
@@ -9,7 +8,7 @@
 #include <coreinit/filesystem.h>
 
 //#include "kernel.h"
-#include <kernel/kernel.
+#include <kernel/kernel.h>
 
 //audio video manager
 #include <avm/drc.h>
@@ -24,7 +23,7 @@ void CommandHandler::command_resume_console(){
 
 void CommandHandler::command_is_console_paused(){
 	bool paused = isConsolePaused();
-	log_printf("Paused: %d\n", paused);
+	WHBLogPrintf("Paused: %d\n", paused);
 	ret = sendByte((unsigned char)paused);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendByte (sending paused console status)")
 };
@@ -45,17 +44,17 @@ typedef enum {
 void writeConsoleState(ConsoleState state) {
 	// Get the value to write
 	int patchValue = state;
-	log_printf("Patch value: %x\n", patchValue);
+	WHBLogPrintf("Patch value: %x\n", patchValue);
 
 	// Write the value
 	unsigned int patchAddress = getConsoleStatePatchAddress();
-	log_printf("Patch address: %x\n", patchAddress);
+	WHBLogPrintf("Patch address: %x\n", patchAddress);
 	GeckoKernelCopyData((unsigned char *) patchAddress, (unsigned char *) &patchValue, 4);
 }
 
 bool isConsolePaused() {
 	unsigned int patchAddress = getConsoleStatePatchAddress();
-	log_printf("Patch address: %x\n", patchAddress);
+	WHBLogPrintf("Patch address: %x\n", patchAddress);
 	int value = *(unsigned int *) patchAddress;
 
 	return value == PAUSED;

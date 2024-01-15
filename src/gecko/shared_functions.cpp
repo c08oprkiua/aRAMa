@@ -1,4 +1,3 @@
-#include "shared_functions.h"
 #include "../tcpgecko/assertions.h"
 
 #include <stdlib.h>
@@ -53,13 +52,4 @@ void considerInitializingFileSystem() {
 
 		FSInitCmdBlock(commandBlock);
 	}
-}
-
-
-void reportIllegalCommandByte(int commandByte) {
-	char errorBuffer[ERROR_BUFFER_SIZE];
-	__os_snprintf(errorBuffer, ERROR_BUFFER_SIZE,
-				  "Illegal command byte received: 0x%02x\nServer Version: %s\nIf you see this,\nplease report this bug.",
-				  commandByte, SERVER_VERSION);
-	OSFatal(errorBuffer);
 }

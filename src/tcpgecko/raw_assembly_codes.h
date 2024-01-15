@@ -14,8 +14,8 @@ unsigned int getStartAddress() {
 
 void executeAssembly() {
 	int startAddress = getStartAddress();
-	log_printf("[Execute assembly] Start address: %i\n", startAddress);
+	WHBLogPrintf("[Execute assembly] Start address: %i\n", startAddress);
 	void (*function)() = (void (*)()) startAddress;
 	function();
-	log_print("[Execute assembly] Executed!\n");
+	WHBLogPrint("[Execute assembly] Executed!\n");
 }

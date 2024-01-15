@@ -19,7 +19,7 @@ void CommandHandler::command_persist_assembly(){
 
 void CommandHandler::command_clear_assembly(){
 	assemblySize = 0;
-	log_print("[Clear assembly] Assembly size 0\n");
+	WHBLogPrint("[Clear assembly] Assembly size 0\n");
 };
 
 #define ENDING_ADDRESS 0x10000000
