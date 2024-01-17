@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../common/fs_defs.h"
-#include "../utils/logger.h"
+//#include "../utils/logger.h"
+#include <whb/log.h>
 //#include "../dynamic_libs/os_functions.h"
 
 
@@ -47,7 +48,7 @@ void UnormR8G8B8A82Yuv420p(uint8_t **destination_, void *image_data, int *dest_i
 		*dest_img_size = 0;
 		return;
 	}
-	log_printf("allocated %d \n", *dest_img_size);
+	WHBLogPrintf("allocated %d \n", *dest_img_size);
 
 	R8G8B8A8_COLOR *buffer = (R8G8B8A8_COLOR *) image_data;
 
@@ -82,7 +83,7 @@ void UnormR8G8B8A82Yuv420p(uint8_t **destination_, void *image_data, int *dest_i
 		}
 	}
 	sleep(1);
-	log_printf("done %d \n", *dest_img_size);
+	WHBLogPrintf("done %d \n", *dest_img_size);
 }
 
 void UnormR10G10B10A2TogdImage(gdImagePtr *gdImgTmp, void *image_data, uint32_t width, uint32_t rows, uint32_t pitch) {

@@ -1,4 +1,4 @@
-#include "tcpgecko/tcp_gecko_commands.h"
+#include "gecko_commands.h"
 #include "gecko_processor.h"
 
 #include <nsysnet/socket.h>
@@ -208,7 +208,7 @@ int GeckoProcessor::processCommands() {
 	}
 	
 	error:
-	bss->error = ret;
+	error = ret;
 	return 0;
 	
 }

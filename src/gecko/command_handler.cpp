@@ -33,7 +33,6 @@
 #include <coreinit/dynload.h>
 #include "../tcpgecko/assertions.h"
 
-
 #define errno2 (*__gh_errno_ptr())
 #define MSG_DONT_WAIT 32
 #define E_WOULD_BLOCK 6
@@ -63,6 +62,11 @@ void CommandHandler::command_validate_address_range(){
 	int isAddressRangeValid = validateAddressRange(startingAddress, endingAddress);
 
 	sendByte((unsigned char)isAddressRangeValid);
+	return;
+	
+	error:
+	error = ret;
+	return;
 };
 
 void CommandHandler::command_read_threads(){
