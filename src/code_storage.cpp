@@ -29,46 +29,40 @@ void SaveaRAMaSettings(){
     }
 }
 
-
 //Big props to Inkay for serving as a model of how to do this stuff
-
-//it has to return int or WUPS config complains, lol
-int MakeWUPSGui(){
+int aRAMaConfig::LoadBaseConfigMenu(){
 
     //First we register the name of the plugin in WUPS base menu
-    WUPSConfigHandle base;
     WUPSConfig_CreateHandled(&base, "aRAMa");
 
     //Then we register categories, such as the settings for aRAMa
-    WUPSConfigCategoryHandle arama_category;
     WUPSConfig_AddCategoryByNameHandled(base, "aRAMa settings", &arama_category);
 
-    WUPSConfigCategoryHandle game_codes;
-    //Todo: Have it say the name of the app here instead of "this title"
-    WUPSConfig_AddCategoryByNameHandled(base, "Codes for this title", &game_codes);
-
+    //THIS IS PLACEHOLDER CODE
     WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "is_active", "aRAMa active",(arama_settings & ARAMA_SET_ACTIVE), &setting_changed);
-
-
-
+    WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "sd_codes", "Use SD codes", (arama_settings & ARAMA_SET_SD_CODES_ACTIVE), &setting_changed);
+    WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "notis_on", "Enable notifications", (arama_settings & ARAMA_SET_NOTIFICATIONS_ON), &setting_changed);
+    //Maybe use the custom fields of CategoryEx to make this a bit more clear, with "offline" and "online"
+    WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "be_offline", "Operate offline", (arama_settings & ARAMA_SET_NO_ONLINE), &setting_changed);
+    WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "autosave_codes", "Automatically save sent codes", (arama_settings & ARAMA_SET_AUTO_STORE_CODES), &setting_changed);
+    WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "caffiine_on", "Enable Caffiine", (arama_settings & ARAMA_ENABLE_CAFFIINE), &setting_changed);
+    WUPSConfigItemBoolean_AddToCategoryHandled(base, arama_category, "saviine_on", "Enable Saviine", (arama_settings & ARAMA_ENABLE_SAVIINE), &setting_changed);
 
     return 0;
 }
 
 void setting_changed(ConfigItemBoolean* item, bool new_value){
     //Determine which setting it is, edit accordingly, save
-    //switch (item->configId){
-
-    //}
-
+    uint32_t val_int; //=item->...something
 }
 
 //This will generate the WUPS Config screen per title for the game specific codes
-void GetCodesByTitle(){
+int aRAMaConfig::LoadCodesForCurrentTitle(){
     uint64_t current_title_id = OSGetTitleID();
     uint8_t iterate = 1;
-}
 
-void StoreSentCode(){
+    //Todo: Have it say the name of the app here instead of "this title"
+    WUPSConfig_AddCategoryByNameHandled(base, "Codes for this title", &codes_category);
 
+    return 0;
 }

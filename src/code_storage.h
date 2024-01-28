@@ -4,13 +4,11 @@
 #include <wups/config/WUPSConfigItemBoolean.h>
 #include <wups/config.h>
 
-//Create all the settings in WUPS storage
+//Create/fetch all the settings in WUPS storage
 void InitaRAMaSettings();
+//Save the settings to WUPS storage
 void SaveaRAMaSettings();
-//Get codes based on the TitleID
-void GetCodesByTitle();
 
-void StoreSentCode();
 
 class aRAMaConfig {
 public:
@@ -20,9 +18,11 @@ public:
     WUPSConfigCategoryHandle codes_category;
 
 
+    //these have to return int or WUPS config complains, lol
 
-    void LoadBaseConfigMenu();
-    void LoadCodesForCurrentTitle();
+    int LoadBaseConfigMenu();
+    //Get codes based on the TitleID
+    int LoadCodesForCurrentTitle();
 
     
 };
