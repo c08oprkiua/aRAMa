@@ -1,12 +1,12 @@
 #include "../command_handler.h"
 #include "./tcpgecko/kernel.h"
 
-void CommandHandler::command_execute_assembly(){
+inline void CommandHandler::command_execute_assembly(){
 	receiveString((unsigned char *)buffer, DATA_BUFFER_SIZE);
 	executeAssembly(buffer, DATA_BUFFER_SIZE);
 };
 
-void CommandHandler::command_persist_assembly(){
+inline void CommandHandler::command_persist_assembly(){
 	unsigned int length = receiveString((unsigned char *)buffer, DATA_BUFFER_SIZE);
 	assemblySize = length;
 
@@ -17,7 +17,7 @@ void CommandHandler::command_persist_assembly(){
 	GeckoKernelCopyData((unsigned char *) startAddress, buffer, assemblySize);
 };
 
-void CommandHandler::command_clear_assembly(){
+inline void CommandHandler::command_clear_assembly(){
 	assemblySize = 0;
 	WHBLogPrint("[Clear assembly] Assembly size 0\n");
 };
@@ -25,6 +25,6 @@ void CommandHandler::command_clear_assembly(){
 #define ENDING_ADDRESS 0x10000000
 unsigned int assemblySize = 0;
 
-unsigned int getStartAddress() {
+inline unsigned int getStartAddress() {
 	return ENDING_ADDRESS - assemblySize;
 }

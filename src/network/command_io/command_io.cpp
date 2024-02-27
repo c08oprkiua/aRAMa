@@ -3,6 +3,22 @@
 
 #include <nsysnet/socket.h>
 #include <coreinit/debug.h>
+#include <coreinit/memdefaultheap.h>
+
+inline void CommandIO::check_error(bool cond){
+	if (cond){                         
+		line = __LINE__;
+		goto error;
+	}
+}
+
+CommandIO::CommandIO(){
+	//alloc mem for buffer and stack
+}
+
+CommandIO::~CommandIO(){
+	//delete mem for buffer and stack
+}
 
 int CommandIO::getMode(int * result){
 	while (iLock)

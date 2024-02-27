@@ -2,7 +2,7 @@
 #include "./tcpgecko/hardware_breakpoints.h"
 #include "./tcpgecko/software_breakpoints.h"
 
-void CommandHandler::command_set_data_breakpoint(){
+inline void CommandHandler::command_set_data_breakpoint(){
 	// Read the data from the client
 	ret = recvwait(sizeof(int) + sizeof(bool) * 2);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (data breakpoint)");
@@ -19,7 +19,7 @@ void CommandHandler::command_set_data_breakpoint(){
 	// setDataBreakpoint(address, read, write);
 };
 
-void CommandHandler::command_set_instruction_breakpoint(){
+inline void CommandHandler::command_set_instruction_breakpoint(){
 	// Read the address
 	ret = recvwait(sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (instruction breakpoint)");
@@ -29,7 +29,7 @@ void CommandHandler::command_set_instruction_breakpoint(){
 	setInstructionBreakpoint(address);
 };
 
-void CommandHandler::command_toggle_breakpoint(){
+inline void CommandHandler::command_toggle_breakpoint(){
 	// Read the address
 	ret = recvwait(sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (toggle breakpoint)");
@@ -52,7 +52,7 @@ void CommandHandler::command_toggle_breakpoint(){
 	}
 };
 
-void CommandHandler::command_remove_all_breakpoints(){
+inline void CommandHandler::command_remove_all_breakpoints(){
 	//removeAllBreakpoints();
 	for (int index = 0; index < GENERAL_BREAKPOINTS_COUNT; index++) {
 		struct Breakpoint *breakpoint = &breakpoints[index];

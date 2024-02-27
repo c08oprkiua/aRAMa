@@ -135,9 +135,7 @@ static signed int startTCPGeckoThread(signed int argc, void *argv) {
 	return (signed int) 0;
 }
 
-
 //FROM tcp_gecko.cpp
-
 
 //#define CHECK_ERROR(cond) if (cond) { bss->line = __LINE__; goto error; }
 

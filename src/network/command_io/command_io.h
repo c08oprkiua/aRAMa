@@ -7,8 +7,8 @@
 
 #define MSG_DONT_WAIT 32
 
-#define FS_CLIENT_SIZE                  0x1700
-#define FS_CMD_BLOCK_SIZE               0xA80
+#define FS_CLIENT_SIZE 0x1700
+#define FS_CMD_BLOCK_SIZE 0xA80
 
 #define ERROR_BUFFER_SIZE 150
 #define DATA_BUFFER_SIZE 0x5000
@@ -19,7 +19,6 @@
 		line = __LINE__; \
 		goto error;       \
 	}
-
 FSClient *client;
 FSCmdBlock *commandBlock;
 bool kernelCopyServiceStarted;
@@ -31,12 +30,16 @@ enum code_mode{
     CODE_OTHER, //Just in case
 };
 
-class CommandIO
-{
+class CommandIO {
 public:
 
+    CommandIO();
+    ~CommandIO();
+
+    inline void check_error(bool cond);
+
     //Tells the backing code where to point to for retrieving codes
-    code_mode mode = CODE_SD_CARD;
+    code_mode mode;
 
     OSThread *thread;
     

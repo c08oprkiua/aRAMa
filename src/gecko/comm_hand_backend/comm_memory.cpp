@@ -1,7 +1,7 @@
 #include "../command_handler.h"
 
 
-void CommandHandler::command_read_memory()
+inline void CommandHandler::command_read_memory()
 {
 	const unsigned char *startingAddress, *endingAddress;
 	ret = recvwait(sizeof(int) * 2);
@@ -48,7 +48,7 @@ void CommandHandler::command_read_memory()
 	}
 };
 
-void CommandHandler::command_read_memory_kernel(){
+inline void CommandHandler::command_read_memory_kernel(){
 	const unsigned char *startingAddress, *endingAddress, *useKernRead;
 	ret = recvwait(3 * sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (receiving data)");
@@ -197,7 +197,7 @@ void CommandHandler::command_read_memory_kernel(){
 	*/
 };
 
-void CommandHandler::command_memory_search_32(){
+inline void CommandHandler::command_memory_search_32(){
 	ret = recvwait(sizeof(int) * 3);
 	CHECK_ERROR(ret < 0);
 	int address = ((int *)buffer)[0];
@@ -219,7 +219,7 @@ void CommandHandler::command_memory_search_32(){
 	CHECK_ERROR(ret < 0)
 };
 
-void CommandHandler::command_advanced_memory_search(){
+inline void CommandHandler::command_advanced_memory_search(){
 	// Receive the initial data
 	ret = recvwait(6 * sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (memory search information)")
@@ -276,7 +276,7 @@ void CommandHandler::command_advanced_memory_search(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (Sending search bytes occurrences)")
 };
 
-void CommandHandler::command_read_memory_compressed(){
+inline void CommandHandler::command_read_memory_compressed(){
 	// Receive the starting address and length 
 /*	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
@@ -352,7 +352,7 @@ void CommandHandler::command_read_memory_compressed(){
 	break;*/
 };
 
-void CommandHandler::command_upload_memory(){
+inline void CommandHandler::command_upload_memory(){
 	// Receive the starting and ending addresses
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)

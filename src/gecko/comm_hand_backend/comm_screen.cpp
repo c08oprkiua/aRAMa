@@ -92,7 +92,7 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorB
 
 WUPS_MUST_REPLACE(GX2CopyColorBufferToScanBuffer, WUPS_LOADER_LIBRARY_GX2, GX2CopyColorBufferToScanBuffer);
 
-void CommandHandler::command_take_screenshot(){
+inline void CommandHandler::command_take_screenshot(){
 	// Tell the hook to dump the screen shot now
 	shouldTakeScreenShot = true;
 
@@ -157,7 +157,7 @@ void CommandHandler::command_take_screenshot(){
 };
 
 //TODO: Make this cause a notification to appear onscreen
-void CommandHandler::command_write_screen(){
+inline void CommandHandler::command_write_screen(){
 	char message[WRITE_SCREEN_MESSAGE_BUFFER_SIZE];
 	ret = recvwait(4);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (write screen seconds)")

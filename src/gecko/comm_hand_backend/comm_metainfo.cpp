@@ -6,13 +6,13 @@
 #define VERSION_HASH 0x7FB223
 #define SERVER_VERSION "01/11/2024"
 
-void CommandHandler::command_server_status(){
+inline void CommandHandler::command_server_status(){
 	ret = sendByte(1);
 	CHECK_ERROR(ret < 0)
 	return;
 };
 
-void CommandHandler::command_server_version(){
+inline void CommandHandler::command_server_version(){
 	char versionBuffer[50];
 	strcpy(versionBuffer, SERVER_VERSION);
 	int versionLength = strlen(versionBuffer);
@@ -24,7 +24,7 @@ void CommandHandler::command_server_version(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (server version)");
 };
 
-void CommandHandler::command_account_identifier(){
+inline void CommandHandler::command_account_identifier(){
 	// Acquire the RPL
 
 	/*Unneeded in WUT
@@ -61,7 +61,7 @@ void CommandHandler::command_account_identifier(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (persistent identifier)")
 };
 
-void CommandHandler::command_get_os_version(){
+inline void CommandHandler::command_get_os_version(){
 	MCPSystemVersion version;
 	//Idk what to put for handle
 	MCP_GetSystemVersion(0, &version);
@@ -74,7 +74,7 @@ void CommandHandler::command_get_os_version(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (OS version)");
 };
 
-void CommandHandler::command_get_data_buffer_size(){
+inline void CommandHandler::command_get_data_buffer_size(){
 	WHBLogPrintf("COMMAND_GET_DATA_BUFFER_SIZE...\n");
 	((int *)buffer)[0] = DATA_BUFFER_SIZE;
 	WHBLogPrintf("Sending buffer size...\n");
@@ -83,12 +83,12 @@ void CommandHandler::command_get_data_buffer_size(){
 	CHECK_ERROR(ret < 0)
 };
 
-void CommandHandler::command_get_version_hash(){
+inline void CommandHandler::command_get_version_hash(){
 	((int *)buffer)[0] = VERSION_HASH;
 	ret = sendwait(4);
 };
 
-void CommandHandler::command_get_code_handler_address(){
+inline void CommandHandler::command_get_code_handler_address(){
 	((int *)buffer)[0] = CODE_HANDLER_INSTALL_ADDRESS;
 	ret = sendwait(4);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (code handler address)")

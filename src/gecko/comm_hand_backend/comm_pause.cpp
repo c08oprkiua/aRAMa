@@ -13,15 +13,15 @@
 //audio video manager
 #include <avm/drc.h>
 
-void CommandHandler::command_pause_console(){
+inline void CommandHandler::command_pause_console(){
 	writeConsoleState(PAUSED);
 };
 
-void CommandHandler::command_resume_console(){
+inline void CommandHandler::command_resume_console(){
 	writeConsoleState(RUNNING);
 };
 
-void CommandHandler::command_is_console_paused(){
+inline void CommandHandler::command_is_console_paused(){
 	bool paused = isConsolePaused();
 	WHBLogPrintf("Paused: %d\n", paused);
 	ret = sendByte((unsigned char)paused);

@@ -1,4 +1,4 @@
-#include "./network/net_common.h"
+#include "./network/command_io/command_io.h"
 
 class Caffiine: public CommandIO {
     void caf_connect(uint32_t ip);

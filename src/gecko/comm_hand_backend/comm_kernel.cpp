@@ -1,6 +1,6 @@
 #include "../command_handler.h"
 
-void CommandHandler::command_kernel_write(){
+inline void CommandHandler::command_kernel_write(){
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
 
@@ -10,7 +10,7 @@ void CommandHandler::command_kernel_write(){
 	writeKernelMemory(address, (uint32_t)value);
 };
 
-void CommandHandler::command_kernel_read(){
+inline void CommandHandler::command_kernel_read(){
 	ret = recvwait(sizeof(int));
 	CHECK_ERROR(ret < 0)
 
@@ -21,7 +21,7 @@ void CommandHandler::command_kernel_read(){
 	sendwait(sizeof(int));
 };
 
-void CommandHandler::command_run_kernel_copy_service(){
+inline void CommandHandler::command_run_kernel_copy_service(){
 	if (!kernelCopyServiceStarted)
 	{
 		kernelCopyServiceStarted = true;
