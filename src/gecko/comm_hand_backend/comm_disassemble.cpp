@@ -2,7 +2,7 @@
 
 #include <coreinit/debug.h>
 
-inline void CommandHandler::command_disassemble_range(){
+void CommandHandler::command_disassemble_range(){
 	// Receive the starting, ending address and the disassembler options
 	ret = recvwait(4 + 4 + 4);
 	CHECK_ERROR(ret < 0)
@@ -27,7 +27,7 @@ inline void CommandHandler::command_disassemble_range(){
 	disassemblerBuffer = (char *)disassemblerBufferPointer;
 }
 
-inline void CommandHandler::command_memory_disassemble(){
+void CommandHandler::command_memory_disassemble(){
 	// Receive the starting address, ending address and disassembler options
 	ret = recvwait(sizeof(int) * 3);
 	CHECK_ERROR(ret < 0)

@@ -5,19 +5,12 @@
 #include <coreinit/debug.h>
 #include <coreinit/memdefaultheap.h>
 
-inline void CommandIO::check_error(bool cond){
-	if (cond){                         
-		line = __LINE__;
-		goto error;
-	}
-}
-
 CommandIO::CommandIO(){
-	//alloc mem for buffer and stack
+	//alloc mem for buffer and stack?
 }
 
 CommandIO::~CommandIO(){
-	//delete mem for buffer and stack
+	//delete mem for buffer and stack?
 }
 
 int CommandIO::getMode(int * result){
@@ -61,7 +54,7 @@ int CommandIO::recvwait(int len){
 		ret = recv(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
 		len -= ret;
-		buffer += ret; //hmm
+		*buffer += ret; //hmm
 	}
 	return 0;
 
@@ -88,7 +81,7 @@ int CommandIO::sendwait(int len){
 		ret = send(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
 		len -= ret;
-		buffer += ret;
+		*buffer += ret;
 	}
 	return;
 
@@ -125,7 +118,7 @@ int CommandIO::recvwaitlen(int len) {
 		ret = recv(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
 		len -= ret;
-		buffer = &buffer + ret;
+		*buffer += ret;
 	}
 	return 0;
 

@@ -2,7 +2,7 @@
 
 #include <coreinit/cache.h>
 
-inline void CommandHandler::command_write_8()
+void CommandHandler::command_write_8()
 {
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0);
@@ -13,7 +13,7 @@ inline void CommandHandler::command_write_8()
 	return;
 };
 
-inline void CommandHandler::command_write_16()
+void CommandHandler::command_write_16()
 {
 	short *destinationAddress;
 	ret = recvwait(sizeof(int) * 2);
@@ -25,7 +25,7 @@ inline void CommandHandler::command_write_16()
 	return;
 };
 
-inline void CommandHandler::command_write_32()
+void CommandHandler::command_write_32()
 {
 	int destinationAddress, value;
 	ret = recvwait(sizeof(int) * 2);

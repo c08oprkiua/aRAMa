@@ -1,8 +1,8 @@
 #include "gecko/gecko_processor.h"
 #include "arama.h"
 
-#include "tcpgecko/raw_assembly_codes.h"
-#include "tcpgecko/sd_codes.h"
+//#include "tcpgecko/raw_assembly_codes.h"
+//#include "tcpgecko/sd_codes.h"
 
 #include <nsysnet/socket.h>
 #include <gx2/event.h>
@@ -76,14 +76,14 @@ int runGeckoServer(uint32_t argc, char *argv){
 static int CreateGeckoThread(){
 	WHBLogPrint("Starting aRAMa thread. Welcome To The Next Level!\n");
 	GeckoProcessor geck_proc;
+	return 1; //idk
 }
 
-static signed int startTCPGeckoThread(signed int argc, void *argv) {
+static signed int startTCPGeckoThread(GeckoProcessor *geck_proc) {
 	WHBLogPrint("Starting TCP Gecko thread...\n");
 
 	// Run the TCP Gecko Installer server
-	GeckoProcessor geck_proc;
-
+	
     /*
 	bss = (struct pygecko_bss_t *) memalign(0x40, sizeof(struct pygecko_bss_t));
 	if (bss == 0)
@@ -92,17 +92,16 @@ static signed int startTCPGeckoThread(signed int argc, void *argv) {
     */
 
 	if (OSCreateThread(
-		geck_proc.thread, 
+		geck_proc->thread, 
 		(OSThreadEntryPointFn) runGeckoServer, 
 		(uint32_t) 1, 
-		(char *) &geck_proc,
-		(void *)geck_proc.stack + sizeof(geck_proc.stack), 
-		sizeof(geck_proc.stack), 
+		(char *) geck_proc,
+		(void *)(geck_proc->stack + sizeof(geck_proc->stack)), 
+		sizeof(geck_proc->stack), 
 		0, 
-		0xc
-		) 
-	== 1) {
-		OSResumeThread(geck_proc.thread);
+		0xC
+		) == true) {
+		OSResumeThread(geck_proc->thread);
 	}
 
 	WHBLogPrint("TCP Gecko thread started...\n");
@@ -120,12 +119,14 @@ static signed int startTCPGeckoThread(signed int argc, void *argv) {
 			codeHandlerFunction();
 			// WHBLogPrint("Code handler done executing...\n");
 
+			/* Assembly codes are not yet supported by aRAMa
 			if (assemblySize > 0) {
 				executeAssembly();
 			}
+			*/
 
-			if (arama_settings && ARAMA_SET_SD_CODES_ACTIVE) {
-				considerApplyingSDCheats();
+			if (arama_settings & ARAMA_SET_SD_CODES_ACTIVE) {
+				//considerApplyingSDCheats();
 			}
 		}
 	} else {

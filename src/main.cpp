@@ -1,17 +1,21 @@
 //TCPGecko includes
-#include "tcpgecko/tcp_gecko.h"
+//#include "tcpgecko/tcp_gecko.h"
 //#include "utils/logger.h"
 #include <whb/log.h>
-
-//aRAMa code
-#include "arama.h"
-#include "code_storage.h"
 
 #include <coreinit/filesystem.h>
 #include <wups.h>
 #include <wups/storage.h>
 
 #include <whb/log_udp.h>
+
+//aRAMa code
+#include "arama.h"
+#include "code_storage.h"
+
+
+GeckoProcessor *processor;
+
 
 //Metadata
 WUPS_PLUGIN_NAME("aRAMa");
@@ -28,7 +32,7 @@ WUPS_PLUGIN_DESCRIPTION("RAM magic for Aroma");
 - from meta.xml
 */
 WUPS_PLUGIN_VERSION("v0.1");
-WUPS_PLUGIN_AUTHOR("aRAMa: c08o.prkiua \n TCPGecko: BullyWiiPlaza + contributors");
+WUPS_PLUGIN_AUTHOR("aRAMa: c08o.prkiua; TCPGecko: BullyWiiPlaza + contributors");
 WUPS_PLUGIN_LICENSE("GPLv3");
 
 WUPS_USE_WUT_DEVOPTAB();
@@ -37,7 +41,7 @@ WUPS_USE_STORAGE("aRAMa");
 
 INITIALIZE_PLUGIN(){
 	WHBLogUdpInit();
-
+	
 	/*
 	InitOSFunctionPointers();
 	InitSocketFunctionPointers();
@@ -49,12 +53,15 @@ INITIALIZE_PLUGIN(){
 		socket_lib_init();
 		initializeUDPLog();
 	*/
-	InitaRAMaSettings();
+	
+	//InitaRAMaSettings();
+	
 	aRAMaReInit(); //"Re"Init, but init and reinit are identical, so
 }
 
 DEINITIALIZE_PLUGIN(){
 	aRAMaDeInit();
+
 }
 
 void aRAMaReInit(){
@@ -64,6 +71,9 @@ void aRAMaReInit(){
 		return;
 	}
 	
+	//Init gecko here
+
+
 	//SD codes get priority, regardless of being online
 	if (arama_settings & ARAMA_SET_SD_CODES_ACTIVE){
 		//Init Gecko so it can load SD codes
@@ -74,28 +84,33 @@ void aRAMaReInit(){
 
 		//deinit if offline and no codes are found
 	}
+
 	if (arama_settings & ARAMA_SET_NO_ONLINE){
 		isOnline = false;
-		//If aRAMa is active and offline, but SD codes are disabled, no reason
-		//to keep it loaded in cause it'll sit there doing nothing
+		
 		if (!(arama_settings & ARAMA_SET_SD_CODES_ACTIVE)){
+			//If aRAMa is active and offline, but SD codes are disabled, no reason
+			//to keep it loaded in cause it'll sit there doing nothing
 			aRAMaDeInit();
+			return;
 		}
 		//Start aRAMa offline, with only SD codes
 		return;
 	}
 	//If we're not offline, we must be online :bigbrain:
-	else{
+	else {
 		isOnline = true;
 		//This setting has not changed, and it returns the opposite of the previous check,
 		//So it can be used to check for Gecko being initialized
-		if (!(arama_settings && ARAMA_SET_SD_CODES_ACTIVE)){
-			//Gecko was not initialized earlier, so init now
-			//Init Gecko
+		if (!(arama_settings & ARAMA_SET_SD_CODES_ACTIVE)){
+			//Run SD codes
 		}
+
 		if (isOnline == true){
 			//Init TCP function
 		}
+		//activate Gecko
+
 	}
 }
 

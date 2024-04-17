@@ -1,3 +1,6 @@
+#ifdef CODE_STORAGE_H
+#define CODE_STORAGE_H
+
 #include <wups/storage.h>
 #include <wups.h>
 
@@ -9,7 +12,6 @@ void InitaRAMaSettings();
 //Save the settings to WUPS storage
 void SaveaRAMaSettings();
 
-
 class aRAMaConfig {
 public:
 
@@ -19,10 +21,11 @@ public:
 
 
     //these have to return int or WUPS config complains, lol
-
     int LoadBaseConfigMenu();
     //Get codes based on the TitleID
     int LoadCodesForCurrentTitle();
 
     
 };
+
+#endif 

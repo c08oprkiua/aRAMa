@@ -1,3 +1,6 @@
+#ifndef CAFFIINE_H
+#define CAFFIINE_H
+
 #include "./network/command_io/command_io.h"
 
 class Caffiine: public CommandIO {
@@ -21,3 +24,5 @@ class Caffiine: public CommandIO {
 
     void send_ping(int val1, int val2);
 };
+
+#endif

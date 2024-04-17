@@ -1,3 +1,6 @@
+#ifndef COMMAND_HANDLER_H
+#define COMMAND_HANDLER_H
+
 #include "../network/command_io/command_io.h"
 
 #include <whb/log.h>
@@ -10,68 +13,80 @@ public:
     static void reportIllegalCommandByte(int byte);
 
     /*
-    All of these are inline to preserve the original function's structure, 
+    All of these are to preserve the original function's structure, 
     while also debloating that function for easier maintenence.
     */
-    inline void command_write_8();
-    inline void command_write_16();
-    inline void command_write_32();
+    //comm_write_int
+    void command_write_8();
+    void command_write_16();
+    void command_write_32();
 
-    inline void command_read_memory();
-    inline void command_read_memory_kernel();
-    inline void command_memory_search_32();
-    inline void command_advanced_memory_search();
+    //comm_memory
+    void command_read_memory();
+    void command_read_memory_kernel();
+    void command_memory_search_32();
+    void command_advanced_memory_search();
+    void command_read_memory_compressed();
+    void command_upload_memory();
 
-    inline void command_validate_address_range();
-    inline void command_disassemble_range();
-    inline void command_memory_disassemble();
-    inline void command_read_memory_compressed();
+    //command_handler
+        //comm_memory?
+    void command_validate_address_range();
+        //comm_debug?
+    void command_read_threads();
+    void command_follow_pointer();
+    void command_remote_procedure_call();
+    void command_get_symbol();
+    void command_poke_registers();
+    void command_get_stack_trace();
+    void commmand_get_entry_point_address();
 
-    inline void command_kernel_write();
-    inline void command_kernel_read();
+    //comm_disassemble
+    void command_disassemble_range();
+    void command_memory_disassemble();
 
-    inline void command_take_screenshot();
+    //comm_kernel
+    void command_kernel_write();
+    void command_kernel_read();
+    void command_run_kernel_copy_service();
 
-    inline void command_upload_memory();
+    //comm_screen
+    void command_take_screenshot();
+    void command_write_screen();
 
-    inline void command_server_status();
-    inline void command_server_version();
 
-    inline void command_get_data_buffer_size();
+    //comm_metainfo
+    void command_server_status();
+    void command_server_version();
+    void command_get_data_buffer_size();
+    void command_get_code_handler_address();
+    void command_account_identifier();
+    void command_get_os_version();
+    void command_get_version_hash();
 
-    inline void command_read_file();
-    inline void command_read_directory();
-    inline void command_replace_file();
 
-    inline void command_get_code_handler_address();
-    inline void command_read_threads();
-    inline void command_account_identifier();
-    inline void command_write_screen();
-    inline void command_follow_pointer();
-    inline void command_remote_procedure_call();
-    inline void command_get_symbol();
-    inline void command_memory_search_32();
-    inline void command_advanced_memory_search();
-    inline void command_execute_assembly();
+    //comm_fs
+    void command_read_file();
+    void command_read_directory();
+    void command_replace_file();
+    void command_iosu_hax_read_file();
 
-    inline void command_pause_console();
-    inline void command_resume_console();
-    inline void command_is_console_paused();
+    //comm_asm
+    void command_execute_assembly();
+    void command_persist_assembly();
+    void command_clear_assembly();
 
-    inline void command_get_os_version();
+    //comm_pause
+    void command_pause_console();
+    void command_resume_console();
+    void command_is_console_paused();
 
-    inline void command_set_data_breakpoint();
-    inline void command_set_instruction_breakpoint();
-    inline void command_toggle_breakpoint();
-    inline void command_remove_all_breakpoints();
+    //comm_breakpoint
+    void command_set_data_breakpoint();
+    void command_set_instruction_breakpoint();
+    void command_toggle_breakpoint();
+    void command_remove_all_breakpoints();
 
-    inline void command_poke_registers();
-    inline void command_get_stack_trace();
-    inline void commmand_get_entry_point_address();
-    inline void command_run_kernel_copy_service();
-    inline void command_iosu_hax_read_file();
-    inline void command_get_version_hash();
-
-    inline void command_persist_assembly();
-    inline void command_clear_assembly();
 };
+
+#endif

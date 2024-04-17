@@ -1,3 +1,6 @@
+#ifndef COMMAND_IO_H
+#define COMMAND_IO_H
+
 #include <coreinit/thread.h>
 #include <coreinit/filesystem.h>
 
@@ -36,8 +39,6 @@ public:
     CommandIO();
     ~CommandIO();
 
-    inline void check_error(bool cond);
-
     //Tells the backing code where to point to for retrieving codes
     code_mode mode;
 
@@ -73,3 +74,5 @@ public:
 
     void log_string(const char *str, char flag_byte);
 };
+
+#endif

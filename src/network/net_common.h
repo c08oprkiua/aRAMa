@@ -1,3 +1,6 @@
+#ifndef NET_COMMON_H
+#define NET_COMMON_H
+
 /*
 #include "command_io/command_io.h"
 #include "caffiine/caffiine.h"
@@ -45,3 +48,5 @@
 
 //iLock just looks to be a mutex, lol
 static volatile int iLock = 0;
+
+#endif

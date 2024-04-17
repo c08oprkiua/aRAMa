@@ -3,7 +3,7 @@
 #include <coreinit/filesystem.h>
 
 
-inline void CommandHandler::command_read_file(){
+void CommandHandler::command_read_file(){
 	char file_path[FS_MAX_FULLPATH_SIZE] = {0};
 	receiveString((unsigned char *)file_path, FS_MAX_FULLPATH_SIZE);
 
@@ -63,7 +63,7 @@ inline void CommandHandler::command_read_file(){
 	}
 };
 
-inline void CommandHandler::command_read_directory(){
+void CommandHandler::command_read_directory(){
 	char directory_path[FS_MAX_FULLPATH_SIZE] = {0};
 	receiveString((unsigned char *)directory_path, FS_MAX_FULLPATH_SIZE);
 
@@ -114,7 +114,7 @@ inline void CommandHandler::command_read_directory(){
 	}
 };
 
-inline void CommandHandler::command_replace_file(){
+void CommandHandler::command_replace_file(){
 	// TODO FSOpenFile ACCESS_ERROR
 
 	// Receive the file path
@@ -193,7 +193,7 @@ inline void CommandHandler::command_replace_file(){
 	}
 };
 
-inline void CommandHandler::command_iosu_hax_read_file(){
+void CommandHandler::command_iosu_hax_read_file(){
 	/*WHBLogPrint("COMMAND_IOSUHAX_READ_FILE");
 
 	// TODO Crashes console on this call

@@ -51,7 +51,7 @@
 // The time the producer and consumer wait while there is nothing to do
 #define WAITING_TIME_MILLISECONDS 1
 
-inline void CommandHandler::command_validate_address_range(){
+void CommandHandler::command_validate_address_range(){
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
 
@@ -69,7 +69,7 @@ inline void CommandHandler::command_validate_address_range(){
 	return;
 };
 
-inline void CommandHandler::command_read_threads(){
+void CommandHandler::command_read_threads(){
 	struct node *threads = getAllThreads();
 	int threadCount = length(threads);
 	WHBLogPrintf("Thread Count: %i\n", threadCount);
@@ -98,7 +98,7 @@ inline void CommandHandler::command_read_threads(){
 	destroy(threads);
 };
 
-inline void CommandHandler::command_follow_pointer(){
+void CommandHandler::command_follow_pointer(){
 	ret = recvwait(sizeof(int) * 2);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (Pointer address and offsets count)")
 
@@ -151,7 +151,7 @@ inline void CommandHandler::command_follow_pointer(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (destination address)")
 };
 
-inline void CommandHandler::command_remote_procedure_call(){
+void CommandHandler::command_remote_procedure_call(){
 	int r3, r4, r5, r6, r7, r8, r9, r10;
 
 	WHBLogPrint("Receiving RPC information...\n");
@@ -182,7 +182,7 @@ inline void CommandHandler::command_remote_procedure_call(){
 	WHBLogPrint("Result successfully sent...\n");
 };
 
-inline void CommandHandler::command_get_symbol(){
+void CommandHandler::command_get_symbol(){
 	int size = recvbyte();
 	CHECK_ERROR(size < 0)
 
@@ -206,7 +206,7 @@ inline void CommandHandler::command_get_symbol(){
 	CHECK_ERROR(ret < 0)
 };
 
-inline void CommandHandler::command_poke_registers(){
+void CommandHandler::command_poke_registers(){
 	WHBLogPrint("Receiving poke registers data...\n");
 	int gprSize = 4 * 32;
 	int fprSize = 8 * 32;
@@ -216,7 +216,7 @@ inline void CommandHandler::command_poke_registers(){
 	memcpy((void *)crashContext.fpr, (const void *)buffer, fprSize);
 };
 
-inline void CommandHandler::command_get_stack_trace(){
+void CommandHandler::command_get_stack_trace(){
 	WHBLogPrint("Getting stack trace...\n");
 	struct node *stackTrace = getStackTrace(NULL);
 	int stackTraceLength = length(stackTrace);
@@ -240,7 +240,7 @@ inline void CommandHandler::command_get_stack_trace(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (stack trace)");
 };
 
-inline void CommandHandler::commmand_get_entry_point_address(){
+void CommandHandler::commmand_get_entry_point_address(){
 	uint32_t *entryPointAddress = (uint32_t *)*((uint32_t *)OS_SPECIFICS->addr_OSTitle_main_entry);
 	((uint32_t *)buffer)[0] = (uint32_t)entryPointAddress;
 	ret = sendwait(sizeof(int));
