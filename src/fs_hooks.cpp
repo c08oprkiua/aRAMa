@@ -2,8 +2,6 @@
 
 #include <coreinit/filesystem.h>
 
-#include <gctypes.h>
-
 //#include "utils/logger.h"
 #include <whb/log.h>
 
@@ -19,7 +17,7 @@ DECL_FUNCTION(int, FSOpenFileAsync, void *pClient, void *pCmd, const char *path,
 	return real_FSOpenFileAsync(pClient, pCmd, path, mode, handle, error, asyncParams);
 }
 
-DECL_FUNCTION(int, FSOpenDir, void *pClient, void *pCmd, const char *path, s32 *dh, int errHandling) {
+DECL_FUNCTION(int, FSOpenDir, void *pClient, void *pCmd, const char *path, int32_t *dh, int errHandling) {
 	WHBLogPrintf("FSOpenDir(): %s", path);
 	return real_FSOpenDir(pClient, pCmd, path, dh, errHandling);
 }

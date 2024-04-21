@@ -2,11 +2,13 @@
 #define COMMAND_IO_H
 
 #include <coreinit/thread.h>
+#include <coreinit/mutex.h>
 #include <coreinit/filesystem.h>
+#include <whb/log.h>
 
-#include "../net_common.h"
+#include "net_common.h"
 
-#define SERVER_VERSION "06/03/2017"
+#define SERVER_VERSION "4/17/2024"
 
 #define MSG_DONT_WAIT 32
 
@@ -16,31 +18,32 @@
 #define ERROR_BUFFER_SIZE 150
 #define DATA_BUFFER_SIZE 0x5000
 
+
 #define CHECK_ERROR(cond)     \
 	if (cond)                 \
 	{                         \
 		line = __LINE__; \
 		goto error;       \
-	}
-FSClient *client;
-FSCmdBlock *commandBlock;
-bool kernelCopyServiceStarted;
+}
 
-enum code_mode{
-    CODE_SD_CARD,
-    CODE_TCP,
-    CODE_USB, // Future plans
-    CODE_OTHER, //Just in case
-};
+#define ASSERT_FUNCTION_SUCCEEDED(returnValue, functionName) \
+    if (returnValue < 0) { \
+        char buffer[100] = {0}; \
+        WHBLogPrintf(buffer, 100, "%s failed with return value: %i", functionName, returnValue); \
+        OSFatal(buffer); \
+} \
+
+static FSClient *client;
+static FSCmdBlock *commandBlock;
+static bool kernelCopyServiceStarted;
 
 class CommandIO {
 public:
 
+    static OSMutex iLock;
+
     CommandIO();
     ~CommandIO();
-
-    //Tells the backing code where to point to for retrieving codes
-    code_mode mode;
 
     OSThread *thread;
     

@@ -31,7 +31,7 @@
 */
 
 #include <coreinit/dynload.h>
-#include "../tcpgecko/assertions.h"
+//#include "../tcpgecko/assertions.h"
 
 #define errno2 (*__gh_errno_ptr())
 #define MSG_DONT_WAIT 32
@@ -108,7 +108,7 @@ void CommandHandler::command_follow_pointer(){
 
 	// Receive the offsets
 	ret = recvwait(offsetsCount * sizeof(int));
-	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (offsets)")
+	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (offsets)");
 	int offsets[offsetsCount];
 	int offsetIndex = 0;
 	for (; offsetIndex < offsetsCount; offsetIndex++)
@@ -148,7 +148,7 @@ void CommandHandler::command_follow_pointer(){
 	// Return the destination address
 	((int *)buffer)[0] = destinationAddress;
 	ret = sendwait(sizeof(int));
-	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (destination address)")
+	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (destination address)");
 };
 
 void CommandHandler::command_remote_procedure_call(){
@@ -156,7 +156,7 @@ void CommandHandler::command_remote_procedure_call(){
 
 	WHBLogPrint("Receiving RPC information...\n");
 	ret = recvwait(sizeof(int) + 8 * sizeof(int));
-	ASSERT_FUNCTION_SUCCEEDED(ret, "revcwait() Receiving RPC information")
+	ASSERT_FUNCTION_SUCCEEDED(ret, "revcwait() Receiving RPC information");
 	WHBLogPrint("RPC information received...\n");
 
 	long long (*function)(int, int, int, int, int, int, int, int);
@@ -178,16 +178,16 @@ void CommandHandler::command_remote_procedure_call(){
 	WHBLogPrint("Sending result...\n");
 	((long long *)buffer)[0] = result;
 	ret = sendwait(sizeof(long long));
-	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait() Sending return value")
+	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait() Sending return value");
 	WHBLogPrint("Result successfully sent...\n");
 };
 
 void CommandHandler::command_get_symbol(){
 	int size = recvbyte();
-	CHECK_ERROR(size < 0)
+	CHECK_ERROR(size < 0);
 
 	ret = recvwait(size);
-	CHECK_ERROR(ret < 0)
+	CHECK_ERROR(ret < 0);
 
 	/* Identify the RPL name and symbol name */
 	char *rplName = (char *)&((int *)buffer)[2];
@@ -203,7 +203,7 @@ void CommandHandler::command_get_symbol(){
 
 	((int *)buffer)[0] = (int)function_address;
 	ret = sendwait(4);
-	CHECK_ERROR(ret < 0)
+	CHECK_ERROR(ret < 0);
 };
 
 void CommandHandler::command_poke_registers(){

@@ -46,7 +46,5 @@
 #define MASK_COMMON           0x0200
 #define MASK_COMMON_CLEAN     0x0400
 
-//iLock just looks to be a mutex, lol
-static volatile int iLock = 0;
 
 #endif

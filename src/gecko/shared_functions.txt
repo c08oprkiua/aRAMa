@@ -1,5 +1,3 @@
-#include "../tcpgecko/assertions.h"
-
 #include <stdlib.h>
 
 #include <coreinit/debug.h>

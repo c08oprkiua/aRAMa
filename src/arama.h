@@ -2,39 +2,25 @@
 #define ARAMA_H
 
 #include "gecko/gecko_processor.h"
+#include "code_handler.h"
+#include "config.h"
+#include "network/caffiine.h"
+#include "network/saviine.h"
 
-#define ARAMA_SET_ACTIVE 1 << 0
-#define ARAMA_SET_SD_CODES_ACTIVE 1 << 1
-#define ARAMA_SET_NOTIFICATIONS_ON 1 << 2
-#define ARAMA_SET_NO_ONLINE 1 << 3
-#define ARAMA_SET_AUTO_STORE_CODES 1 << 4
-#define ARAMA_ENABLE_CAFFIINE 1 << 5
-#define ARAMA_ENABLE_SAVIINE 1 << 6
+static GeckoProcessor *gecko = nullptr;
+static CodeHandler *c_h = nullptr;
+static aRAMaConfig *config = nullptr;
+static Saviine *saviine = nullptr;
+static Caffiine *caffiine = nullptr;
 
-enum ARAMA_SETTINGS {
-	ACTIVE = 1 << 0,
-	SD_CODES_ACTIVE = 1 << 1,
-	NOTIFICATIONS_ON = 1 << 2,
-	NO_ONLINE = 1 << 3,
-	AUTO_STORE_CODES = 1 << 4,
-	ENABLE_CAFFIINE = 1 << 5,
-	ENABLE_SAVIINE = 1 << 6
-};
-
-//This is a bitfield of STORED values
-//It has to be uint32_t for WUPS storage
-uint32_t arama_settings = (ARAMA_SET_ACTIVE | ARAMA_SET_NOTIFICATIONS_ON);
-
-//Todo: Get IP from console, display in WUPS menu a la FTPiiU
-uint32_t ip_address;
-
-bool geckoSetUp = false;
-bool isOnline = true;
-bool isCodeHandlerInstalled = false;
-bool areNotificationsOn = true;
-
+//This function is responsible for loading up all the things that should be active, 
+//and nothing that shouldn't be active.
+void aRAMaReInit();
+//This function does the opposite of aRAMaReInit
+void aRAMaDeInit();
 
 static int CreateGeckoThread();
-static signed int runGeckoServer(GeckoProcessor *processor);
+
+static int CreateCaffiineThread();
 
 #endif

@@ -1,30 +1,46 @@
 # What is this?
-This is an unofficial TCPGecko port/rewrite for Aroma. 
 
-**At the time of writing this, this is a work in progress and does not work yet**. 
+This is an unofficial TCPGecko rewrite and port for Aroma. It contains several improvements, including notifications, enabling and disabling specific features via the plugin config menu, and more.
+
+### **At the time of writing this, this is a work in progress and is not usable yet**.
 
 # How do I use this?
-This is a plugin for Aroma. Check to make sure it is enabled in the plugin menu. You will have an option in the plugin menu to use "SD codes", which are codes that are locally stored on the SD card instead of sent from a client.
+
+In the config menu, there will be several options:
+
+* `aRAMa active`: Activates/deactivates the entire plugin.
+
+* `Notifications`: When enabled, will send Aroma notifications when the plugin does various things, such as load a code or have an error.
+
+* `Save sent codes`: When a code is set from a client, such as JGeckoU, automatically save it to the SD card for offline use.
+
+* `Caffiine`: Enable Caffiine. 
+
+* `Saviine`: Enable Saviine. 
 
 # Compiling
 
-As stated previously, this project is not done yet. However, I will list the libraries I am using/will use in it, for future reference in case I forget to add this later.
+To compile this, you will need:
 
-To compile this, you will (probably) need:
-* `devkitpro`:
-  * `libogc` (I'm gonna work on removing this requirement)
-  * `wut`
+* `wut`
+
+* `WiiUPluginSystem`
+
 * `libkernel`
 
+And then simply run `make` in the root directory of this repo after cloning locally. 
+
 # Feature re-implementation checklist:
+
 Though I tried, I cannot guarantee that everything works, because of what was necessarily changed in porting TCPGecko from the old libraries to the new equivalents. 
 
-* Things related to kernel access may be depreciated and/or redundant to their non-kernel counterparts in the future
-* **Old codes are expected to not work due to RAM offsets, so please do not report old codes not working as an issue.**
+* Things related to kernel access may be depreciated and/or redundant to their non-kernel counterparts in the future.
+* **Old codes are expected to not work due to RAM offsets, so please do not report stock old codes not working as an issue.**
 
 I am reliant on people testing it and getting back to me on the status of various features. A checklist of what has been reported to work is below. 
 
 Commands:
+
 - [ ] Write 8 bit value
 - [ ] Write 16 bit value
 - [ ] Write 32 bit value
@@ -71,22 +87,29 @@ Commands:
 - [ ] Persist assembly
 - [ ] Clear assembly
 
-
 # Credits
+
 ## Original TCPGecko credits:
+
 * **dimok** for Homebrew Launcher project engine/base
-* **BullyWiiPlaza** for further development of advanced/efficient features
+* **BullyWiiPlaza** for further development of advanced/efficient features of TCPGecko
 * **wj44** for porting [`pyGecko`](https://github.com/wiiudev/pyGecko) to the Homebrew Launcher and some development
 * **Marionumber1** for exploit development and TCP Gecko Installer contributions
 * **NWPlayer123** for the `pyGecko` client library
 * **Chadderz** for the original `TCP Gecko Installer`
 * **Kinnay** for some `DiiBugger` code this project made use of
+* **CosmoCortney** for the original café code handler
+* **Mewtality** for various code handler improvements
 
 ## aRAMa credits:
+
 * **Maschell** for help on Discord
 * **Lulsec2#0064** on Discord, for coming up with the name "aRAMa"
+* (The devs of) **FTPiiU**, for implementation referencing
+* **Quarky**, for arGecko
 
 # Help, inquiries, etc.
+
 For help with or questions about JGecko U or the original TCPGecko, join [the JGecko U Discord](https://discord.com/invite/rSRM3RWDq4)
 
 For help with or questions about aRAMa, join [my Discord](https://discord.com/invite/VPHr56hnbQ)

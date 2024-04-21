@@ -2,6 +2,30 @@
 
 #include <coreinit/filesystem.h>
 
+void considerInitializingFileSystem() {
+	if (!client) {
+		// Initialize the file system
+		//int status = FSInit();
+		FSStatus status;
+		FSInit();
+		//ASSERT_FUNCTION_SUCCEEDED(status, "FSInit")
+
+		// Allocate the client
+		client = malloc(FS_CLIENT_SIZE);
+		ASSERT_ALLOCATED(client, "Client");
+
+		// Register the client
+		status = FSAddClientEx(client, 0, -1);
+		ASSERT_FUNCTION_SUCCEEDED(status, "FSAddClientEx")
+
+		// Allocate the command block
+		commandBlock = malloc(FS_CMD_BLOCK_SIZE);
+		ASSERT_ALLOCATED(commandBlock, "Command block")
+
+		FSInitCmdBlock(commandBlock);
+	}
+}
+
 
 void CommandHandler::command_read_file(){
 	char file_path[FS_MAX_FULLPATH_SIZE] = {0};

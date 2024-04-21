@@ -1,7 +1,7 @@
 #ifndef COMMAND_HANDLER_H
 #define COMMAND_HANDLER_H
 
-#include "../network/command_io/command_io.h"
+#include "../network/command_io.h"
 
 #include <whb/log.h>
 

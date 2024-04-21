@@ -14,7 +14,7 @@ int GeckoProcessor::processCommands() {
 	while (true) {
 	    ret = checkbyte();
 		if (ret < 0) {
-			CHECK_ERROR(errno2 != E_WOULD_BLOCK);
+			//CHECK_ERROR(errno2 != E_WOULD_BLOCK);
 			GX2WaitForVsync();
 			continue;
 		}
@@ -213,13 +213,18 @@ int GeckoProcessor::processCommands() {
 	
 }
 
-int GeckoProcessor::runProcessServer(){
 
+int GeckoProcessor::run(){
+	
 	struct sockaddr_in socketAddress;
 
 	int sockfd = -1, len;
 
 	while (true) {
+		if (!running){
+			goto intentional_exit;
+		}
+
 		socketAddress.sin_family = AF_INET;
 		socketAddress.sin_port = 7331;
 		socketAddress.sin_addr.s_addr = 0;
@@ -237,13 +242,20 @@ int GeckoProcessor::runProcessServer(){
 		CHECK_ERROR(ret < 0)
 
 		while (true) {
+			if (!running){
+				WHBLogPrint("Leaving TCPGecko loop...");
+				break;
+			}
 			len = 16;
 			WHBLogPrintf("before accept()...\n");
 			clientfd = accept(sockfd, (struct sockaddr *) &socketAddress, (socklen_t *) &len);
+			
 			WHBLogPrintf("after accept()...\n");
 			CHECK_ERROR(clientfd == -1)
+			
 			WHBLogPrintf("commands()...\n");
 			ret = processCommands();
+			
 			CHECK_ERROR(ret < 0)
 			socketclose(clientfd);
 			clientfd = -1;
@@ -265,5 +277,10 @@ int GeckoProcessor::runProcessServer(){
 		GX2WaitForVsync();
 	}
 	return 0;
+
+	intentional_exit:
+	WHBLogPrintf("TCPGecko deactivated...\n");
+	return 0;
+
 }
 

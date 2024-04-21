@@ -1,7 +1,7 @@
 #ifndef CAFFIINE_H
 #define CAFFIINE_H
 
-#include "./network/command_io/command_io.h"
+#include "command_io.h"
 
 class Caffiine: public CommandIO {
     void caf_connect(uint32_t ip);

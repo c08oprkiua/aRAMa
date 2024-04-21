@@ -1,15 +1,32 @@
 #ifndef GECKO_PROCESSOR_H
 #define GECKO_PROCESSOR_H
 
+#include <coreinit/thread.h>
+
 #include "command_handler.h"
 
-//Yes this is all it adds, these layers are layers for a reason ok?
 class GeckoProcessor: public CommandHandler {
 public:
 
+    GeckoProcessor(bool active = false){
+        running = active;
+    }
+
+    bool running;
+
+    OSThread *thread;
+
     int processCommands();
 
-    int runProcessServer();
+    int run();
+
 };
+
+//Another thing taken from FTPiiU
+static int runGeckoServer(int argc, const char **argv){
+    ((GeckoProcessor *) argv)->run();
+    return 0;
+}
+
 
 #endif

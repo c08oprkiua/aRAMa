@@ -1,5 +1,5 @@
 #include "command_io.h"
-#include "./tcpgecko/assertions.h"
+//#include "./tcpgecko/assertions.h"
 
 #include <nsysnet/socket.h>
 #include <coreinit/debug.h>
@@ -14,31 +14,34 @@ CommandIO::~CommandIO(){
 }
 
 int CommandIO::getMode(int * result){
-	while (iLock)
+	while (OSTryLockMutex(&iLock))
 		usleep(5000);
-	iLock = 1;
+	OSLockMutex(&iLock);
 	CHECK_ERROR(sock == -1);
 
-	// create and send buffer with : [cmd id][fd][size][buffer data ...]
-	{
-		ret = sendByte(BYTE_G_MODE);
+	ret = sendByte(BYTE_G_MODE);
 
-		// wait reply
-		ret = recvbyte();
-		CHECK_ERROR(ret < 0);
-		if (ret == BYTE_MODE_D) *result = BYTE_MODE_D;
-		if (ret == BYTE_MODE_I) *result = BYTE_MODE_I;
-		ret = 1;
-	}
+	// wait reply
+	ret = recvbyte();
+
+	CHECK_ERROR(ret < 0);
+	
+	if (ret == BYTE_MODE_D) *result = BYTE_MODE_D;
+	if (ret == BYTE_MODE_I) *result = BYTE_MODE_I;
+	ret = 1;
+
 	error:
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return ret;
 }
 
 int CommandIO::recvwait_buffer(unsigned char *buffer, int len){
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
+		
 		CHECK_ERROR(ret < 0);
+
+		
 		len -= ret;
 		buffer += ret;
 	}
@@ -53,6 +56,7 @@ int CommandIO::recvwait(int len){
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
+		
 		len -= ret;
 		*buffer += ret; //hmm
 	}
@@ -79,11 +83,12 @@ int CommandIO::checkbyte(){
 int CommandIO::sendwait(int len){
 	while (len > 0) {
 		ret = send(sock, buffer, len, 0);
+
 		CHECK_ERROR(ret < 0);
 		len -= ret;
 		*buffer += ret;
 	}
-	return;
+	return 0;
 
 	error:
 	error = ret;
@@ -143,9 +148,9 @@ void CommandIO::log_string(const char *str, char flag_byte){
 	if (sock == -1) {
 		return;
 	}
-	while (iLock)
+	while (OSTryLockMutex(&iLock))	
 		usleep(5000);
-	iLock = 1;
+	OSLockMutex(&iLock);
 
 	int i;
 	int len_str = 0;
@@ -154,7 +159,7 @@ void CommandIO::log_string(const char *str, char flag_byte){
 
 	//
 	{
-		char buffer[1 + 4 + len_str];
+		//char buffer[1 + 4 + len_str];
 		buffer[0] = flag_byte;
 		*(int *) (buffer + 1) = len_str;
 		for (i = 0; i < len_str; i++)
@@ -165,5 +170,5 @@ void CommandIO::log_string(const char *str, char flag_byte){
 		sendwait(1 + 4 + len_str);
 	}
 
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 }

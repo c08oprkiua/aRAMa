@@ -8,23 +8,32 @@ void Caffiine::caf_connect(uint32_t server_ip) {
 
     int *psock;
 
-	socket_lib_init(); //wdym
+	//socket_lib_init(); //wdym
 
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	CHECK_ERROR(sock == -1);
+	if (check_error(sock == -1, FAIL_SOCKET_INIT, 5)){
+		goto error;
+	}
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = 7332;
 	addr.sin_addr.s_addr = server_ip;
 
 	ret = connect(sock, (sockaddr *) &addr, sizeof(addr));
-	CHECK_ERROR(ret < 0);
+	if (check_error(ret < 0, FAIL_SOCKET_CONNECT, 1)){
+		goto error;
+	}
+
 	ret = handshake();
+	if (check_error(ret < 0, FAIL_SOCKET_HANDSHAKE, 1)){
+		goto error;
+	}
 	CHECK_ERROR(ret < 0);
 	CHECK_ERROR(ret == BYTE_NORMAL);
 
 	*psock = sock;
 	return;
+	
 	error:
 	if (sock != -1)
 		socketclose(sock);
