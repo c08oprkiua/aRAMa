@@ -23,7 +23,7 @@ TARGET		:=	aRAMa
 BUILD		:=	build
 SOURCES		:=	src
 DATA		:=	
-INCLUDES	:=	src src/ext/inih
+INCLUDES	:=	src
 
 #-------------------------------------------------------------------------------
 # options for code generation

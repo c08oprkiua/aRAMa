@@ -1,91 +1,93 @@
 #include <wups/storage.h>
 #include <wups.h>
 #include <whb/log.h>
-#include <coreinit/title.h>
-
 
 #include "config.h"
 #include "arama.h"
 
+//certified C++ moment 
+const char aRAMaConfig::active_id = '0';
+const char aRAMaConfig::sd_codes_id = '1';
+const char aRAMaConfig::notifs_id = '2';
+const char aRAMaConfig::autosave_id = '4';
+const char aRAMaConfig::caffiine_id = '5';
+const char aRAMaConfig::saviine_id = '6';
+
+int32_t aRAMaConfig::settings = 0;
+uint32_t aRAMaConfig::ip_address = false;
+uint32_t aRAMaConfig::local_code_amount = 0;
+
+bool aRAMaConfig::active = false;
+bool aRAMaConfig::sd_codes = false;
+bool aRAMaConfig::notifications_enabled = false;
+bool aRAMaConfig::no_online = false;
+bool aRAMaConfig::auto_save = false;
+
+bool aRAMaConfig::tcpgecko = false;
+bool aRAMaConfig::code_handler = false;
+bool aRAMaConfig::caffiine = false;
+bool aRAMaConfig::saviine = false;
+
 
 void aRAMaConfig::LoadSettings(){
     if (WUPS_OpenStorage() != WUPS_STORAGE_ERROR_SUCCESS){
-        WHBLogPrint("Opening WUPS storage to retrieve settings failed!");
+        WHBLogPrint("aRAMa: Opening WUPS storage failed!");
         return;
     }
     if (WUPS_GetInt(nullptr, "arama_settings", &settings) != WUPS_STORAGE_ERROR_SUCCESS){
-        WHBLogPrint("Retrieving settings failed, writing default settings to storage...");
-        WUPS_StoreInt(nullptr, "arama_settings", settings);
+        WHBLogPrint("aRAMa: Retrieving settings failed");
     }
+
+    active = settings & ACTIVE;
+    sd_codes = settings & SD_CODES_ACTIVE;
+    notifications_enabled = settings & NOTIFICATIONS_ON;
+    no_online = settings & NO_ONLINE;
+    auto_save = settings & AUTO_STORE_CODES;
+    caffiine = settings & ENABLE_CAFFIINE;
+    saviine = settings & ENABLE_SAVIINE;
 }
 
 void aRAMaConfig::SaveSettings(){
-    if (WUPS_OpenStorage() != WUPS_STORAGE_ERROR_SUCCESS){
-        WHBLogPrint("Opening WUPS storage to retrieve settings failed!");
-    }
-    else if (WUPS_StoreInt(nullptr, "arama_settings", settings) != WUPS_STORAGE_ERROR_SUCCESS){
+    if (WUPS_StoreInt(nullptr, "arama_settings", settings) != WUPS_STORAGE_ERROR_SUCCESS){
         WHBLogPrint("Saving aRAMa settings failed!");
     }
+    if (WUPS_CloseStorage() != WUPS_STORAGE_ERROR_SUCCESS) {
+        WHBLogPrint("aRAMa failed to close storage!");
+    }
 }
 
 
-//Big props to Inkay for serving as a model of how to do this stuff
-int aRAMaConfig::LoadBaseConfigMenu(){
-
-    //First we register the name of the plugin in WUPS base menu
-    WUPSConfig_CreateHandled(&base, "aRAMa");
-
-    //Then we register categories, such as the settings for aRAMa
-    WUPSConfig_AddCategoryByNameHandled(base, "aRAMa settings", &arama_category);
-
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 0, "aRAMa active",(settings & ACTIVE), &setting_changed, "Active", "Inactive");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 1, "Use SD codes", (settings & SD_CODES_ACTIVE), &setting_changed, "Yes", "No");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 2, "Notifications", (settings & NOTIFICATIONS_ON), &setting_changed, "Enabled", "Disabled");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 3, "Operation mode", (settings & NO_ONLINE), &setting_changed, "Offline", "Online");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 4, "Save sent codes", (settings & AUTO_STORE_CODES), &setting_changed, "Save codes", "Don't save codes");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 5, "Caffiine", (settings & ENABLE_CAFFIINE), &setting_changed, "Enabled", "Disabled");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, (const char *) 6, "Saviine", (settings & ENABLE_SAVIINE), &setting_changed, "Enabled", "Disabled");
-
-    return base;
-}
-
-
-
-void setting_changed(ConfigItemBoolean* item, bool new_value){
-
+//Hope you know your bitwise operators :trollface:
+void aRAMaConfig::settings_changed(ConfigItemBoolean* item, bool new_value){
     char val_char = *item->configId;
-    //Todo: look up char int as string values for this
     switch (val_char){
-        case 0:
-        //something something pointer to aRAMaConfig->active = new_value;
-            config->active = new_value;
+        case active_id:
+            new_value ? settings |= ACTIVE : settings &= ~ACTIVE;
+            active = new_value;
             break;
-        case 1:
+        case sd_codes_id:
+            new_value ? settings |= SD_CODES_ACTIVE : settings &= ~SD_CODES_ACTIVE;
+            sd_codes = new_value;
             break;
-        case 2:
+        case notifs_id:
+            new_value ? settings |= NOTIFICATIONS_ON : settings &= ~NOTIFICATIONS_ON;
+            notifications_enabled = new_value;
             break;
         case 3:
+
+            no_online = new_value;
             break;
-        case 4:
+        case autosave_id:
+            new_value ? settings |= AUTO_STORE_CODES : settings &= ~AUTO_STORE_CODES;
+            auto_save = new_value;
             break;
-        case 5:
-            config->caffiine = new_value;
+        case caffiine_id:
+            new_value ? settings |= ENABLE_CAFFIINE : settings &= ~ENABLE_CAFFIINE;
+            caffiine = new_value;
             break;
-        case 6:
-            config->saviine = new_value;
+        case saviine_id:
+            new_value ? settings |= ENABLE_SAVIINE : settings &= ~ENABLE_SAVIINE;
+            saviine = new_value;
             break;
     }
-    
-    
-}
-
-//This will generate the WUPS Config screen per title for the game specific codes
-int aRAMaConfig::LoadCodesForCurrentTitle(){
-    uint64_t current_title_id = OSGetTitleID();
-    uint8_t iterate = 1;
-
-    //Todo: Have it say the name of the app here instead of "this title"
-    WUPSConfig_AddCategoryByNameHandled(base, "Codes for this title", &codes_category);
-
-    return 0;
 }

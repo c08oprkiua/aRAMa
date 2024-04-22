@@ -4,19 +4,10 @@
 #include <wups/config/WUPSConfigItemBoolean.h>
 #include <wups/config.h>
 
-void setting_changed(ConfigItemBoolean* item, bool new_value);
-
 class aRAMaConfig {
-private:
+public:
     //The raw bitfield of settings fetched from and saved to WUPS storage.
-    int32_t settings;
-
-    //The base.
-    WUPSConfigHandle base;
-    //Category for aRAMa's settings
-    WUPSConfigCategoryHandle arama_category;
-    //Category for stored codes for the current titleID
-    WUPSConfigCategoryHandle codes_category;
+    static int32_t settings;
 
     enum ARAMA_SETTINGS {
 	ACTIVE = 1 << 0,
@@ -28,41 +19,48 @@ private:
 	ENABLE_SAVIINE = 1 << 6
     };
 
-public:
+    static const char active_id;
+    static const char sd_codes_id;
+    static const char notifs_id;
+    static const char autosave_id;
+    static const char caffiine_id;
+    static const char saviine_id;
+
     //IP address of the Wii U
-    uint32_t ip_address;
+    static uint32_t ip_address;
+
+    //Amount of SD codes detected for the currently running title
+    static uint32_t local_code_amount;
 
     //Whether aRAMa as a whole is active or not.
-    bool active;
+    static bool active;
     //Depreciate? Whether or not SD codes are active.
-    bool sd_codes;
+    static bool sd_codes;
     //TODO: When enabled, aRAMa will notify about running status messages,
     //such as errors, transmissions sent/recieved, etc.
-    bool notifications_enabled;
+    static bool notifications_enabled;
     //DEPRECIATE: when enabled, aRAMa will not connect to TCP.
-    bool no_online;
+    static bool no_online;
     //If enabled, codes sent over will be saved to SD card automatically
-    bool auto_save;
+    static bool auto_save;
 
     //if tcpgecko is active
-    bool tcpgecko;
+    static bool tcpgecko;
     //if caffiine is active
-    bool caffiine;
+    static bool caffiine;
     //if saviine is active
-    bool saviine;
+    static bool saviine;
     //if the code handler is active
-    bool code_handler;
+    static bool code_handler;
+
+    static void settings_changed(ConfigItemBoolean *item, bool new_value);
 
     //Create/fetch all the settings in WUPS storage
-    void LoadSettings();
+    static void LoadSettings();
     //Save the settings to WUPS storage
-    void SaveSettings();
+    static void SaveSettings();
 
-    //Load the base settings menu, ie. what's loaded from storage.
-    int LoadBaseConfigMenu();
-    //TODO: Load a second menu listing codes for the current titleID a la SDCaffiine
-    int LoadCodesForCurrentTitle();
-    
 };
 
-#endif 
+
+#endif

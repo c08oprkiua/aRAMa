@@ -41,11 +41,6 @@ class CommandIO {
 public:
 
     static OSMutex iLock;
-
-    CommandIO();
-    ~CommandIO();
-
-    OSThread *thread;
     
     //ret must be signed because it is set to -1 for errors, idk if any of the others 
     //share a similar requirement to be signed, or to be large numbers

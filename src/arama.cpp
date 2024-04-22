@@ -7,7 +7,7 @@
 
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
-	if (config == nullptr || !(config->active)){
+	if (!(aRAMaConfig::active)){
 
 		aRAMaDeInit();
 		return;
@@ -17,7 +17,7 @@ void aRAMaReInit(){
 
 
 	//SD codes get priority, regardless of being online
-	if (config->sd_codes){
+	if (aRAMaConfig::sd_codes){
 		//Init Gecko so it can load SD codes
 
 		WHBLogPrint("aRAMa is active, checking for local codes for this title...\n");
@@ -27,9 +27,9 @@ void aRAMaReInit(){
 		//deinit if offline and no codes are found
 	}
 
-	if (config->no_online){
+	if (aRAMaConfig::no_online){
 		
-		if (!(config->sd_codes)){
+		if (!(aRAMaConfig::sd_codes)){
 			//If aRAMa is active and offline, but SD codes are disabled, no reason
 			//to keep it loaded in cause it'll sit there doing nothing
 			aRAMaDeInit();
@@ -42,32 +42,58 @@ void aRAMaReInit(){
 	else {
 		//This setting has not changed, and it returns the opposite of the previous check,
 		//So it can be used to check for Gecko being initialized
-		if (!(config->sd_codes)){
+		if (!(aRAMaConfig::sd_codes)){
 			//Run SD codes
 		}
 
 	}
+	// Activate TCP Gecko if it's enabled and not already activated
+	if (aRAMaConfig::tcpgecko && gecko == nullptr){
+
+		gecko = new GeckoProcessor(true); //May need a memalign for performance?
+
+		WHBLogPrint("Starting TCPGecko thread.\n");
+		if (OSCreateThread(
+		gecko->thread, 
+		(OSThreadEntryPointFn) runGeckoServer, 
+		(uint32_t) 0, 
+		(char *) gecko,
+		(void *)(gecko->stack + sizeof(gecko->stack)), 
+		sizeof(gecko->stack), 
+		0, 
+		0xC
+		) == true) {
+		OSResumeThread(gecko->thread);
+		}
+		WHBLogPrint("TCP Gecko thread started...\n");
+	}
 }
 
 void aRAMaDeInit(){
-	if (gecko != nullptr && !config->tcpgecko){
+	if (gecko != nullptr && !aRAMaConfig::tcpgecko){
 		delete gecko;
 		gecko = nullptr;
 	}
-	if (c_h != nullptr && !config->code_handler){
+	if (c_h != nullptr && !aRAMaConfig::code_handler){
 		delete c_h;
 		c_h = nullptr;
 	}
-	if (caffiine != nullptr && !config->caffiine){
+	if (caffiine != nullptr && !aRAMaConfig::caffiine){
 		delete caffiine;
 		caffiine = nullptr;
+	}
+	if (saviine != nullptr && !aRAMaConfig::saviine){
+		delete saviine;
+		saviine = nullptr;
 	}
 }
 
 static int CreateGeckoThread(){
-	if (gecko != nullptr){
+	if (gecko == nullptr){
 		// Run the TCP Gecko Installer server
 
+
+		gecko = new GeckoProcessor(true);
 		/*
 		bss = (struct pygecko_bss_t *) memalign(0x40, sizeof(struct pygecko_bss_t));
 		if (bss == 0)
@@ -80,7 +106,7 @@ static int CreateGeckoThread(){
 		gecko->thread, 
 		(OSThreadEntryPointFn) runGeckoServer, 
 		(uint32_t) 0, 
-		(char *) 0,
+		(char *) gecko,
 		(void *)(gecko->stack + sizeof(gecko->stack)), 
 		sizeof(gecko->stack), 
 		0, 
@@ -112,7 +138,7 @@ static int CreateGeckoThread(){
 			}
 			*/
 
-			if (config->sd_codes) {
+			if (aRAMaConfig::sd_codes) {
 				//considerApplyingSDCheats();
 			}
 		}

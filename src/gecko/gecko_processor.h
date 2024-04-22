@@ -12,7 +12,7 @@ public:
         running = active;
     }
 
-    bool running;
+    bool running = false;
 
     OSThread *thread;
 

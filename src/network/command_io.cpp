@@ -1,17 +1,8 @@
-#include "command_io.h"
-//#include "./tcpgecko/assertions.h"
-
 #include <nsysnet/socket.h>
 #include <coreinit/debug.h>
 #include <coreinit/memdefaultheap.h>
 
-CommandIO::CommandIO(){
-	//alloc mem for buffer and stack?
-}
-
-CommandIO::~CommandIO(){
-	//delete mem for buffer and stack?
-}
+#include "command_io.h"
 
 int CommandIO::getMode(int * result){
 	while (OSTryLockMutex(&iLock))

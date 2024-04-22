@@ -11,4 +11,5 @@ class Saviine: public CommandIO {
     int readdir(char *path, char *resultname, int *resulttype, int *filesize);
 };
 
+
 #endif
