@@ -7,6 +7,8 @@
 #include "network/caffiine.h"
 #include "network/saviine.h"
 
+
+
 static GeckoProcessor *gecko = nullptr;
 static CodeHandler *c_h = nullptr;
 static Saviine *saviine = nullptr;
@@ -19,9 +21,10 @@ void aRAMaReInit();
 //shouldn't be active anymore
 void aRAMaDeInit();
 
-static int CreateGeckoThread();
-static int CreateCodeHandlerThread();
-static int CreateSaviineThread();
-static int CreateCaffiineThread();
+
+//static int runGeckoServer(int argc, const char **argv);
+static int runCodeHandlerServer(int argc, const char **argv);
+static int runSaviineServer(int argc, const char **argv);
+static int runCaffiineServer(int argc, const char **argv);
 
 #endif

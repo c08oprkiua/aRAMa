@@ -21,7 +21,7 @@ WUPS_PLUGIN_DESCRIPTION("RAM multi-tool for Aroma");
         Mewtality - New Cheat code handler
 - from meta.xml
 */
-WUPS_PLUGIN_VERSION("v0.1");
+WUPS_PLUGIN_VERSION("active-dev, v0.1");
 WUPS_PLUGIN_AUTHOR("c08oprkiua, TCPGecko contributors");
 WUPS_PLUGIN_LICENSE("GPLv3");
 
@@ -55,11 +55,11 @@ ON_APPLICATION_START(){
 	if (aRAMaConfig::sd_codes){
 		//TODO: count SD codes, update aRAMaConfig::local_codes_amount with amount
 	}
-	aRAMaConfig::LoadSettings();
 	aRAMaReInit();
 }
 
 ON_APPLICATION_REQUESTS_EXIT(){
+    aRAMaDeInit();
 	//Prolly clean up/remove ASM codes, cause leaving those executing might break stuff
 }
 
@@ -97,5 +97,6 @@ WUPS_GET_CONFIG(){
 
 WUPS_CONFIG_CLOSED(){
 	aRAMaConfig::SaveSettings();
+    aRAMaDeInit();
 	aRAMaReInit();
 }

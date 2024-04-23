@@ -3,7 +3,13 @@
 
 #include "arama.h"
 
+
 #define CODE_HANDLER_INSTALL_ADDRESS 0x010F4000
+
+static int runGeckoServer(int argc, const char **argv){
+	//GeckoProcessor *proc = ((GeckoProcessor *) argv);
+	return ((GeckoProcessor *) argv)->run();
+}
 
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
@@ -47,18 +53,21 @@ void aRAMaReInit(){
 		}
 
 	}
+	
 	// Activate TCP Gecko if it's enabled and not already activated
 	if (aRAMaConfig::tcpgecko && gecko == nullptr){
 
-		gecko = new GeckoProcessor(true); //May need a memalign for performance?
+		gecko = new GeckoProcessor; //May need a memalign for performance?
+
+		gecko->running = true;
 
 		WHBLogPrint("Starting TCPGecko thread.\n");
 		if (OSCreateThread(
 		gecko->thread, 
-		(OSThreadEntryPointFn) runGeckoServer, 
-		(uint32_t) 0, 
+		&runGeckoServer, 
+		1, 
 		(char *) gecko,
-		(void *)(gecko->stack + sizeof(gecko->stack)), 
+		(gecko->stack + sizeof(gecko->stack)), 
 		sizeof(gecko->stack), 
 		0, 
 		0xC
@@ -70,7 +79,10 @@ void aRAMaReInit(){
 }
 
 void aRAMaDeInit(){
-	if (gecko != nullptr && !aRAMaConfig::tcpgecko){
+	if (!aRAMaConfig::tcpgecko && gecko != nullptr){
+		gecko->running = false;
+		int thread_result;
+		OSJoinThread(gecko->thread, &thread_result);
 		delete gecko;
 		gecko = nullptr;
 	}
@@ -88,63 +100,3 @@ void aRAMaDeInit(){
 	}
 }
 
-static int CreateGeckoThread(){
-	if (gecko == nullptr){
-		// Run the TCP Gecko Installer server
-
-
-		gecko = new GeckoProcessor(true);
-		/*
-		bss = (struct pygecko_bss_t *) memalign(0x40, sizeof(struct pygecko_bss_t));
-		if (bss == 0)
-			return (s32) 0;
-		memset(bss, 0, sizeof(struct pygecko_bss_t));
-    	*/
-
-		WHBLogPrint("Starting TCPGecko thread.\n");
-		if (OSCreateThread(
-		gecko->thread, 
-		(OSThreadEntryPointFn) runGeckoServer, 
-		(uint32_t) 0, 
-		(char *) gecko,
-		(void *)(gecko->stack + sizeof(gecko->stack)), 
-		sizeof(gecko->stack), 
-		0, 
-		0xC
-		) == true) {
-		OSResumeThread(gecko->thread);
-		}
-		WHBLogPrint("TCP Gecko thread started...\n");
-	}
-
-	//The code after here should be moved to the CodeHandler class in the future
-
-	// Execute the code handler if it is installed
-	if (c_h != nullptr) {
-		WHBLogPrint("Code handler installed...\n");
-		void (*codeHandlerFunction)() = (void (*)()) CODE_HANDLER_INSTALL_ADDRESS;
-
-		while (true) {
-			usleep(9000);
-
-			// considerApplyingSDCheats();
-			// WHBLogPrint("Running code handler...\n");
-			codeHandlerFunction();
-			// WHBLogPrint("Code handler done executing...\n");
-
-			/* Assembly codes are not yet supported by aRAMa
-			if (assemblySize > 0) {
-				executeAssembly();
-			}
-			*/
-
-			if (aRAMaConfig::sd_codes) {
-				//considerApplyingSDCheats();
-			}
-		}
-	} else {
-		WHBLogPrint("Code handler not installed...\n");
-	}
-
-	return 0;
-}

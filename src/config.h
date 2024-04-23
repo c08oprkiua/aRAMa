@@ -8,6 +8,9 @@ class aRAMaConfig {
 public:
     //The raw bitfield of settings fetched from and saved to WUPS storage.
     static int32_t settings;
+    //A 2nd bitfield, representing values changed in real time in the config menu
+    //If it matches settings, aRAMa will not re-init/de-init
+    static int32_t settings_live_cache;
 
     enum ARAMA_SETTINGS {
 	ACTIVE = 1 << 0,
