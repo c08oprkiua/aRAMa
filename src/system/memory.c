@@ -34,16 +34,16 @@
 //! Memory functions
 //! This is the only place where those are needed so lets keep them more or less private
 //!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-extern unsigned int * pMEMAllocFromDefaultHeapEx;
-extern unsigned int * pMEMAllocFromDefaultHeap;
-extern unsigned int * pMEMFreeToDefaultHeap;
+extern uint32_t * pMEMAllocFromDefaultHeapEx;
+extern uint32_t * pMEMAllocFromDefaultHeap;
+extern uint32_t * pMEMFreeToDefaultHeap;
 
 extern int (* MEMGetBaseHeapHandle)(int mem_arena);
-extern unsigned int (* MEMGetAllocatableSizeForFrmHeapEx)(int heap, int align);
-extern void *(* MEMAllocFromFrmHeapEx)(int heap, unsigned int size, int align);
+extern uint32_t (* MEMGetAllocatableSizeForFrmHeapEx)(int heap, int align);
+extern void *(* MEMAllocFromFrmHeapEx)(int heap, uint32_t size, int align);
 extern void (* MEMFreeToFrmHeap)(int heap, int mode);
-extern void *(* MEMAllocFromExpHeapEx)(int heap, unsigned int size, int align);
-extern int (* MEMCreateExpHeapEx)(void* address, unsigned int size, unsigned short flags);
+extern void *(* MEMAllocFromExpHeapEx)(int heap, uint32_t size, int align);
+extern int (* MEMCreateExpHeapEx)(void* address, uint32_t size, unsigned short flags);
 extern void *(* MEMDestroyExpHeap)(int heap);
 extern void (* MEMFreeToExpHeap)(int heap, void* ptr);
 
@@ -53,13 +53,13 @@ static int bucket_heap = -1;
 void memoryInitialize(void)
 {
     int mem1_heap_handle = MEMGetBaseHeapHandle(MEMORY_ARENA_1);
-    unsigned int mem1_allocatable_size = MEMGetAllocatableSizeForFrmHeapEx(mem1_heap_handle, 4);
+    uint32_t mem1_allocatable_size = MEMGetAllocatableSizeForFrmHeapEx(mem1_heap_handle, 4);
     void *mem1_memory = MEMAllocFromFrmHeapEx(mem1_heap_handle, mem1_allocatable_size, 4);
     if(mem1_memory)
         mem1_heap = MEMCreateExpHeapEx(mem1_memory, mem1_allocatable_size, 0);
 
     int bucket_heap_handle = MEMGetBaseHeapHandle(MEMORY_ARENA_FG_BUCKET);
-    unsigned int bucket_allocatable_size = MEMGetAllocatableSizeForFrmHeapEx(bucket_heap_handle, 4);
+    uint32_t bucket_allocatable_size = MEMGetAllocatableSizeForFrmHeapEx(bucket_heap_handle, 4);
     void *bucket_memory = MEMAllocFromFrmHeapEx(bucket_heap_handle, bucket_allocatable_size, 4);
     if(bucket_memory)
         bucket_heap = MEMCreateExpHeapEx(bucket_memory, bucket_allocatable_size, 0);
@@ -163,7 +163,7 @@ void *__wrap__realloc_r(struct _reent *r, void *p, size_t size)
 //!-------------------------------------------------------------------------------------------
 //! some wrappers
 //!-------------------------------------------------------------------------------------------
-void * MEM2_alloc(unsigned int size, unsigned int align)
+void * MEM2_alloc(uint32_t size, uint32_t align)
 {
     return __wrap_memalign(align, size);
 }
@@ -173,7 +173,7 @@ void MEM2_free(void *ptr)
     __wrap_free(ptr);
 }
 
-void * MEM1_alloc(unsigned int size, unsigned int align)
+void * MEM1_alloc(uint32_t size, uint32_t align)
 {
     if (align < 4)
         align = 4;
@@ -185,7 +185,7 @@ void MEM1_free(void *ptr)
     MEMFreeToExpHeap(mem1_heap, ptr);
 }
 
-void * MEMBucket_alloc(unsigned int size, unsigned int align)
+void * MEMBucket_alloc(uint32_t size, uint32_t align)
 {
     if (align < 4)
         align = 4;

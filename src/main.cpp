@@ -77,8 +77,9 @@ WUPS_GET_CONFIG(){
     WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::active_id, "aRAMa active", aRAMaConfig::active, &aRAMaConfig::settings_changed, "Active", "Inactive");
     WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::sd_codes_id, "Use SD codes", aRAMaConfig::sd_codes, &aRAMaConfig::settings_changed, "Yes", "No");
     WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::notifs_id, "Notifications", aRAMaConfig::notifications_enabled, &aRAMaConfig::settings_changed, "Enabled", "Disabled");
-    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, "D", "Operation mode", aRAMaConfig::no_online, &aRAMaConfig::settings_changed, "Offline", "Online");
     WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::autosave_id, "Save sent codes", aRAMaConfig::auto_save, &aRAMaConfig::settings_changed, "Save codes", "Don't save codes");
+    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, "Z", "TCP Gecko", aRAMaConfig::active, &aRAMaConfig::settings_changed, "Enabled", "Disabled");
+    WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::code_hand_id, "Code handler", aRAMaConfig::code_handler, &aRAMaConfig::settings_changed, "Enabled", "Disabled");
     WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::caffiine_id, "Caffiine", aRAMaConfig::caffiine, &aRAMaConfig::settings_changed, "Enabled", "Disabled");
     WUPSConfigItemBoolean_AddToCategoryHandledEx(base, arama_category, &aRAMaConfig::saviine_id, "Saviine", aRAMaConfig::caffiine, &aRAMaConfig::settings_changed, "Enabled", "Disabled");
 

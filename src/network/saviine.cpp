@@ -23,7 +23,7 @@ int Saviine::start_injection(long persistentID, int *mask) {
 		CHECK_ERROR(ret < 0);
 		CHECK_ERROR(ret != BYTE_SPECIAL);
 
-		ret = recvwait_buffer((unsigned char *) mask, 4);
+		ret = recvwait_buffer((uint8_t *) mask, 4);
 		CHECK_ERROR(ret < 0);
 		CHECK_ERROR((*mask & MASK_NORMAL) != MASK_NORMAL);
 
@@ -142,10 +142,10 @@ int Saviine::readdir(char *path, char *resultname, int *resulttype, int *filesiz
 		CHECK_ERROR(ret != BYTE_FILE && ret != BYTE_FOLDER);
 		*resulttype = ret;
 		size = 0;
-		ret = recvwait_buffer((unsigned char *) &size, 4);
+		ret = recvwait_buffer((uint8_t *) &size, 4);
 		CHECK_ERROR(ret < 0);
 
-		ret = recvwait_buffer((unsigned char *) resultname, size + 1);
+		ret = recvwait_buffer((uint8_t *) resultname, size + 1);
 		CHECK_ERROR(ret < 0);
 
 		size = 0;

@@ -16,7 +16,7 @@ public:
 	ACTIVE = 1 << 0,
 	SD_CODES_ACTIVE = 1 << 1,
 	NOTIFICATIONS_ON = 1 << 2,
-	NO_ONLINE = 1 << 3,
+	CODE_HANDLER = 1 << 3,
 	AUTO_STORE_CODES = 1 << 4,
 	ENABLE_CAFFIINE = 1 << 5,
 	ENABLE_SAVIINE = 1 << 6
@@ -25,6 +25,7 @@ public:
     static const char active_id;
     static const char sd_codes_id;
     static const char notifs_id;
+    static const char code_hand_id;
     static const char autosave_id;
     static const char caffiine_id;
     static const char saviine_id;
@@ -42,8 +43,6 @@ public:
     //TODO: When enabled, aRAMa will notify about running status messages,
     //such as errors, transmissions sent/recieved, etc.
     static bool notifications_enabled;
-    //DEPRECIATE: when enabled, aRAMa will not connect to TCP.
-    static bool no_online;
     //If enabled, codes sent over will be saved to SD card automatically
     static bool auto_save;
 

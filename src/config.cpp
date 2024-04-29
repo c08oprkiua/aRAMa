@@ -9,6 +9,7 @@
 const char aRAMaConfig::active_id = '0';
 const char aRAMaConfig::sd_codes_id = '1';
 const char aRAMaConfig::notifs_id = '2';
+const char aRAMaConfig::code_hand_id = '3';
 const char aRAMaConfig::autosave_id = '4';
 const char aRAMaConfig::caffiine_id = '5';
 const char aRAMaConfig::saviine_id = '6';
@@ -22,7 +23,6 @@ uint32_t aRAMaConfig::local_code_amount = 0;
 bool aRAMaConfig::active = false;
 bool aRAMaConfig::sd_codes = false;
 bool aRAMaConfig::notifications_enabled = false;
-bool aRAMaConfig::no_online = false;
 bool aRAMaConfig::auto_save = false;
 
 bool aRAMaConfig::tcpgecko = false;
@@ -44,15 +44,17 @@ void aRAMaConfig::LoadSettings(){
     active = settings & ACTIVE;
     sd_codes = settings & SD_CODES_ACTIVE;
     notifications_enabled = settings & NOTIFICATIONS_ON;
-    no_online = settings & NO_ONLINE;
+    code_handler = settings & CODE_HANDLER;
     auto_save = settings & AUTO_STORE_CODES;
     caffiine = settings & ENABLE_CAFFIINE;
     saviine = settings & ENABLE_SAVIINE;
 }
 
 void aRAMaConfig::SaveSettings(){
-    if (WUPS_StoreInt(nullptr, "arama_settings", settings) != WUPS_STORAGE_ERROR_SUCCESS){
-        WHBLogPrint("Saving aRAMa settings failed!");
+    if (settings_live_cache != settings){
+        if (WUPS_StoreInt(nullptr, "arama_settings", settings) != WUPS_STORAGE_ERROR_SUCCESS){
+            WHBLogPrint("Saving aRAMa settings failed!");
+        }
     }
     if (WUPS_CloseStorage() != WUPS_STORAGE_ERROR_SUCCESS) {
         WHBLogPrint("aRAMa failed to close storage!");
@@ -76,9 +78,9 @@ void aRAMaConfig::settings_changed(ConfigItemBoolean* item, bool new_value){
             new_value ? settings_live_cache |= NOTIFICATIONS_ON : settings_live_cache &= ~NOTIFICATIONS_ON;
             notifications_enabled = new_value;
             break;
-        case 3:
-
-            no_online = new_value;
+        case code_hand_id:
+            new_value ? settings_live_cache |= CODE_HANDLER : settings_live_cache &= ~CODE_HANDLER;
+            code_handler = new_value;
             break;
         case autosave_id:
             new_value ? settings_live_cache |= AUTO_STORE_CODES : settings_live_cache &= ~AUTO_STORE_CODES;

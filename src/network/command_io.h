@@ -47,16 +47,16 @@ public:
     int32_t ret;
 	uint32_t error, line, clientfd, sock;
 
-    unsigned char stack[0x6F00];
+    uint8_t stack[0x6F00];
 
-	unsigned char buffer[0x5001];
+	uint8_t buffer[0x5001];
 
     int getMode(int *result);
 
     int checkbyte();
 
     int recvwait(int len);
-    int recvwait_buffer(unsigned char *buffer, int len);
+    int recvwait_buffer(uint8_t *buffer, int len);
 
     int recvwaitlen(int len);
     int recvwaitlen_buffer(void *buffer, int len);
@@ -64,11 +64,11 @@ public:
     int recvbyte();
 
     int sendwait(int len);
-    int sendwait_buffer(unsigned char *buffer, int len);
+    int sendwait_buffer(uint8_t *buffer, int len);
 
     int sendByte(u_char byte);
 
-    unsigned int receiveString(unsigned char *stringBuffer, unsigned int bufferSize);
+    uint32_t receiveString(uint8_t *stringBuffer, uint32_t bufferSize);
 
     void log_string(const char *str, char flag_byte);
 };

@@ -71,7 +71,7 @@ void CommandHandler::command_memory_disassemble(){
 		}
 
 		int bytesToSend = currentIntegerIndex * integerSize;
-		ret = sendwait_buffer((unsigned char *)&bytesToSend, sizeof(int));
+		ret = sendwait_buffer((uint8_t *)&bytesToSend, sizeof(int));
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (Buffer size)");
 
 		// VALUE(4)|STATUS(4)|LENGTH(4)|DISASSEMBLED(LENGTH)
@@ -80,6 +80,6 @@ void CommandHandler::command_memory_disassemble(){
 	}
 
 	int bytesToSend = 0;
-	ret = sendwait_buffer((unsigned char *)&bytesToSend, sizeof(int));
+	ret = sendwait_buffer((uint8_t *)&bytesToSend, sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (No more bytes)")
 };

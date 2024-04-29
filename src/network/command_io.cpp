@@ -26,7 +26,7 @@ int CommandIO::getMode(int * result){
 	return ret;
 }
 
-int CommandIO::recvwait_buffer(unsigned char *buffer, int len){
+int CommandIO::recvwait_buffer(uint8_t *buffer, int len){
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
 		
@@ -91,12 +91,12 @@ int CommandIO::sendByte(u_char byte){
 	return sendwait(1);
 }
 
-unsigned int CommandIO::receiveString(unsigned char *stringBuffer, unsigned int bufferSize){
+uint32_t CommandIO::receiveString(uint8_t *stringBuffer, uint32_t bufferSize){
 	// Receive the string length
-	unsigned char lengthBuffer[4] = {0};
+	uint8_t lengthBuffer[4] = {0};
 	int ret = recvwait_buffer(lengthBuffer, sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (string length)");
-	unsigned int stringLength = ((unsigned int *) lengthBuffer)[0];
+	uint32_t stringLength = ((uint32_t *) lengthBuffer)[0];
 
 	if (stringLength <= bufferSize) {
 		// Receive the actual string

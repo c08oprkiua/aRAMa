@@ -187,7 +187,7 @@ std::vector<std::string> stringSplit(const std::string & inValue, const std::str
     std::string value = inValue;
     std::vector<std::string> result;
     while (true) {
-        unsigned int index = value.find(splitter);
+        uint32_t index = value.find(splitter);
         if (index == std::string::npos) {
             result.push_back(value);
             break;

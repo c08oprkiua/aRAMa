@@ -10,6 +10,9 @@ void CommandHandler::command_write_8()
 	char *destinationAddress = ((char **)buffer)[0];
 	*destinationAddress = buffer[7];
 	DCFlushRange(destinationAddress, 1);
+
+	error:
+	error = ret;
 	return;
 };
 
@@ -22,6 +25,9 @@ void CommandHandler::command_write_16()
 	destinationAddress = ((short **)buffer)[0];
 	*destinationAddress = ((short *)buffer)[3];
 	DCFlushRange(destinationAddress, 2);
+
+	error:
+	error = ret;
 	return;
 };
 
@@ -34,6 +40,9 @@ void CommandHandler::command_write_32()
 	destinationAddress = ((int *)buffer)[0];
 	value = ((int *)buffer)[1];
 
-	GeckoKernelCopyData((unsigned char *) destinationAddress, (unsigned char *) &value, sizeof(int));
+	GeckoKernelCopyData((uint8_t *) destinationAddress, (uint8_t *) &value, sizeof(int));
 	
+	error:
+	error = ret;
+	return;
 };

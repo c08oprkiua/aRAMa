@@ -14,6 +14,11 @@ public:
 
     int processCommands();
 
+    static int runGeckoServer(int argc, const char **argv){
+        ((GeckoProcessor *) argv)->run();
+        
+    }
+
     int run();
 
 };

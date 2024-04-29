@@ -2,7 +2,6 @@
 #include <string.h> // memcpy()
 
 #include <wups.h>
-#include <gctypes.h>
 
 #include <gx2/swap.h>
 #include <gx2/surface.h>
@@ -21,20 +20,20 @@
 
 //Screenshot variables
 static volatile int executionCounter = 0;
-unsigned int remainingImageSize = 0;
-unsigned int totalImageSize = 0;
+uint32_t remainingImageSize = 0;
+uint32_t totalImageSize = 0;
 int bufferedImageSize = 0;
 void *bufferedImageData = nullptr;
 bool shouldTakeScreenShot = false;
 
-DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorBuffer, s32 scan_target){
+DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, const GX2ColorBuffer *colorBuffer, int32_t scan_target){
 	if (executionCounter > 120) {
 		GX2Surface surface = colorBuffer->surface;
 		WHBLogPrintf("GX2CopyColorBufferToScanBuffer {surface width:%d, height:%d, image size:%d, image data:%x}\n",
-				   surface.width, surface.height, surface.imageSize, surface.image_data);
+				   surface.width, surface.height, surface.imageSize, surface.image);
 
 		if (shouldTakeScreenShot) {
-			void *imageData = surface.image_data;
+			void *imageData = surface.image;
 			totalImageSize = surface.imageSize;
 			remainingImageSize = totalImageSize;
 			int bufferSize = IMAGE_BUFFER_SIZE;
@@ -97,7 +96,7 @@ void CommandHandler::command_take_screenshot(){
 	shouldTakeScreenShot = true;
 
 	// Tell the client the size of the upcoming image
-	ret = sendwait_buffer((unsigned char *)&totalImageSize, sizeof(int));
+	ret = sendwait_buffer((uint8_t *)&totalImageSize, sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (total image size)");
 
 	// Keep sending the image data
@@ -120,7 +119,7 @@ void CommandHandler::command_take_screenshot(){
 		}
 
 		// Send the size of the current chunk
-		ret = sendwait_buffer((unsigned char *)&bufferPosition, sizeof(int));
+		ret = sendwait_buffer((uint8_t *)&bufferPosition, sizeof(int));
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (image data chunk size)");
 
 		// Send the image data itself
@@ -135,10 +134,10 @@ void CommandHandler::command_take_screenshot(){
 	uint32_t image_size = surface.image_size;
 
 	// Send the image size so that the client knows how much to read
-	ret = sendwait(bss, clientfd, (unsigned char *) &image_size, sizeof(int));
+	ret = sendwait(bss, clientfd, (uint8_t *) &image_size, sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (image size)")
 
-	unsigned int imageBytesSent = 0;
+	uint32_t imageBytesSent = 0;
 	while (imageBytesSent < image_size) {
 		int length = image_size - imageBytesSent;
 
@@ -158,12 +157,10 @@ void CommandHandler::command_take_screenshot(){
 
 //TODO: Make this cause a notification to appear onscreen
 void CommandHandler::command_write_screen(){
-	char message[WRITE_SCREEN_MESSAGE_BUFFER_SIZE];
+	uint8_t message[WRITE_SCREEN_MESSAGE_BUFFER_SIZE];
 	ret = recvwait(4);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (write screen seconds)")
 	int seconds = ((int *)buffer)[0];
 	receiveString(message, WRITE_SCREEN_MESSAGE_BUFFER_SIZE);
-	writeScreen(message, seconds);
-
-	break;
+	//writeScreen(message, seconds);
 };

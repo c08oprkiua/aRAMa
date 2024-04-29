@@ -61,7 +61,7 @@ void CommandHandler::command_validate_address_range(){
 
 	int isAddressRangeValid = validateAddressRange(startingAddress, endingAddress);
 
-	sendByte((unsigned char)isAddressRangeValid);
+	sendByte((uint8_t)isAddressRangeValid);
 	return;
 	
 	error:

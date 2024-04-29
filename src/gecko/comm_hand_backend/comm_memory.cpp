@@ -3,11 +3,11 @@
 
 void CommandHandler::command_read_memory()
 {
-	const unsigned char *startingAddress, *endingAddress;
+	const uint8_t *startingAddress, *endingAddress;
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
-	startingAddress = ((const unsigned char **)buffer)[0];
-	endingAddress = ((const unsigned char **)buffer)[1];
+	startingAddress = ((const uint8_t **)buffer)[0];
+	endingAddress = ((const uint8_t **)buffer)[1];
 	while (startingAddress != endingAddress)
 	{
 		int length = (int)(endingAddress - startingAddress);
@@ -49,14 +49,14 @@ void CommandHandler::command_read_memory()
 };
 
 void CommandHandler::command_read_memory_kernel(){
-	const unsigned char *startingAddress, *endingAddress, *useKernRead;
+	const uint8_t *startingAddress, *endingAddress, *useKernRead;
 	ret = recvwait(3 * sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (receiving data)");
 
 	int bufferIndex = 0;
-	startingAddress = ((const unsigned char **)buffer)[bufferIndex++];
-	endingAddress = ((const unsigned char **)buffer)[bufferIndex++];
-	useKernRead = ((const unsigned char **)buffer)[bufferIndex];
+	startingAddress = ((const uint8_t **)buffer)[bufferIndex++];
+	endingAddress = ((const uint8_t **)buffer)[bufferIndex++];
+	useKernRead = ((const uint8_t **)buffer)[bufferIndex];
 
 	while (startingAddress != endingAddress)
 	{
@@ -115,21 +115,21 @@ void CommandHandler::command_read_memory_kernel(){
 	}
 
 	/*
-	const unsigned char *startingAddress, *endingAddress, *useKernRead;
+	const uint8_t *startingAddress, *endingAddress, *useKernRead;
 	ret = recvwait(3 * sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (receiving data)")
 
 	int bufferIndex = 0;
-	startingAddress = ((const unsigned char **)buffer)[bufferIndex++];
-	endingAddress = ((const unsigned char **)buffer)[bufferIndex++];
-	useKernRead = ((const unsigned char **)buffer)[bufferIndex];
+	startingAddress = ((const uint8_t **)buffer)[bufferIndex++];
+	endingAddress = ((const uint8_t **)buffer)[bufferIndex++];
+	useKernRead = ((const uint8_t **)buffer)[bufferIndex];
 
 	while (startingAddress != endingAddress)
 	{
 		WHBLogPrintf("Reading memory from %08x to %08x with kernel %i\n", startingAddress, endingAddress,
 				   useKernRead);
 
-		unsigned int length = (unsigned int)(endingAddress - startingAddress);
+		uint32_t length = (uint32_t)(endingAddress - startingAddress);
 
 		// Do not smash the buffer
 		if (length > DATA_BUFFER_SIZE)
@@ -139,7 +139,7 @@ void CommandHandler::command_read_memory_kernel(){
 
 		// Figure out if all bytes are zero to possibly avoid sending them
 		WHBLogPrint("Checking for all zero bytes...\n");
-		unsigned int rangeIterationIndex = 0;
+		uint32_t rangeIterationIndex = 0;
 		for (; rangeIterationIndex < length; rangeIterationIndex++)
 		{
 			int character = useKernRead ? readKernelMemory(startingAddress + rangeIterationIndex)
@@ -167,8 +167,8 @@ void CommandHandler::command_read_memory_kernel(){
 
 			if (useKernRead)
 			{
-				// kernelCopy(buffer + 1, (unsigned char *) startingAddress, length);
-				for (unsigned int offset = 0; offset < length; offset += sizeof(int))
+				// kernelCopy(buffer + 1, (uint8_t *) startingAddress, length);
+				for (uint32_t offset = 0; offset < length; offset += sizeof(int))
 				{
 					*((int *)(buffer + 1) + offset / sizeof(int)) = readKernelMemory(
 						startingAddress + offset);
@@ -233,7 +233,7 @@ void CommandHandler::command_advanced_memory_search(){
 
 	// Receive the search bytes
 	char searchBytes[searchBytesCount];
-	ret = recvwait_buffer((unsigned char *)searchBytes, searchBytesCount);
+	ret = recvwait_buffer((uint8_t *)searchBytes, searchBytesCount);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (memory search bytes)")
 
 	int iterationIncrement = aligned ? searchBytesCount : 1;
@@ -281,7 +281,7 @@ void CommandHandler::command_read_memory_compressed(){
 /*	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
 	int startingAddress = ((int *)buffer)[0];
-	unsigned int inputLength = ((unsigned int *)buffer)[1];
+	uint32_t inputLength = ((uint32_t *)buffer)[1];
 
 	z_stream stream;
 	memset(&stream, 0, sizeof(stream));
@@ -321,11 +321,11 @@ void CommandHandler::command_read_memory_compressed(){
 	/*
 
 	// Setup compressed buffer
-	unsigned int compressedBufferSize = length * 2;
+	uint32_t compressedBufferSize = length * 2;
 	void *compressedBuffer = (void *) OSAllocFromSystem(compressedBufferSize, 0x4);
 	ASSERT_ALLOCATED(compressedBuffer, "Compressed buffer")
 
-	unsigned int zlib_handle;
+	uint32_t zlib_handle;
 	OSDynLoad_Acquire("zlib125.rpl", (uint32_t *) &zlib_handle);
 	int (*compress2)(char *, int *, const char *, int, int);
 	OSDynLoad_FindExport((uint32_t) zlib_handle, 0, "compress2", &compress2);
@@ -356,8 +356,8 @@ void CommandHandler::command_upload_memory(){
 	// Receive the starting and ending addresses
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
-	unsigned char *currentAddress = ((unsigned char **)buffer)[0];
-	unsigned char *endAddress = ((unsigned char **)buffer)[1];
+	uint8_t *currentAddress = ((uint8_t **)buffer)[0];
+	uint8_t *endAddress = ((uint8_t **)buffer)[1];
 
 	while (currentAddress != endAddress)
 	{
@@ -371,7 +371,7 @@ void CommandHandler::command_upload_memory(){
 
 		ret = recvwait(length);
 		CHECK_ERROR(ret < 0)
-		GeckoKernelCopyData(currentAddress, buffer, (unsigned int) length);
+		GeckoKernelCopyData(currentAddress, buffer, (uint32_t) length);
 
 		currentAddress += length;
 	}

@@ -31,7 +31,7 @@ void CommandHandler::command_resume_console(){
 void CommandHandler::command_is_console_paused(){
 	bool paused = isConsolePaused();
 	WHBLogPrintf("Paused: %d\n", paused);
-	ret = sendByte((unsigned char)paused);
+	ret = sendByte((uint8_t)paused);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendByte (sending paused console status)")
 };
 
@@ -54,15 +54,15 @@ void writeConsoleState(ConsoleState state) {
 	WHBLogPrintf("Patch value: %x\n", patchValue);
 
 	// Write the value
-	unsigned int patchAddress = getConsoleStatePatchAddress();
+	uint32_t patchAddress = getConsoleStatePatchAddress();
 	WHBLogPrintf("Patch address: %x\n", patchAddress);
-	GeckoKernelCopyData((unsigned char *) patchAddress, (unsigned char *) &patchValue, 4);
+	GeckoKernelCopyData((uint8_t *) patchAddress, (uint8_t *) &patchValue, 4);
 }
 
 bool isConsolePaused() {
-	unsigned int patchAddress = getConsoleStatePatchAddress();
+	uint32_t patchAddress = getConsoleStatePatchAddress();
 	WHBLogPrintf("Patch address: %x\n", patchAddress);
-	int value = *(unsigned int *) patchAddress;
+	int value = *(uint32_t *) patchAddress;
 
 	return value == PAUSED;
 }

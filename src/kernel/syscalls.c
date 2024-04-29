@@ -12,27 +12,27 @@
 
 extern void my_PrepareTitle_hook(void);
 
-static unsigned int origPrepareTitleInstr = 0;
+static uint32_t origPrepareTitleInstr = 0;
 
 //static void KernelCopyData
-static void Debugged_Out_1(unsigned int addr, unsigned int src, unsigned int len) {
+static void Debugged_Out_1(uint32_t addr, uint32_t src, uint32_t len) {
 	/*
 	 * Setup a DBAT access with cache inhibited to write through and read directly from memory
 	 */
-	unsigned int dbatu0, dbatl0, dbatu1, dbatl1;
+	uint32_t dbatu0, dbatl0, dbatu1, dbatl1;
 	// save the original DBAT value
 	asm volatile("mfdbatu %0, 0" : "=r" (dbatu0));
 	asm volatile("mfdbatl %0, 0" : "=r" (dbatl0));
 	asm volatile("mfdbatu %0, 1" : "=r" (dbatu1));
 	asm volatile("mfdbatl %0, 1" : "=r" (dbatl1));
 
-	unsigned int target_dbatu0 = 0;
-	unsigned int target_dbatl0 = 0;
-	unsigned int target_dbatu1 = 0;
-	unsigned int target_dbatl1 = 0;
+	uint32_t target_dbatu0 = 0;
+	uint32_t target_dbatl0 = 0;
+	uint32_t target_dbatu1 = 0;
+	uint32_t target_dbatl1 = 0;
 
-	unsigned char *dst_p = (unsigned char *) addr;
-	unsigned char *src_p = (unsigned char *) src;
+	uint8_t *dst_p = (uint8_t *) addr;
+	uint8_t *src_p = (uint8_t *) src;
 
 	// we only need DBAT modification for addresses out of our own DBAT range
 	// as our own DBAT is available everywhere for user and supervisor
@@ -42,7 +42,7 @@ static void Debugged_Out_1(unsigned int addr, unsigned int src, unsigned int len
 		target_dbatl0 = (addr & 0xFFF00000) | 0x32;
 		asm volatile("mtdbatu 0, %0" : : "r" (target_dbatu0));
 		asm volatile("mtdbatl 0, %0" : : "r" (target_dbatl0));
-		dst_p = (unsigned char *) ((addr & 0xFFFFFF) | 0xC0000000);
+		dst_p = (uint8_t *) ((addr & 0xFFFFFF) | 0xC0000000);
 	}
 	if (src < 0x00800000 || src >= 0x01000000) {
 		target_dbatu1 = (src & 0x00F00000) | 0xB0000000 | 0x1F;
@@ -50,28 +50,28 @@ static void Debugged_Out_1(unsigned int addr, unsigned int src, unsigned int len
 
 		asm volatile("mtdbatu 1, %0" : : "r" (target_dbatu1));
 		asm volatile("mtdbatl 1, %0" : : "r" (target_dbatl1));
-		src_p = (unsigned char *) ((src & 0xFFFFFF) | 0xB0000000);
+		src_p = (uint8_t *) ((src & 0xFFFFFF) | 0xB0000000);
 	}
 
 	asm volatile("eieio; isync");
 
-	unsigned int i;
+	uint32_t i;
 	for (i = 0; i < len; i++) {
 		// if we are on the edge to next chunk
-		if ((target_dbatu0 != 0) && (((unsigned int) dst_p & 0x00F00000) != (target_dbatu0 & 0x00F00000))) {
+		if ((target_dbatu0 != 0) && (((uint32_t) dst_p & 0x00F00000) != (target_dbatu0 & 0x00F00000))) {
 			target_dbatu0 = ((addr + i) & 0x00F00000) | 0xC0000000 | 0x1F;
 			target_dbatl0 = ((addr + i) & 0xFFF00000) | 0x32;
-			dst_p = (unsigned char *) (((addr + i) & 0xFFFFFF) | 0xC0000000);
+			dst_p = (uint8_t *) (((addr + i) & 0xFFFFFF) | 0xC0000000);
 
 			asm volatile("eieio; isync");
 			asm volatile("mtdbatu 0, %0" : : "r" (target_dbatu0));
 			asm volatile("mtdbatl 0, %0" : : "r" (target_dbatl0));
 			asm volatile("eieio; isync");
 		}
-		if ((target_dbatu1 != 0) && (((unsigned int) src_p & 0x00F00000) != (target_dbatu1 & 0x00F00000))) {
+		if ((target_dbatu1 != 0) && (((uint32_t) src_p & 0x00F00000) != (target_dbatu1 & 0x00F00000))) {
 			target_dbatu1 = ((src + i) & 0x00F00000) | 0xB0000000 | 0x1F;
 			target_dbatl1 = ((src + i) & 0xFFF00000) | 0x32;
-			src_p = (unsigned char *) (((src + i) & 0xFFFFFF) | 0xB0000000);
+			src_p = (uint8_t *) (((src + i) & 0xFFFFFF) | 0xB0000000);
 
 			asm volatile("eieio; isync");
 			asm volatile("mtdbatu 1, %0" : : "r" (target_dbatu1));
@@ -221,23 +221,23 @@ void KernelSetupSyscalls(void) {
 
 	ucSyscallsSetupRequired = 0;
 
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl1 + (0x36 * 4)), (unsigned int) KernelReadDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl2 + (0x36 * 4)), (unsigned int) KernelReadDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl3 + (0x36 * 4)), (unsigned int) KernelReadDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x36 * 4)), (unsigned int) KernelReadDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x36 * 4)), (unsigned int) KernelReadDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl1 + (0x36 * 4)), (uint32_t) KernelReadDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl2 + (0x36 * 4)), (uint32_t) KernelReadDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl3 + (0x36 * 4)), (uint32_t) KernelReadDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x36 * 4)), (uint32_t) KernelReadDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x36 * 4)), (uint32_t) KernelReadDBATs);
 
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl1 + (0x37 * 4)), (unsigned int) KernelWriteDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl2 + (0x37 * 4)), (unsigned int) KernelWriteDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl3 + (0x37 * 4)), (unsigned int) KernelWriteDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x37 * 4)), (unsigned int) KernelWriteDBATs);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x37 * 4)), (unsigned int) KernelWriteDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl1 + (0x37 * 4)), (uint32_t) KernelWriteDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl2 + (0x37 * 4)), (uint32_t) KernelWriteDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl3 + (0x37 * 4)), (uint32_t) KernelWriteDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x37 * 4)), (uint32_t) KernelWriteDBATs);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x37 * 4)), (uint32_t) KernelWriteDBATs);
 
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl1 + (0x25 * 4)), (unsigned int) KernelCopyData);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl2 + (0x25 * 4)), (unsigned int) KernelCopyData);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl3 + (0x25 * 4)), (unsigned int) KernelCopyData);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x25 * 4)), (unsigned int) KernelCopyData);
-	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x25 * 4)), (unsigned int) KernelCopyData);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl1 + (0x25 * 4)), (uint32_t) KernelCopyData);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl2 + (0x25 * 4)), (uint32_t) KernelCopyData);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl3 + (0x25 * 4)), (uint32_t) KernelCopyData);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl4 + (0x25 * 4)), (uint32_t) KernelCopyData);
+	kern_write((void *) (OS_SPECIFICS->addr_KernSyscallTbl5 + (0x25 * 4)), (uint32_t) KernelCopyData);
 
 	//! write our hook to the
 	uint32_t addr_my_PrepareTitle_hook = ((u32) my_PrepareTitle_hook) | 0x48000003;

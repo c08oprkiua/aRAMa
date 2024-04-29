@@ -11,23 +11,16 @@ void Caffiine::caf_connect(uint32_t server_ip) {
 	//socket_lib_init(); //wdym
 
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (check_error(sock == -1, FAIL_SOCKET_INIT, 5)){
-		goto error;
-	}
+	CHECK_ERROR(sock == -1);
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = 7332;
 	addr.sin_addr.s_addr = server_ip;
 
 	ret = connect(sock, (sockaddr *) &addr, sizeof(addr));
-	if (check_error(ret < 0, FAIL_SOCKET_CONNECT, 1)){
-		goto error;
-	}
+	CHECK_ERROR(ret <0);
 
 	ret = handshake();
-	if (check_error(ret < 0, FAIL_SOCKET_HANDSHAKE, 1)){
-		goto error;
-	}
 	CHECK_ERROR(ret < 0);
 	CHECK_ERROR(ret == BYTE_NORMAL);
 
@@ -51,7 +44,7 @@ void Caffiine::disconnect() {
 int Caffiine::handshake() {
 	int ret;
 
-	unsigned char buffer[16];
+	uint8_t buffer[16];
 
 	uint64_t title_id = OSGetTitleID();
 	memcpy(buffer, &title_id, 16);
@@ -66,13 +59,15 @@ int Caffiine::handshake() {
 }
 
 int Caffiine::fsetpos(int *result, int fd, int set) {
-	while (iLock)
+	
+	while (OSTryLockMutex(&iLock)){
 		usleep(5000);
-	iLock = 1;
+	}
+	OSLockMutex(&iLock);
 
 	CHECK_ERROR(sock == -1);
 
-	int ret;
+	//int ret;
 	char buffer[1 + 8];
 	buffer[0] = BYTE_SETPOS;
 	*(int *) (buffer + 1) = fd;
@@ -82,20 +77,20 @@ int Caffiine::fsetpos(int *result, int fd, int set) {
 	ret = recvbyte();
 	CHECK_ERROR(ret < 0);
 	CHECK_ERROR(ret == BYTE_NORMAL);
-	ret = recvwait_buffer( (unsigned char *) result, 4);
+	ret = recvwait_buffer( (uint8_t *) result, 4);
 	CHECK_ERROR(ret < 0);
 
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return 0;
 	error:
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return -1;
 }
 
 int Caffiine::send_handle(const char *path, int handle) {
-	while (iLock)
+	while (OSTryLockMutex(&iLock))
 		usleep(5000);
-	iLock = 1;
+	OSLockMutex(&iLock);
 
 	CHECK_ERROR(sock == -1);
 
@@ -129,12 +124,12 @@ int Caffiine::send_handle(const char *path, int handle) {
 		int special_ret = recvbyte();
 		CHECK_ERROR(special_ret < 0);
 		CHECK_ERROR(special_ret != BYTE_SPECIAL);
-		iLock = 0;
+		OSUnlockMutex(&iLock);
 		return ret;
 	}
 
 	error:
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return -1;
 }
 
@@ -186,9 +181,9 @@ int Caffiine::send_handle(const char *path, int handle) {
 }*/
 
 void Caffiine::send_file(char *file, int size, int fd) {
-	while (iLock)
+	while (OSTryLockMutex(&iLock))
 		usleep(5000);
-	iLock = 1;
+	OSLockMutex(&iLock);
 
 	CHECK_ERROR(sock == -1);
 
@@ -218,9 +213,9 @@ void Caffiine::send_file(char *file, int size, int fd) {
 }
 
 int Caffiine::fread(int *result, void *ptr, int size, int fd) {
-	while (iLock)
+	while (OSTryLockMutex(&iLock))
 		usleep(5000);
-	iLock = 1;
+	OSLockMutex(&iLock);
 
 	CHECK_ERROR(sock == -1);
 
@@ -233,24 +228,24 @@ int Caffiine::fread(int *result, void *ptr, int size, int fd) {
 	ret = recvbyte();
 	CHECK_ERROR(ret == BYTE_NORMAL);
 	int sz;
-	ret = recvwait_buffer((unsigned char *) &sz, 4);
+	ret = recvwait_buffer((uint8_t *) &sz, 4);
 	CHECK_ERROR(ret < 0);
 	ret = recvwaitlen_buffer(ptr, sz);
 	*result = sz - ret;
 	ret = sendByte(BYTE_OK);
 	CHECK_ERROR(ret < 0);
 
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return 0;
 	error:
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return -1;
 }
 
 int Caffiine::fclose( int *result, int fd, int dumpclose) {
-	while (iLock)
+	while (OSTryLockMutex(&iLock))
 		usleep(5000);
-	iLock = 1;
+	OSLockMutex(&iLock);
 
 	CHECK_ERROR(sock == -1);
 
@@ -262,12 +257,12 @@ int Caffiine::fclose( int *result, int fd, int dumpclose) {
 	CHECK_ERROR(ret < 0);
 	ret = recvbyte();
 	CHECK_ERROR(ret == BYTE_NORMAL);
-	ret = recvwait_buffer((unsigned char *) result, 4);
+	ret = recvwait_buffer((uint8_t *) result, 4);
 	CHECK_ERROR(ret < 0);
 
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return 0;
 	error:
-	iLock = 0;
+	OSUnlockMutex(&iLock);
 	return -1;
 }

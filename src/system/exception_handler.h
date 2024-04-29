@@ -26,9 +26,9 @@ typedef struct _framerec {
 
 void setup_os_exceptions(void);
 
-unsigned char dsi_exception_cb(OSContext *context);
-unsigned char isi_exception_cb(OSContext *context);
-unsigned char program_exception_cb(OSContext *context);
+uint8_t dsi_exception_cb(OSContext *context);
+uint8_t isi_exception_cb(OSContext *context);
+uint8_t program_exception_cb(OSContext *context);
 
 #ifdef __cplusplus
 }

@@ -9,6 +9,9 @@
 void CommandHandler::command_server_status(){
 	ret = sendByte(1);
 	CHECK_ERROR(ret < 0)
+
+	error:
+	error = ret;
 	return;
 };
 
@@ -36,10 +39,10 @@ void CommandHandler::command_account_identifier(){
 	int (*nn_act_Initialize)(void);
 	OSDynLoad_FindExport(nn_act_handle, 0, "Initialize__Q2_2nn3actFv", &nn_act_Initialize);
 	ASSERT_ALLOCATED(nn_act_Initialize, "nn_act_Initialize")
-	unsigned char (*nn_act_GetSlotNo)(void);
+	uint8_t (*nn_act_GetSlotNo)(void);
 	OSDynLoad_FindExport(nn_act_handle, 0, "GetSlotNo__Q2_2nn3actFv", &nn_act_GetSlotNo);
 	ASSERT_ALLOCATED(nn_act_GetSlotNo, "nn_act_GetSlotNo")
-	unsigned int (*nn_act_GetPersistentIdEx)(unsigned char);
+	uint32_t (*nn_act_GetPersistentIdEx)(uint8_t);
 	OSDynLoad_FindExport(nn_act_handle, 0, "GetPersistentIdEx__Q2_2nn3actFUc", &nn_act_GetPersistentIdEx);
 	ASSERT_ALLOCATED(nn_act_GetPersistentIdEx, "nn_act_GetPersistentIdEx")
 	int (*nn_act_Finalize)(void);
@@ -57,8 +60,8 @@ void CommandHandler::command_account_identifier(){
 	ASSERT_FUNCTION_SUCCEEDED(ret, "nn_act_Finalize");
 
 	// Send it
-	ret = sendwait_buffer((unsigned char *)&persistentIdentifier, 4);
-	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (persistent identifier)")
+	ret = sendwait_buffer((uint8_t *)&persistentIdentifier, 4);
+	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (persistent identifier)");
 };
 
 void CommandHandler::command_get_os_version(){
@@ -81,6 +84,10 @@ void CommandHandler::command_get_data_buffer_size(){
 	ret = sendwait(sizeof(int));
 	WHBLogPrintf("Sent: %i\n", ret);
 	CHECK_ERROR(ret < 0)
+
+	error:
+	error = ret;
+	return;
 };
 
 void CommandHandler::command_get_version_hash(){
@@ -88,6 +95,7 @@ void CommandHandler::command_get_version_hash(){
 	ret = sendwait(4);
 };
 
+//Todo: send null back if code handler is not initialized
 void CommandHandler::command_get_code_handler_address(){
 	((int *)buffer)[0] = CODE_HANDLER_INSTALL_ADDRESS;
 	ret = sendwait(4);

@@ -29,7 +29,7 @@ void considerInitializingFileSystem() {
 
 void CommandHandler::command_read_file(){
 	char file_path[FS_MAX_FULLPATH_SIZE] = {0};
-	receiveString((unsigned char *)file_path, FS_MAX_FULLPATH_SIZE);
+	receiveString((uint8_t *)file_path, FS_MAX_FULLPATH_SIZE);
 
 	considerInitializingFileSystem();
 
@@ -55,7 +55,7 @@ void CommandHandler::command_read_file(){
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (total bytes)")
 
 		// Allocate the file bytes buffer
-		unsigned int file_buffer_size = 0x2000;
+		uint32_t file_buffer_size = 0x2000;
 		char *fileBuffer = (char *)OSAllocFromSystem(file_buffer_size, FS_IO_BUFFER_ALIGN);
 		ASSERT_ALLOCATED(fileBuffer, "File buffer")
 
@@ -67,7 +67,7 @@ void CommandHandler::command_read_file(){
 			ASSERT_FUNCTION_SUCCEEDED(bytesRead, "FSReadFile")
 
 			// Send file bytes
-			ret = sendwait_buffer((unsigned char *)fileBuffer, bytesRead);
+			ret = sendwait_buffer((uint8_t *)fileBuffer, bytesRead);
 			ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (file buffer)")
 
 			totalBytesRead += bytesRead;
@@ -89,7 +89,7 @@ void CommandHandler::command_read_file(){
 
 void CommandHandler::command_read_directory(){
 	char directory_path[FS_MAX_FULLPATH_SIZE] = {0};
-	receiveString((unsigned char *)directory_path, FS_MAX_FULLPATH_SIZE);
+	receiveString((uint8_t *)directory_path, FS_MAX_FULLPATH_SIZE);
 
 	considerInitializingFileSystem();
 
@@ -116,7 +116,7 @@ void CommandHandler::command_read_directory(){
 			ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (data coming)")
 
 			// Send the struct
-			ret = sendwait_buffer((unsigned char *)&entry, entrySize);
+			ret = sendwait_buffer((uint8_t *)&entry, entrySize);
 			ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (directory entry)")
 		}
 
@@ -143,7 +143,7 @@ void CommandHandler::command_replace_file(){
 
 	// Receive the file path
 	char file_path[FS_MAX_FULLPATH_SIZE] = {0};
-	receiveString((unsigned char *)file_path, FS_MAX_FULLPATH_SIZE);
+	receiveString((uint8_t *)file_path, FS_MAX_FULLPATH_SIZE);
 
 	considerInitializingFileSystem();
 
@@ -163,26 +163,26 @@ void CommandHandler::command_replace_file(){
 		ASSERT_FUNCTION_SUCCEEDED(ret, "FSSetPosFile")
 
 		// Allocate the file bytes buffer
-		unsigned int file_buffer_size = 0x2000;
+		uint32_t file_buffer_size = 0x2000;
 		char *fileBuffer = (char *)OSAllocFromSystem(file_buffer_size, FS_IO_BUFFER_ALIGN);
 		ASSERT_ALLOCATED(fileBuffer, "File buffer")
 
 		// Send the maximum file buffer size
-		ret = sendwait_buffer((unsigned char *)&file_buffer_size, 4);
+		ret = sendwait_buffer((uint8_t *)&file_buffer_size, 4);
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (maximum file buffer size)")
 
 		while (true)
 		{
 			// Receive the data bytes length
-			unsigned int dataLength;
-			ret = recvwait_buffer((unsigned char *)&dataLength, 4);
+			uint32_t dataLength;
+			ret = recvwait_buffer((uint8_t *)&dataLength, 4);
 			ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (File bytes length)")
 			ASSERT_MAXIMUM_HOLDS(file_buffer_size, dataLength, "File buffer overrun attempted")
 
 			if (dataLength > 0)
 			{
 				// Receive the data
-				ret = recvwait_buffer((unsigned char *)fileBuffer, dataLength);
+				ret = recvwait_buffer((uint8_t *)fileBuffer, dataLength);
 				ASSERT_FUNCTION_SUCCEEDED(ret, "recvwait (File buffer)")
 
 				// Write the data (and advance file handle position implicitly)

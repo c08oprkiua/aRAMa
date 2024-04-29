@@ -4,12 +4,8 @@
 #include "arama.h"
 
 
-#define CODE_HANDLER_INSTALL_ADDRESS 0x010F4000
 
-static int runGeckoServer(int argc, const char **argv){
-	//GeckoProcessor *proc = ((GeckoProcessor *) argv);
-	return ((GeckoProcessor *) argv)->run();
-}
+#define CODE_HANDLER_INSTALL_ADDRESS 0x010F4000
 
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
@@ -33,7 +29,7 @@ void aRAMaReInit(){
 		//deinit if offline and no codes are found
 	}
 
-	if (aRAMaConfig::no_online){
+	if (!aRAMaConfig::tcpgecko){
 		
 		if (!(aRAMaConfig::sd_codes)){
 			//If aRAMa is active and offline, but SD codes are disabled, no reason
@@ -64,7 +60,7 @@ void aRAMaReInit(){
 		WHBLogPrint("Starting TCPGecko thread.\n");
 		if (OSCreateThread(
 		gecko->thread, 
-		&runGeckoServer, 
+		&GeckoProcessor::runGeckoServer, 
 		1, 
 		(char *) gecko,
 		(gecko->stack + sizeof(gecko->stack)), 

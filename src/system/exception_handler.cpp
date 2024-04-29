@@ -36,7 +36,7 @@ static const char exception_print_formats[18][45] = {
 		"%p:  %08X %08X %08X %08X\n",                         // 17
 };
 
-static unsigned char exceptionCallback(OSContext *c, unsigned char exception_type) {
+static uint8_t exceptionCallback(OSContext *c, uint8_t exception_type) {
 	char stackTraceBuffer[850];
 	int pos = 0;
 
@@ -131,15 +131,15 @@ static unsigned char exceptionCallback(OSContext *c, unsigned char exception_typ
 	return 1;
 }
 
-unsigned char dsi_exception_cb(OSContext *context) {
+uint8_t dsi_exception_cb(OSContext *context) {
 	return exceptionCallback(context, 0);
 }
 
-unsigned char isi_exception_cb(OSContext *context) {
+uint8_t isi_exception_cb(OSContext *context) {
 	return exceptionCallback(context, 1);
 }
 
-unsigned char program_exception_cb(OSContext *context) {
+uint8_t program_exception_cb(OSContext *context) {
 	return exceptionCallback(context, 2);
 }
 

@@ -10,9 +10,13 @@ In the config menu, there will be several options:
 
 * `aRAMa active`: Activates/deactivates the entire plugin.
 
-* `Notifications`: When enabled, will send Aroma notifications when the plugin does various things, such as load a code or have an error.
+* `Notifications`: When enabled, you will get Aroma notifications when the plugin does various things, such as load an assembly code or encounter an error.
 
 * `Save sent codes`: When a code is set from a client, such as JGeckoU, automatically save it to the SD card for offline use.
+
+* `TCP Gecko`: Enable TCPGecko.
+
+* `Code handler`: Enable the environment used for running assembly code.
 
 * `Caffiine`: Enable Caffiine. 
 
@@ -35,7 +39,8 @@ And then simply run `make` in the root directory of this repo after cloning loca
 Though I tried, I cannot guarantee that everything works, because of what was necessarily changed in porting TCPGecko from the old libraries to the new equivalents. 
 
 * Things related to kernel access may be depreciated and/or redundant to their non-kernel counterparts in the future.
-* **Old codes are expected to not work due to RAM offsets, so please do not report stock old codes not working as an issue.**
+* **Old codes are anticipated to not work due to RAM offsets, so please do not report unmodified old codes not working as an issue.**
+* Assembly related commands will not do anything if the `Code handler` is disabled.
 
 I am reliant on people testing it and getting back to me on the status of various features. A checklist of what has been reported to work is below. 
 
