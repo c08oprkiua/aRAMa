@@ -34,7 +34,7 @@ int CodeHandler::run(){
 	void (*codeHandlerFunction)() = (void (*)()) CODE_HANDLER_INSTALL_ADDRESS;
 
 	while (running) {
-		usleep(9000);
+		//usleep(9000);
 
 	    // considerApplyingSDCheats();
 		WHBLogPrint("Running code handler...\n");
@@ -45,7 +45,7 @@ int CodeHandler::run(){
 			executeAssembly();
 		}
 
-		if (aRAMaConfig::sd_codes) {
+		if (singletons.config->get_sd_codes()) {
 			loadSDCodes(); //TODO: Only load an auto-load list
 		}
 	}

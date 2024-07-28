@@ -7,7 +7,7 @@
 
 void CommandHandler::command_execute_assembly(){
 	receiveString((uint8_t *)buffer, DATA_BUFFER_SIZE);
-	if (!aRAMaConfig::code_handler){
+	if (!singletons.config->get_code_handler()){
 		//something something "this is illegal, you know"
 	}
 
@@ -18,7 +18,7 @@ void CommandHandler::command_execute_assembly(){
 
 void CommandHandler::command_persist_assembly(){
 	uint32_t length = receiveString((uint8_t *)buffer, DATA_BUFFER_SIZE);
-	if (!aRAMaConfig::code_handler){
+	if (!singletons.config->get_code_handler()){
 		//something something "this is illegal, you know"
 	}
 	singletons.code_handler->persistAssembly(length, buffer);
