@@ -1,11 +1,42 @@
 #include "../command_handler.h"
+#include <stdarg.h>
 
 #include <coreinit/debug.h>
+
+char *disassemblerBuffer;
+void *disassemblerBufferPointer;
+
+#define DISASSEMBLER_BUFFER_SIZE 0x1024
+
+void formatDisassembled(const char *format, ...) {
+	if (!disassemblerBuffer) {
+		disassemblerBuffer = (char *) malloc(DISASSEMBLER_BUFFER_SIZE);
+		ASSERT_ALLOCATED(disassemblerBuffer, "Disassembler buffer")
+		disassemblerBufferPointer = disassemblerBuffer;
+	}
+
+	va_list variableArguments;
+	va_start(variableArguments, format);
+	char *temporaryBuffer;
+	int printedBytesCount = vasprintf(&temporaryBuffer, format, variableArguments);
+	ASSERT_ALLOCATED(temporaryBuffer, "Temporary buffer")
+	ASSERT_MINIMUM_HOLDS(printedBytesCount, 1, "Printed bytes count")
+	va_end(variableArguments);
+
+	// Do not smash the buffer
+	long projectedSize = disassemblerBuffer - (char *) disassemblerBufferPointer + printedBytesCount;
+	if (projectedSize < DISASSEMBLER_BUFFER_SIZE) {
+		memcpy(disassemblerBuffer, temporaryBuffer, printedBytesCount);
+		disassemblerBuffer += printedBytesCount;
+	}
+
+	free(temporaryBuffer);
+}
 
 void CommandHandler::command_disassemble_range(){
 	// Receive the starting, ending address and the disassembler options
 	ret = recvwait(4 + 4 + 4);
-	CHECK_ERROR(ret < 0)
+	CHECK_ERROR(ret < 0);
 	void *startingAddress = ((void **)buffer)[0];
 	void *endingAddress = ((void **)buffer)[1];
 	int disassemblerOptions = ((int *)buffer)[2];
@@ -25,6 +56,12 @@ void CommandHandler::command_disassemble_range(){
 
 	// Place the pointer back to the beginning
 	disassemblerBuffer = (char *)disassemblerBufferPointer;
+
+	return;
+
+	error:
+	ret = -1;
+	return;
 }
 
 void CommandHandler::command_memory_disassemble(){
@@ -82,4 +119,10 @@ void CommandHandler::command_memory_disassemble(){
 	int bytesToSend = 0;
 	ret = sendwait_buffer((uint8_t *)&bytesToSend, sizeof(int));
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (No more bytes)")
+
+	return;
+
+	error:
+	ret = -1;
+	return;
 };

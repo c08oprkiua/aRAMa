@@ -3,7 +3,7 @@
 
 #include "command_io.h"
 
-class Saviine: public CommandIO {
+class Saviine: public TCPCommandIO {
     int start_injection(long persistentID, int *mask);
     int end_injection();
     int start_dump(long persistentID, int *mask);

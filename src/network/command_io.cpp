@@ -4,10 +4,11 @@
 
 #include "command_io.h"
 
-int CommandIO::getMode(int * result){
-	while (OSTryLockMutex(&iLock))
+int TCPCommandIO::getMode(int * result){
+	while(!OSTryLockMutex(&fsMutex)){
 		usleep(5000);
-	OSLockMutex(&iLock);
+	}
+	OSLockMutex(&fsMutex);
 	CHECK_ERROR(sock == -1);
 
 	ret = sendByte(BYTE_G_MODE);
@@ -22,11 +23,11 @@ int CommandIO::getMode(int * result){
 	ret = 1;
 
 	error:
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&fsMutex);
 	return ret;
 }
 
-int CommandIO::recvwait_buffer(uint8_t *buffer, int len){
+int TCPCommandIO::recvwait_buffer(uint8_t *buffer, int len){
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
 		
@@ -43,7 +44,7 @@ int CommandIO::recvwait_buffer(uint8_t *buffer, int len){
 	return ret;
 }
 
-int CommandIO::recvwait(int len){
+int TCPCommandIO::recvwait(int len){
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
@@ -58,20 +59,20 @@ int CommandIO::recvwait(int len){
 	return ret;
 }
 
-int CommandIO::recvbyte(){
+int TCPCommandIO::recvbyte(){
 	ret = recvwait(1);
 	if (ret < 0) return ret;
 	return buffer[0];
 }
 
-int CommandIO::checkbyte(){
+int TCPCommandIO::checkbyte(){
 	ret = recv(sock, buffer, 1, MSG_DONT_WAIT);
 	if (ret < 0) return ret;
 	if (ret == 0) return -1;
 	return buffer[0];
 }
 
-int CommandIO::sendwait(int len){
+int TCPCommandIO::sendwait(int len){
 	while (len > 0) {
 		ret = send(sock, buffer, len, 0);
 
@@ -86,12 +87,12 @@ int CommandIO::sendwait(int len){
 	return ret;
 }
 
-int CommandIO::sendByte(u_char byte){
+int TCPCommandIO::sendByte(u_char byte){
 	buffer[0] = byte;
 	return sendwait(1);
 }
 
-uint32_t CommandIO::receiveString(uint8_t *stringBuffer, uint32_t bufferSize){
+uint32_t TCPCommandIO::receiveString(uint8_t *stringBuffer, uint32_t bufferSize){
 	// Receive the string length
 	uint8_t lengthBuffer[4] = {0};
 	int ret = recvwait_buffer(lengthBuffer, sizeof(int));
@@ -109,7 +110,7 @@ uint32_t CommandIO::receiveString(uint8_t *stringBuffer, uint32_t bufferSize){
 	return stringLength;
 }
 
-int CommandIO::recvwaitlen(int len) {
+int TCPCommandIO::recvwaitlen(int len) {
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
@@ -122,7 +123,7 @@ int CommandIO::recvwaitlen(int len) {
 	return len;
 }
 
-int CommandIO::recvwaitlen_buffer(void * buffer, int len) {
+int TCPCommandIO::recvwaitlen_buffer(void * buffer, int len) {
 	while (len > 0) {
 		ret = recv(sock, buffer, len, 0);
 		CHECK_ERROR(ret < 0);
@@ -135,13 +136,13 @@ int CommandIO::recvwaitlen_buffer(void * buffer, int len) {
 	return len;
 }
 
-void CommandIO::log_string(const char *str, char flag_byte){
+void TCPCommandIO::log_string(const char *str, char flag_byte){
 	if (sock == -1) {
 		return;
 	}
-	while (OSTryLockMutex(&iLock))	
+	while (OSTryLockMutex(&fsMutex))	
 		usleep(5000);
-	OSLockMutex(&iLock);
+	OSLockMutex(&fsMutex);
 
 	int i;
 	int len_str = 0;
@@ -161,5 +162,5 @@ void CommandIO::log_string(const char *str, char flag_byte){
 		sendwait(1 + 4 + len_str);
 	}
 
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&fsMutex);
 }

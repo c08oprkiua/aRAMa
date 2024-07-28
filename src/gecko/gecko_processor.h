@@ -8,18 +8,9 @@
 class GeckoProcessor: public CommandHandler {
 public:
 
-    bool running = false;
-
-    OSThread *thread;
-
     int processCommands();
 
-    static int runGeckoServer(int argc, const char **argv){
-        ((GeckoProcessor *) argv)->run();
-        
-    }
-
-    int run();
+    int run() override;
 
 };
 

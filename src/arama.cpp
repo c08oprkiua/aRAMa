@@ -3,10 +3,6 @@
 
 #include "arama.h"
 
-
-
-#define CODE_HANDLER_INSTALL_ADDRESS 0x010F4000
-
 void aRAMaReInit(){
 	//If aRAMa shoudn't be active, immedeately end function
 	if (!(aRAMaConfig::active)){
@@ -30,18 +26,20 @@ void aRAMaReInit(){
 	}
 
 	if (!aRAMaConfig::tcpgecko){
-		
+
 		if (!(aRAMaConfig::sd_codes)){
 			//If aRAMa is active and offline, but SD codes are disabled, no reason
 			//to keep it loaded in cause it'll sit there doing nothing
 			aRAMaDeInit();
 			return;
 		}
+		singletons.code_handler->start_server();
 		//Start aRAMa offline, with only SD codes
 		return;
 	}
 	//If we're not offline, we must be online :bigbrain:
 	else {
+		singletons.gecko->start_server();
 		//This setting has not changed, and it returns the opposite of the previous check,
 		//So it can be used to check for Gecko being initialized
 		if (!(aRAMaConfig::sd_codes)){
@@ -51,48 +49,31 @@ void aRAMaReInit(){
 	}
 	
 	// Activate TCP Gecko if it's enabled and not already activated
-	if (aRAMaConfig::tcpgecko && gecko == nullptr){
+	if (aRAMaConfig::tcpgecko && singletons.gecko == nullptr){
 
-		gecko = new GeckoProcessor; //May need a memalign for performance?
+		singletons.gecko = new GeckoProcessor;
 
-		gecko->running = true;
-
-		WHBLogPrint("Starting TCPGecko thread.\n");
-		if (OSCreateThread(
-		gecko->thread, 
-		&GeckoProcessor::runGeckoServer, 
-		1, 
-		(char *) gecko,
-		(gecko->stack + sizeof(gecko->stack)), 
-		sizeof(gecko->stack), 
-		0, 
-		0xC
-		) == true) {
-		OSResumeThread(gecko->thread);
-		}
-		WHBLogPrint("TCP Gecko thread started...\n");
+		singletons.gecko->start_server();
 	}
 }
 
 void aRAMaDeInit(){
-	if (!aRAMaConfig::tcpgecko && gecko != nullptr){
-		gecko->running = false;
-		int thread_result;
-		OSJoinThread(gecko->thread, &thread_result);
-		delete gecko;
-		gecko = nullptr;
+	if (!aRAMaConfig::tcpgecko && singletons.gecko != nullptr){
+		singletons.gecko->stop_server();
+		delete singletons.gecko;
+		singletons.gecko = nullptr;
 	}
-	if (c_h != nullptr && !aRAMaConfig::code_handler){
-		delete c_h;
-		c_h = nullptr;
+	if (singletons.code_handler != nullptr && !aRAMaConfig::code_handler){
+		delete singletons.code_handler;
+		singletons.code_handler = nullptr;
 	}
-	if (caffiine != nullptr && !aRAMaConfig::caffiine){
-		delete caffiine;
-		caffiine = nullptr;
+	if (singletons.caffiine != nullptr && !aRAMaConfig::caffiine){
+		delete singletons.caffiine;
+		singletons.caffiine = nullptr;
 	}
-	if (saviine != nullptr && !aRAMaConfig::saviine){
-		delete saviine;
-		saviine = nullptr;
+	if (singletons.saviine != nullptr && !aRAMaConfig::saviine){
+		delete singletons.saviine;
+		singletons.saviine = nullptr;
 	}
 }
 

@@ -60,10 +60,10 @@ int Caffiine::handshake() {
 
 int Caffiine::fsetpos(int *result, int fd, int set) {
 	
-	while (OSTryLockMutex(&iLock)){
+	while (OSTryLockMutex(&IOMutex)){
 		usleep(5000);
 	}
-	OSLockMutex(&iLock);
+	OSLockMutex(&IOMutex);
 
 	CHECK_ERROR(sock == -1);
 
@@ -80,17 +80,17 @@ int Caffiine::fsetpos(int *result, int fd, int set) {
 	ret = recvwait_buffer( (uint8_t *) result, 4);
 	CHECK_ERROR(ret < 0);
 
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return 0;
 	error:
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return -1;
 }
 
 int Caffiine::send_handle(const char *path, int handle) {
-	while (OSTryLockMutex(&iLock))
+	while (OSTryLockMutex(&IOMutex))
 		usleep(5000);
-	OSLockMutex(&iLock);
+	OSLockMutex(&IOMutex);
 
 	CHECK_ERROR(sock == -1);
 
@@ -124,19 +124,19 @@ int Caffiine::send_handle(const char *path, int handle) {
 		int special_ret = recvbyte();
 		CHECK_ERROR(special_ret < 0);
 		CHECK_ERROR(special_ret != BYTE_SPECIAL);
-		OSUnlockMutex(&iLock);
+		OSUnlockMutex(&IOMutex);
 		return ret;
 	}
 
 	error:
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return -1;
 }
 
 /*int Caffiine::fopen(int sock, int *result, const char *path, const char *mode, int *handle) {
-	while (iLock)
+	while (IOMutex)
 		usleep(5000);
-	iLock = 1;
+	IOMutex = 1;
 
 	int final_result = -1;
 	CHECK_ERROR(sock == -1);
@@ -176,14 +176,15 @@ int Caffiine::send_handle(const char *path, int handle) {
 
 
 	error:
-	iLock = 0;
+	IOMutex = 0;
 	return final_result;
 }*/
 
 void Caffiine::send_file(char *file, int size, int fd) {
-	while (OSTryLockMutex(&iLock))
+	while (OSTryLockMutex(&IOMutex)){
 		usleep(5000);
-	OSLockMutex(&iLock);
+	}
+	OSLockMutex(&IOMutex);
 
 	CHECK_ERROR(sock == -1);
 
@@ -208,14 +209,15 @@ void Caffiine::send_file(char *file, int size, int fd) {
 	}
 
 	error:
-	iLock = 0;
+	OSUnlockMutex(&IOMutex);
 	return;
 }
 
 int Caffiine::fread(int *result, void *ptr, int size, int fd) {
-	while (OSTryLockMutex(&iLock))
+	while (OSTryLockMutex(&IOMutex)){
 		usleep(5000);
-	OSLockMutex(&iLock);
+	}
+	OSLockMutex(&IOMutex);
 
 	CHECK_ERROR(sock == -1);
 
@@ -235,17 +237,18 @@ int Caffiine::fread(int *result, void *ptr, int size, int fd) {
 	ret = sendByte(BYTE_OK);
 	CHECK_ERROR(ret < 0);
 
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return 0;
+	
 	error:
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return -1;
 }
 
 int Caffiine::fclose( int *result, int fd, int dumpclose) {
-	while (OSTryLockMutex(&iLock))
+	while (OSTryLockMutex(&IOMutex))
 		usleep(5000);
-	OSLockMutex(&iLock);
+	OSLockMutex(&IOMutex);
 
 	CHECK_ERROR(sock == -1);
 
@@ -260,9 +263,9 @@ int Caffiine::fclose( int *result, int fd, int dumpclose) {
 	ret = recvwait_buffer((uint8_t *) result, 4);
 	CHECK_ERROR(ret < 0);
 
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return 0;
 	error:
-	OSUnlockMutex(&iLock);
+	OSUnlockMutex(&IOMutex);
 	return -1;
 }

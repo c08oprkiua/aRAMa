@@ -33,12 +33,12 @@ void CommandHandler::command_write_16()
 
 void CommandHandler::command_write_32()
 {
-	int destinationAddress, value;
+	uint8_t destinationAddress, value;
 	ret = recvwait(sizeof(int) * 2);
 	CHECK_ERROR(ret < 0)
 
-	destinationAddress = ((int *)buffer)[0];
-	value = ((int *)buffer)[1];
+	destinationAddress = ((uint8_t *) buffer)[0];
+	value = ((uint8_t *)buffer)[1];
 
 	GeckoKernelCopyData((uint8_t *) destinationAddress, (uint8_t *) &value, sizeof(int));
 	

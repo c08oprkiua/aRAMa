@@ -4,12 +4,14 @@
 #include "../network/command_io.h"
 
 #include <whb/log.h>
+#include <kernel/kernel.h>
+#include <coreinit/cache.h>
+#include <coreinit/memorymap.h>
 
-class CommandHandler: public CommandIO
-{
+#include <cstring>
+
+class CommandHandler: public TCPCommandIO {
 public:
-
-
     static void reportIllegalCommandByte(int byte);
 
     /*
@@ -88,5 +90,18 @@ public:
     void command_remove_all_breakpoints();
 
 };
+
+uint8_t *kernelCopyBufferOld[DATA_BUFFER_SIZE];
+
+void GeckoKernelCopyData(uint8_t * dest, uint8_t * source, uint32_t length){
+	if (length > DATA_BUFFER_SIZE){
+		OSFatal("Kernel copy buffer size exceeded");
+	}
+
+	memcpy(kernelCopyBufferOld, source, length);
+	KernelCopyData(OSEffectiveToPhysical((uint32_t) dest), (uint32_t) &kernelCopyBufferOld, length);
+
+	DCFlushRange(dest, length);
+}
 
 #endif

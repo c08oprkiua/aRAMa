@@ -5,9 +5,9 @@
 #include <unistd.h>
 
 int Saviine::start_injection(long persistentID, int *mask) {
-	while (iLock)
+	while (fsMutex)
 		usleep(5000);
-	iLock = 1;
+	fsMutex = 1;
 
 	int result = 0;
 	CHECK_ERROR(sock == -1);
@@ -33,14 +33,14 @@ int Saviine::start_injection(long persistentID, int *mask) {
 		result = 1;
 	}
 	error:
-	iLock = 0;
+	fsMutex = 0;
 	return result;
 }
 
 int Saviine::end_injection() {
-	while (iLock)
+	while (fsMutex)
 		usleep(5000);
-	iLock = 1;
+	fsMutex = 1;
 
 	int result = 0;
 	CHECK_ERROR(sock == -1);
@@ -54,14 +54,14 @@ int Saviine::end_injection() {
 		result = 1;
 	}
 	error:
-	iLock = 0;
+	fsMutex = 0;
 	return result;
 }
 
 int Saviine::start_dump(long persistentID, int *mask) {
-	while (iLock)
+	while (fsMutex)
 		usleep(5000);
-	iLock = 1;
+	fsMutex = 1;
 
 	int result = 0;
 	CHECK_ERROR(sock == -1);
@@ -87,14 +87,14 @@ int Saviine::start_dump(long persistentID, int *mask) {
 		result = 1;
 	}
 	error:
-	iLock = 0;
+	fsMutex = 0;
 	return result;
 }
 
 int Saviine::end_dump() {
-	while (iLock)
+	while (fsMutex)
 		usleep(5000);
-	iLock = 1;
+	fsMutex = 1;
 
 	int result = 0;
 	CHECK_ERROR(sock == -1);
@@ -108,14 +108,14 @@ int Saviine::end_dump() {
 		result = 1;
 	}
 	error:
-	iLock = 0;
+	fsMutex = 0;
 	return result;
 }
 
 int Saviine::readdir(char *path, char *resultname, int *resulttype, int *filesize) {
-	while (iLock)
+	while (fsMutex)
 		usleep(5000);
-	iLock = 1;
+	fsMutex = 1;
 
 	int result = 0;
 	CHECK_ERROR(sock == -1);
@@ -159,6 +159,6 @@ int Saviine::readdir(char *path, char *resultname, int *resulttype, int *filesiz
 
 	}
 	error:
-	iLock = 0;
+	fsMutex = 0;
 	return result;
 }

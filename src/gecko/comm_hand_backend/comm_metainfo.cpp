@@ -2,9 +2,10 @@
 
 #include <whb/log.h>
 #include <coreinit/mcp.h>
+#include <nn/act.h>
 
 #define VERSION_HASH 0x7FB223
-#define SERVER_VERSION "01/11/2024"
+#define SERVER_VERSION "07/1/2024"
 
 void CommandHandler::command_server_status(){
 	ret = sendByte(1);
@@ -95,6 +96,7 @@ void CommandHandler::command_get_version_hash(){
 	ret = sendwait(4);
 };
 
+#define CODE_HANDLER_INSTALL_ADDRESS 0x010F4000
 //Todo: send null back if code handler is not initialized
 void CommandHandler::command_get_code_handler_address(){
 	((int *)buffer)[0] = CODE_HANDLER_INSTALL_ADDRESS;

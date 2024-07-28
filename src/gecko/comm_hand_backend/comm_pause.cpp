@@ -1,13 +1,10 @@
 #include "../command_handler.h"
 
-//#include "assertions.h"
-//#include "../dynamic_libs/os_functions.h"
 #include <coreinit/dynload.h>
 
-//#include "../common/fs_defs.h"
 #include <coreinit/filesystem.h>
+#include <coreinit/internal.h>
 
-//#include "kernel.h"
 #include <kernel/kernel.h>
 
 //audio video manager

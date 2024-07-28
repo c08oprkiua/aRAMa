@@ -14,7 +14,6 @@ const char aRAMaConfig::autosave_id = '4';
 const char aRAMaConfig::caffiine_id = '5';
 const char aRAMaConfig::saviine_id = '6';
 
-
 int32_t aRAMaConfig::settings = 0;
 int32_t aRAMaConfig::settings_live_cache = 0;
 uint32_t aRAMaConfig::ip_address = false;
@@ -61,8 +60,6 @@ void aRAMaConfig::SaveSettings(){
     }
 }
 
-
-//Hope you know your bitwise operators :trollface:
 void aRAMaConfig::settings_changed(ConfigItemBoolean* item, bool new_value){
     char val_char = *item->configId;
     switch (val_char){

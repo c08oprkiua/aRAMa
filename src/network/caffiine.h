@@ -3,7 +3,7 @@
 
 #include "command_io.h"
 
-class Caffiine: public CommandIO {
+class Caffiine: public TCPCommandIO {
     void caf_connect(uint32_t ip);
 
     void disconnect();

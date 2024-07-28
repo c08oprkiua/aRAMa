@@ -1,6 +1,8 @@
 #ifndef COMMAND_IO_H
 #define COMMAND_IO_H
 
+#include "../core/thread_server.h"
+#include <coreinit/debug.h>
 #include <coreinit/thread.h>
 #include <coreinit/mutex.h>
 #include <coreinit/filesystem.h>
@@ -18,36 +20,14 @@
 #define ERROR_BUFFER_SIZE 150
 #define DATA_BUFFER_SIZE 0x5000
 
-
-#define CHECK_ERROR(cond)     \
-	if (cond)                 \
-	{                         \
-		line = __LINE__; \
-		goto error;       \
-}
-
-#define ASSERT_FUNCTION_SUCCEEDED(returnValue, functionName) \
-    if (returnValue < 0) { \
-        char buffer[100] = {0}; \
-        WHBLogPrintf(buffer, 100, "%s failed with return value: %i", functionName, returnValue); \
-        OSFatal(buffer); \
-} \
-
-static FSClient *client;
-static FSCmdBlock *commandBlock;
-static bool kernelCopyServiceStarted;
-
-class CommandIO {
+class TCPCommandIO : public aRAMaServer {
 public:
 
-    static OSMutex iLock;
+    OSMutex IOMutex;
     
     //ret must be signed because it is set to -1 for errors, idk if any of the others 
     //share a similar requirement to be signed, or to be large numbers
-    int32_t ret;
-	uint32_t error, line, clientfd, sock;
-
-    uint8_t stack[0x6F00];
+    int32_t ret, error, line, clientfd, sock;
 
 	uint8_t buffer[0x5001];
 

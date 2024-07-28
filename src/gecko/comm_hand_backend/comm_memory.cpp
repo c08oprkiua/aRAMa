@@ -1,5 +1,7 @@
 #include "../command_handler.h"
 
+#define ONLY_ZEROS_READ 0xB0
+#define NON_ZEROS_READ 0xBD
 
 void CommandHandler::command_read_memory()
 {
@@ -247,18 +249,15 @@ void CommandHandler::command_advanced_memory_search(){
 
 		int comparisonResult;
 
-		if (kernelRead)
-		{
+		if (kernelRead){
 			comparisonResult = kernelMemoryCompare((char *)currentAddress,
 												   searchBytes, searchBytesCount);
 		}
-		else
-		{
+		else {
 			comparisonResult = memoryCompare((void *)currentAddress,
 											 searchBytes, (size_t)searchBytesCount);
 		}
-		if (comparisonResult == 0)
-		{
+		if (comparisonResult == 0){
 			// Search bytes have been found, add the addresses to the return buffer
 			((int *)buffer)[1 + searchBytesOccurrences] = currentAddress;
 			searchBytesOccurrences++;

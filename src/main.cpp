@@ -21,7 +21,7 @@ WUPS_PLUGIN_DESCRIPTION("RAM multi-tool for Aroma");
         Mewtality - New Cheat code handler
 - from meta.xml
 */
-WUPS_PLUGIN_VERSION("active-dev, v0.1");
+WUPS_PLUGIN_VERSION("active-dev, v0.2");
 WUPS_PLUGIN_AUTHOR("c08oprkiua, TCPGecko contributors");
 WUPS_PLUGIN_LICENSE("GPLv3");
 

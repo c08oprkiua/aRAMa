@@ -1,6 +1,7 @@
 #include "../command_handler.h"
 
 #include <coreinit/filesystem.h>
+#include <coreinit/memory.h>
 
 void considerInitializingFileSystem() {
 	if (!client) {
@@ -57,12 +58,12 @@ void CommandHandler::command_read_file(){
 		// Allocate the file bytes buffer
 		uint32_t file_buffer_size = 0x2000;
 		char *fileBuffer = (char *)OSAllocFromSystem(file_buffer_size, FS_IO_BUFFER_ALIGN);
-		ASSERT_ALLOCATED(fileBuffer, "File buffer")
+		ASSERT_ALLOCATED(fileBuffer, "File buffer");
 
 		int totalBytesRead = 0;
 		while (totalBytesRead < totalBytes)
 		{
-			int bytesRead = FSReadFile(client, commandBlock, fileBuffer, 1, file_buffer_size,
+			int bytesRead = FSReadFile(client, commandBlock, (uint8_t *) fileBuffer, 1, file_buffer_size,
 									   handle, 0, FS_ERROR_FLAG_ALL);
 			ASSERT_FUNCTION_SUCCEEDED(bytesRead, "FSReadFile")
 
@@ -93,7 +94,7 @@ void CommandHandler::command_read_directory(){
 
 	considerInitializingFileSystem();
 
-	s32 handle;
+	int32_t handle;
 	FSDirectoryEntry entry;
 
 	ret = FSOpenDir(client, commandBlock, directory_path, &handle, FS_ERROR_FLAG_ALL);

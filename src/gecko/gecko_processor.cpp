@@ -266,10 +266,12 @@ int GeckoProcessor::run(){
 
 		error:
 		WHBLogPrintf("error, closing connection...\n");
-		if (clientfd != -1)
+		if (clientfd != -1){
 			socketclose(clientfd);
-		if (sockfd != -1)
+		}
+		if (sockfd != -1){
 			socketclose(sockfd);
+		}
 		error = ret;
 
 		// Fix the console freezing when e.g. going to the friend list

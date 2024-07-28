@@ -2,3 +2,6 @@
 /build
 aRAMa.elf
 aRAMa.wps
+/.cache
+/.vscode
+compile_commands.json

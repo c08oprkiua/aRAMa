@@ -21,7 +21,8 @@ WUMS_ROOT := $(DEVKITPRO)/wums
 #-------------------------------------------------------------------------------
 TARGET		:=	aRAMa
 BUILD		:=	build
-SOURCES		:=	src
+SOURCES		:=	src src/core src/gecko src/gecko/comm_hand_backend src/network 
+				
 DATA		:=	
 INCLUDES	:=	src
 
