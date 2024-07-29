@@ -232,7 +232,7 @@ WUPSConfigAPICallbackStatus aRAMaConfig::open_config(WUPSConfigCategoryHandle ro
     WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &sd_codes_id, "Use SD codes", false, get_sd_codes(), &settings_changed, "Yes", "No");
     WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &notifs_id, "Notifications", false, get_notifs_on(), &settings_changed, "Enabled", "Disabled");
     WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &autosave_id, "When recieving codes:", false, get_code_autosave(), &settings_changed, "Save codes", "Don't save codes");
-    WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &tcpgecko_id, "TCP Gecko", true, get_tcpgecko(), &settings_changed, "Enabled", "Disabled");
+    WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &tcpgecko_id, "TCPGecko", true, get_tcpgecko(), &settings_changed, "Enabled", "Disabled");
     WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &code_hand_id, "Code handler", true, get_code_handler(), &settings_changed, "Enabled", "Disabled");
     WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &caffiine_id, "Caffiine", false, get_caffiine(), &settings_changed, "Enabled", "Disabled");
     WUPSConfigItemBoolean_AddToCategoryEx(arama_category, &saviine_id, "Saviine", false, get_saviine(), &settings_changed, "Enabled", "Disabled");

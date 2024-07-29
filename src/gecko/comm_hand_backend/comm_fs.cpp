@@ -3,6 +3,16 @@
 #include <coreinit/filesystem.h>
 #include <coreinit/memory.h>
 
+#include <malloc.h>
+
+#define FS_MAX_LOCALPATH_SIZE           511
+#define FS_MAX_MOUNTPATH_SIZE           128
+#define FS_MAX_FULLPATH_SIZE            (FS_MAX_LOCALPATH_SIZE + FS_MAX_MOUNTPATH_SIZE)
+#define FS_IO_BUFFER_ALIGN 64
+
+FSClient *client;
+FSCmdBlock *commandBlock;
+
 void considerInitializingFileSystem() {
 	if (!client) {
 		// Initialize the file system
@@ -12,15 +22,17 @@ void considerInitializingFileSystem() {
 		//ASSERT_FUNCTION_SUCCEEDED(status, "FSInit")
 
 		// Allocate the client
-		client = malloc(FS_CLIENT_SIZE);
+		client = (FSClient *)malloc(FS_CLIENT_SIZE);
 		ASSERT_ALLOCATED(client, "Client");
 
 		// Register the client
-		status = FSAddClientEx(client, 0, -1);
+		//status = FSAddClientEx(client, 0, -1);
+
+		status = FSAddClient(client, (FSErrorFlag) 0);
 		ASSERT_FUNCTION_SUCCEEDED(status, "FSAddClientEx")
 
 		// Allocate the command block
-		commandBlock = malloc(FS_CMD_BLOCK_SIZE);
+		commandBlock = (FSCmdBlock *)malloc(FS_CMD_BLOCK_SIZE);
 		ASSERT_ALLOCATED(commandBlock, "Command block")
 
 		FSInitCmdBlock(commandBlock);
@@ -34,7 +46,7 @@ void CommandHandler::command_read_file(){
 
 	considerInitializingFileSystem();
 
-	int handle;
+	FSFileHandle handle;
 	int status = FSOpenFile(client, commandBlock, file_path, "r", &handle, FS_ERROR_FLAG_ALL);
 
 	if (status == FS_STATUS_OK)
@@ -94,7 +106,7 @@ void CommandHandler::command_read_directory(){
 
 	considerInitializingFileSystem();
 
-	int32_t handle;
+	FSDirectoryHandle handle;
 	FSDirectoryEntry entry;
 
 	ret = FSOpenDir(client, commandBlock, directory_path, &handle, FS_ERROR_FLAG_ALL);
@@ -109,7 +121,7 @@ void CommandHandler::command_read_directory(){
 		int entrySize = sizeof(FSDirectoryEntry);
 
 		// Read every entry in the given directory
-		while (FSReadDir(client, commandBlock, handle, &entry, -1) == FS_STATUS_OK)
+		while (FSReadDir(client, commandBlock, handle, &entry, (FSErrorFlag)-1) == FS_STATUS_OK)
 		{
 			// Let the client know how much data is going to be sent (even though this is constant)
 			((int *)buffer)[0] = entrySize;
@@ -149,11 +161,10 @@ void CommandHandler::command_replace_file(){
 	considerInitializingFileSystem();
 
 	// Create an empty file for writing. Its contents will be erased
-	int handle;
-	int status = FSOpenFile(client, commandBlock, file_path, "w", &handle, FS_ERROR_FLAG_ALL);
+	FSFileHandle handle;
+	FSStatus status = FSOpenFile(client, commandBlock, file_path, "w", &handle, FS_ERROR_FLAG_ALL);
 
-	if (status == FS_STATUS_OK)
-	{
+	if (status == FS_STATUS_OK){
 		// Send the OK status
 		((int *)buffer)[0] = status;
 		ret = sendwait(4);

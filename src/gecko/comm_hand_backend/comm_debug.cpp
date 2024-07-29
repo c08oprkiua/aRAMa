@@ -5,6 +5,8 @@
 
 #define INVALID_ADDRESS -1
 
+NodeList<int> *getStackTrace(OSContext *context);
+bool isValidStackPointer(uint32_t stackPointer);
 
 void CommandHandler::command_validate_address_range(){
 	ret = recvwait(sizeof(int) * 2);
@@ -109,21 +111,25 @@ void CommandHandler::command_remote_procedure_call(){
 
 void CommandHandler::command_get_symbol(){
 	int size = recvbyte();
+	char *rplName;
+	char *symbolName;
+	OSDynLoad_ExportType data;
+
 	CHECK_ERROR(size < 0);
 
 	ret = recvwait(size);
 	CHECK_ERROR(ret < 0);
 
 	/* Identify the RPL name and symbol name */
-	char *rplName = (char *)&((int *)buffer)[2];
-	char *symbolName = (char *)(&buffer[0] + ((int *)buffer)[1]);
+	rplName = (char *)&((int *)buffer)[2];
+	symbolName = (char *)(&buffer[0] + ((int *)buffer)[1]);
 
 	/* Get the symbol and store it in the buffer */
 	OSDynLoad_Module module_handle;
 	void *function_address;
 	OSDynLoad_Acquire(rplName, &module_handle);
 
-	OSDynLoad_ExportType data = (OSDynLoad_ExportType) recvbyte();
+	data = (OSDynLoad_ExportType) recvbyte();
 	OSDynLoad_FindExport(module_handle, data, symbolName, &function_address);
 
 	((int *)buffer)[0] = (int)function_address;
@@ -158,14 +164,14 @@ void CommandHandler::command_get_stack_trace(){
 	int bufferIndex = 0;
 	((int *)buffer)[bufferIndex++] = stackTraceLength;
 
-	Node<int> *currentStackTraceElement = stackTrace->get_list();
-	while (currentStackTraceElement != NULL)
-	{
-		int address = *currentStackTraceElement->data;
+	Node<int> currentStackTraceElement = *stackTrace->get_list();
+	//while (currentStackTraceElement != nullptr){
+	while (currentStackTraceElement.data != NULL){
+		int address = currentStackTraceElement.data;
 		WHBLogPrintf("Stack trace element address: %08x\n", address);
-		((int *)buffer)[bufferIndex++] = *currentStackTraceElement->data;
+		((int *)buffer)[bufferIndex++] = currentStackTraceElement.data;
 
-		currentStackTraceElement = currentStackTraceElement->next;
+		currentStackTraceElement = *currentStackTraceElement.next;
 	}
 
 	WHBLogPrintf("Sending stack trace with length %i\n", stackTraceLength);
@@ -184,7 +190,7 @@ NodeList<int> *getStackTrace(OSContext *context) {
 			break;
 		}
 
-		int data = *(uint32_t *)(stackPointer + 4);
+		int data =(int) *(uint32_t *)(stackPointer + 4);
 		stackTrace->insert(data);
 		stackPointersCount++;
 	}

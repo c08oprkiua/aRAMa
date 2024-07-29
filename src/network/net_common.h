@@ -20,8 +20,6 @@ enum ByteCodes {
     BYTE_MODE_I,
     BYTE_CLOSE_DUMP,
 
-    
-
 };
 
 #define BYTE_FILE          	  0xC0

@@ -4,7 +4,7 @@
 template<typename DataType>
 class Node {
 public:
-	DataType *data;
+	DataType data;
 	Node *next;
 };
 

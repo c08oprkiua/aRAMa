@@ -1,12 +1,19 @@
 #include "../command_handler.h"
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include <coreinit/debug.h>
+
+#include "core/log_and_noti.h"
 
 char *disassemblerBuffer;
 void *disassemblerBufferPointer;
 
 #define DISASSEMBLER_BUFFER_SIZE 0x1024
+//this value is a patchwork
+#define PPC_DISASM_MAX_BUFFER DISASSEMBLER_BUFFER_SIZE
 
 void formatDisassembled(const char *format, ...) {
 	if (!disassemblerBuffer) {
@@ -33,25 +40,32 @@ void formatDisassembled(const char *format, ...) {
 	free(temporaryBuffer);
 }
 
+int roundUpToAligned(int number) {
+	return (number + 3) & ~0x03;
+}
+
 void CommandHandler::command_disassemble_range(){
 	// Receive the starting, ending address and the disassembler options
 	ret = recvwait(4 + 4 + 4);
+	void *startingAddress, *endingAddress;
+	DisassemblePPCFlags disassemblerOptions;
+	int length;
 	CHECK_ERROR(ret < 0);
-	void *startingAddress = ((void **)buffer)[0];
-	void *endingAddress = ((void **)buffer)[1];
-	int disassemblerOptions = ((int *)buffer)[2];
+	startingAddress = ((void **)buffer)[0];
+	endingAddress = ((void **)buffer)[1];
+	disassemblerOptions = ((DisassemblePPCFlags *)buffer)[2];
 
 	// Disassemble
 	DisassemblePPCRange(startingAddress, endingAddress, formatDisassembled, OSGetSymbolName,
-						(DisassemblePPCFlags)disassemblerOptions);
+						disassemblerOptions);
 
 	// Send the disassembler buffer size
-	int length = DISASSEMBLER_BUFFER_SIZE;
-	ret = sendwait_buffer(&length, 4);
+	length = DISASSEMBLER_BUFFER_SIZE;
+	ret = sendwait_buffer((uint8_t *)length, 4);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (disassembler buffer size)")
 
 	// Send the data
-	ret = sendwait_buffer(disassemblerBufferPointer, length);
+	ret = sendwait_buffer((uint8_t *)disassemblerBufferPointer, length);
 	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (disassembler buffer)")
 
 	// Place the pointer back to the beginning
@@ -67,14 +81,17 @@ void CommandHandler::command_disassemble_range(){
 void CommandHandler::command_memory_disassemble(){
 	// Receive the starting address, ending address and disassembler options
 	ret = recvwait(sizeof(int) * 3);
+	DisassemblePPCFlags disassemblerOptions;
+	int bufferSize, integerSize, bytesToSend;
+	uint32_t startingAddress,endingAddress,currentAddress;
 	CHECK_ERROR(ret < 0)
-	int startingAddress = ((int *)buffer)[0];
-	int endingAddress = ((int *)buffer)[1];
-	int disassemblerOptions = ((int *)buffer)[2];
+	startingAddress = ((uint32_t *)buffer)[0];
+	endingAddress = ((uint32_t *)buffer)[1];
+	disassemblerOptions = ((DisassemblePPCFlags *)buffer)[2];
 
-	uint32_t currentAddress = startingAddress;
-	int bufferSize = PPC_DISASM_MAX_BUFFER;
-	int integerSize = 4;
+	currentAddress = startingAddress;
+	bufferSize = PPC_DISASM_MAX_BUFFER;
+	integerSize = 4;
 
 	// Disassemble everything
 	while (currentAddress < endingAddress)
@@ -88,7 +105,7 @@ void CommandHandler::command_memory_disassemble(){
 			char *opCodeBuffer = (char *)malloc(bufferSize);
 			bool status = (bool)DisassemblePPCOpcode(&currentAddress, opCodeBuffer, bufferSize,
 													 OSGetSymbolName,
-													 (DisassemblePPCFlags)disassemblerOptions);
+													 disassemblerOptions);
 
 			((int *)buffer)[currentIntegerIndex++] = status;
 
@@ -107,7 +124,7 @@ void CommandHandler::command_memory_disassemble(){
 			currentAddress += integerSize;
 		}
 
-		int bytesToSend = currentIntegerIndex * integerSize;
+		bytesToSend = currentIntegerIndex * integerSize;
 		ret = sendwait_buffer((uint8_t *)&bytesToSend, sizeof(int));
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (Buffer size)");
 
@@ -116,9 +133,9 @@ void CommandHandler::command_memory_disassemble(){
 		ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (Buffer)");
 	}
 
-	int bytesToSend = 0;
+	bytesToSend = 0;
 	ret = sendwait_buffer((uint8_t *)&bytesToSend, sizeof(int));
-	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (No more bytes)")
+	ASSERT_FUNCTION_SUCCEEDED(ret, "sendwait (No more bytes)");
 
 	return;
 

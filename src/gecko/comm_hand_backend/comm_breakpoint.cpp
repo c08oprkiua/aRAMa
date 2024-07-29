@@ -8,12 +8,67 @@
 #define INSTRUCTION_TRAP 0x7FE00008 // https://stackoverflow.com/a/10286705/3764804
 #define INSTRUCTION_NOP 0x60000000
 
+//forward declarations of functions
+
+//According to Maschell, 
+//"You would need to implement it as kernel syscall as they are not available on retail by default"
+//But I don't wanna do that just to get this thing to compile, so it will wait
+#define OSSetDABR(num, address, read, write){}
+
+void setDataBreakpoint(int address, bool read, bool write);
+int breakPointHandler(OSContext *interruptedContext);
+void setInstructionBreakpoint(unsigned int address);
+
 struct Breakpoint {
 	uint32_t address;
 	uint32_t instruction;
 };
 
+void writeCode(uint32_t address, uint32_t instruction) {
+	uint32_t *pointer = (uint32_t *) (address + 0xA0000000);
+	*pointer = instruction;
+	DCFlushRange(pointer, 4);
+	ICInvalidateRange(pointer, 4);
+}
+
+class BreakPointC {
+public:
+	uint32_t address;
+	uint32_t instruction;
+
+	void remove(){
+		writeCode(address, instruction);
+		address = 0;
+		instruction = 0;
+	}
+	void set(uint32_t new_address){
+		address = new_address;
+		instruction = *(uint32_t *) new_address;
+		writeCode(address, (uint32_t) INSTRUCTION_TRAP);
+	}
+};
+
 BreakPointC breakpoints[GENERAL_BREAKPOINTS_COUNT + STEP_BREAKPOINTS_COUNT];
+
+BreakPointC *getBreakpoint(uint32_t address, int size) {
+	for (int index = 0; index < GENERAL_BREAKPOINTS_COUNT; index++) {
+		if (breakpoints[index].address == address) {
+			return &breakpoints[index];
+		}
+	}
+
+	return NULL;
+}
+
+BreakPointC *allocateBreakpoint() {
+	for (int breakpointsIndex = 0; breakpointsIndex < GENERAL_BREAKPOINTS_COUNT; breakpointsIndex++) {
+		if (breakpoints[breakpointsIndex].address == 0) {
+			return &breakpoints[breakpointsIndex];
+		}
+	}
+
+	return NULL;
+}
 
 static unsigned char (*bHandler)(OSContext *ctx);
 
@@ -52,50 +107,6 @@ static inline void setIABR(unsigned int address) {
 	isync();
 }
 
-class BreakPointC {
-public:
-	uint32_t address;
-	uint32_t instruction;
-
-	void remove(){
-		writeCode(address, instruction);
-		address = 0;
-		instruction = 0;
-	}
-	void set(uint32_t new_address){
-		address = new_address;
-		instruction = *(uint32_t *) new_address;
-		writeCode(address, (uint32_t) INSTRUCTION_TRAP);
-	}
-};
-
-void writeCode(uint32_t address, uint32_t instruction) {
-	uint32_t *pointer = (uint32_t *) (address + 0xA0000000);
-	*pointer = instruction;
-	DCFlushRange(pointer, 4);
-	ICInvalidateRange(pointer, 4);
-}
-
-BreakPointC *getBreakpoint(uint32_t address, int size) {
-	for (int index = 0; index < GENERAL_BREAKPOINTS_COUNT; index++) {
-		if (breakpoints[index].address == address) {
-			return &breakpoints[index];
-		}
-	}
-
-	return NULL;
-}
-
-BreakPointC *allocateBreakpoint() {
-	for (int breakpointsIndex = 0; breakpointsIndex < GENERAL_BREAKPOINTS_COUNT; breakpointsIndex++) {
-		if (breakpoints[breakpointsIndex].address == 0) {
-			return &breakpoints[breakpointsIndex];
-		}
-	}
-
-	return NULL;
-}
-
 unsigned char basicDABRBreakpointHandler(OSContext *context) {
 	// log_print("Getting DABR address\n");
 	uint32_t address = context->srr0;
@@ -108,7 +119,6 @@ unsigned char basicDABRBreakpointHandler(OSContext *context) {
 	}
 	return 0;
 }
-
 
 static void RegisterDataBreakpointHandler(unsigned char (*breakpointHandler)(OSContext *ctx)) {
 	bHandler = breakpointHandler;
@@ -159,15 +169,6 @@ static void SetDataBreakpoint(unsigned int address, bool read, bool write) {
 	// log_print("DABR set!\n");
 }
 
-void setDataBreakpoint(int address, bool read, bool write) {
-	OSSetExceptionCallbackEx(OS_EXCEPTION_MODE_GLOBAL_ALL_CORES, OS_EXCEPTION_TYPE_PROGRAM, &breakPointHandler);
-	// log_print("Setting DABR...\n");
-	OSSetDABR(1, address, read, write);
-	// log_print("DABR set\n");
-	// int enabled = OSIsInterruptEnabled();
-	// log_printf("Interrupts enabled: %i\n", enabled);
-}
-
 int breakPointHandler(OSContext *interruptedContext) {
 	// Check for data breakpoints
 	uint32_t dataAddress = interruptedContext->srr0;
@@ -191,6 +192,15 @@ int breakPointHandler(OSContext *interruptedContext) {
 	rfi();
 
 	return 0;
+}
+
+void setDataBreakpoint(int address, bool read, bool write) {
+	OSSetExceptionCallbackEx(OS_EXCEPTION_MODE_GLOBAL_ALL_CORES, OS_EXCEPTION_TYPE_PROGRAM, &breakPointHandler);
+	// log_print("Setting DABR...\n");
+	OSSetDABR(1, address, read, write);
+	// log_print("DABR set\n");
+	// int enabled = OSIsInterruptEnabled();
+	// log_printf("Interrupts enabled: %i\n", enabled);
 }
 
 void setInstructionBreakpoint(unsigned int address) {
