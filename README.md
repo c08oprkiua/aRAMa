@@ -1,3 +1,6 @@
+# Disclaimer: This project is no longer being worked on.
+If you REALLY want to use gecko codes on Aroma, check out [argecko by quarky](https://git.sr.ht/~quarky/arGecko). 
+
 # What is this?
 
 This is an unofficial TCPGecko rewrite and port for Aroma. It contains several improvements, including notifications, enabling and disabling specific features via the plugin config menu, and more.
@@ -111,5 +114,3 @@ Commands:
 # Help, inquiries, etc.
 
 For help with or questions about JGecko U or the original TCPGecko, join [the JGecko U Discord](https://discord.com/invite/rSRM3RWDq4)
-
-For help with or questions about aRAMa, join [my Discord](https://discord.com/invite/VPHr56hnbQ)
